@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+<defs>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe5ec"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c7d0da"/><stop offset="1" stop-color="#9aa7b5"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8fb6d9"/><stop offset="1" stop-color="#4a6e94"/></linearGradient>
+</defs>
+<ellipse cx="300" cy="470" rx="240" ry="60" fill="#e8ecef"/>
+<polygon points="140,430 300,510 460,430 300,350" fill="#d5dbe2"/>
+<polygon points="160,300 160,430 300,500 300,370" fill="url(#g2)"/>
+<polygon points="300,370 300,500 440,430 440,300" fill="url(#g1)"/>
+<polygon points="160,300 300,370 440,300 300,230" fill="#f2f5f8"/>
+<polygon points="185,320 185,415 290,468 290,373" fill="url(#glass)" opacity="0.85"/>
+<g stroke="#e8eef4" stroke-width="4" opacity="0.8"><line x1="211" y1="333" x2="211" y2="428"/><line x1="237" y1="346" x2="237" y2="441"/><line x1="263" y1="359" x2="263" y2="454"/></g>
+<polygon points="320,380 320,470 420,420 420,330" fill="#ffffff"/>
+<rect x="337" y="372" width="28" height="60" transform="skewY(-26) translate(0,530)" fill="#3d4c5c"/>
+<polygon points="250,180 250,260 390,260 390,180" fill="#ffffff" transform="skewX(0)"/>
+<polygon points="230,240 300,275 440,205 370,170" fill="#eef2f6"/>
+<polygon points="230,240 230,255 300,290 300,275" fill="#aab6c2"/>
+<polygon points="300,275 300,290 440,220 440,205" fill="#cfd8e0"/>
+<g fill="#5a8a55"><circle cx="130" cy="430" r="26"/><circle cx="110" cy="445" r="18"/><rect x="126" y="440" width="8" height="28" fill="#6b5b45"/></g>
+<g fill="#69a061"><circle cx="480" cy="405" r="22"/><rect x="476" y="415" width="7" height="24" fill="#6b5b45"/></g>
+<g fill="#7fae6f"><ellipse cx="360" cy="490" rx="34" ry="10"/><ellipse cx="220" cy="505" rx="30" ry="9"/></g>
+</svg>
