@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
-import { Heart, MapPin, BedDouble, Bath, Ruler, BadgeCheck } from "lucide-react";
-import { useState } from "react";
+import { Heart, MapPin, BedDouble, Bath, Ruler, BadgeCheck, ShoppingBag, Check } from "lucide-react";
+import { useEffect, useState } from "react";
 import { VerificationBadge } from "./Badges";
 import { naira } from "@/lib/format";
+import { addToCart, inCart, removeFromCart, CART_EVENT } from "@/lib/cart";
 
 export type Listing = {
   id: number;
@@ -27,12 +28,37 @@ export type Listing = {
 export function ListingCard({
   listing,
   href,
+  cartable = false,
 }: {
   listing: Listing;
   href?: string;
+  cartable?: boolean;
 }) {
   const [saved, setSaved] = useState(!!listing.saved);
+  const [carted, setCarted] = useState(false);
   const url = href ?? `/dashboard/property/${listing.id}`;
+
+  useEffect(() => {
+    if (!cartable) return;
+    const sync = () => setCarted(inCart(listing.id));
+    sync();
+    window.addEventListener(CART_EVENT, sync);
+    return () => window.removeEventListener(CART_EVENT, sync);
+  }, [cartable, listing.id]);
+
+  function toggleCart(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (carted) removeFromCart(listing.id);
+    else
+      addToCart({
+        id: listing.id,
+        title: listing.title,
+        price: Number(listing.price),
+        image_seed: listing.image_seed,
+        location: `${listing.location_area}, ${listing.location_city}`,
+      });
+  }
 
   async function toggleSave(e: React.MouseEvent) {
     e.preventDefault();
@@ -96,6 +122,18 @@ export function ListingCard({
             </span>
           ) : null}
         </div>
+        {cartable && (
+          <button
+            onClick={toggleCart}
+            className={`btn-text mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-xl transition ${
+              carted
+                ? "bg-lime-100 text-lime-600"
+                : "bg-neutral-950 text-white hover:bg-brand-900"
+            }`}
+          >
+            {carted ? <><Check size={15} /> In Cart</> : <><ShoppingBag size={15} /> Add to Cart</>}
+          </button>
+        )}
       </div>
     </Link>
   );

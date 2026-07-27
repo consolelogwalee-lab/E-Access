@@ -1,31 +1,60 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
+import { CartButton } from "@/components/landing/Cart";
+
+const NAVY = "#0A1D56";
 
 export function Navbar() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/me").then((r) => r.json()).then((d) => setLoggedIn(!!d.user)).catch(() => {});
+  }, []);
+
+  function goHome() {
+    setOpen(false);
+    if (window.location.pathname === "/") window.scrollTo({ top: 0, behavior: "smooth" });
+    else router.push("/");
+  }
+
   return (
     <>
       <div className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-4">
-        <nav className="pointer-events-auto flex items-center gap-2 rounded-full bg-neutral-950/95 py-1.5 pl-1.5 pr-1.5 shadow-xl shadow-black/20 backdrop-blur">
-          <Link href="/" aria-label="E-Access home">
-            <LogoMark size={34} />
-          </Link>
+        <nav className="pointer-events-auto flex items-center gap-3 rounded-full bg-neutral-950/95 py-1.5 pl-1.5 pr-1.5 shadow-xl shadow-black/20 backdrop-blur">
+          <button onClick={goHome} aria-label="E-Access home">
+            <LogoMark size={36} />
+          </button>
           <button
             onClick={() => setOpen((o) => !o)}
-            className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-white/90 transition hover:text-white"
+            className="flex items-center gap-2 rounded-full py-2 pl-3 pr-6 text-sm font-medium text-white/90 transition hover:text-white sm:pr-10"
           >
             {open ? <X size={16} /> : <Menu size={16} />} Home
           </button>
           <span className="h-1 w-1 rounded-full bg-white/40" />
-          <Link
-            href="/auth/login"
-            className="btn-text flex items-center gap-1.5 rounded-full bg-support-blue px-4 py-2 text-white transition hover:brightness-110"
-          >
-            LOGIN <ArrowUpRight size={15} />
-          </Link>
+          <CartButton loggedIn={loggedIn} />
+          {loggedIn ? (
+            <Link
+              href="/dashboard"
+              className="btn-text flex items-center gap-1.5 rounded-full px-5 py-2.5 text-white transition hover:brightness-125"
+              style={{ background: NAVY }}
+            >
+              DASHBOARD <ArrowUpRight size={15} />
+            </Link>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="btn-text flex items-center gap-1.5 rounded-full px-5 py-2.5 text-white transition hover:brightness-125"
+              style={{ background: NAVY }}
+            >
+              LOGIN <ArrowUpRight size={15} />
+            </Link>
+          )}
         </nav>
       </div>
       {open && (
@@ -36,6 +65,7 @@ export function Navbar() {
           >
             <div className="space-y-1">
               {[
+                ["Browse listings", "#browse"],
                 ["Why us", "#why-us"],
                 ["How e-access works", "#how-it-works"],
                 ["Featured listings", "#featured"],
@@ -55,10 +85,11 @@ export function Navbar() {
               <span>X (twitter)</span><span>Instagram</span><span>Whatsapp</span><span>Youtube</span>
             </div>
             <Link
-              href="/auth"
-              className="btn-text mt-5 flex items-center justify-center gap-1.5 rounded-full bg-support-blue px-4 py-3 text-white"
+              href={loggedIn ? "/dashboard" : "/auth"}
+              className="btn-text mt-5 flex items-center justify-center gap-1.5 rounded-full px-4 py-3 text-white"
+              style={{ background: NAVY }}
             >
-              Sign Up <ArrowUpRight size={15} />
+              {loggedIn ? "Go to Dashboard" : "Sign Up"} <ArrowUpRight size={15} />
             </Link>
           </div>
         </div>

@@ -1,12 +1,31 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { naira, TYPE_LABEL } from "@/lib/format";
 import type { Listing } from "@/components/ListingCard";
 
+const AUTO_MS = 6000;
+
 export function Featured({ listings }: { listings: (Listing & { estate_name: string | null })[] }) {
   const [active, setActive] = useState(Math.min(3, Math.max(0, Math.floor(listings.length / 2))));
+  const pausedUntil = useRef(0);
+
+  // Auto-advance like a display case: every ~6s the next property slides into focus
+  useEffect(() => {
+    if (listings.length < 2) return;
+    const t = setInterval(() => {
+      if (Date.now() < pausedUntil.current) return;
+      setActive((a) => (a + 1) % listings.length);
+    }, AUTO_MS);
+    return () => clearInterval(t);
+  }, [listings.length]);
+
+  function pick(i: number) {
+    pausedUntil.current = Date.now() + 15000; // pause auto-play briefly after manual pick
+    setActive(i);
+  }
+
   if (!listings.length) return null;
   const L = listings[active];
   return (
@@ -29,10 +48,12 @@ export function Featured({ listings }: { listings: (Listing & { estate_name: str
 
         <div className="flex items-center justify-center gap-4">
           <div className="hidden flex-1 justify-end gap-4 md:flex">
-            {listings.slice(0, active).slice(-3).map((l) => {
-              const i = listings.indexOf(l);
+            {[3, 2, 1].map((off) => {
+              const i = (active - off + listings.length * 3) % listings.length;
+              const l = listings[i];
+              if (!l || i === active) return null;
               return (
-                <button key={l.id} onClick={() => setActive(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md opacity-100 transition hover:opacity-100">
+                <button key={`${l.id}-${off}`} onClick={() => pick(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md transition-all duration-500">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={`/images/property-${l.image_seed}.svg`} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
                 </button>
@@ -41,13 +62,21 @@ export function Featured({ listings }: { listings: (Listing & { estate_name: str
           </div>
           <div className="relative h-[320px] w-full max-w-[410px] shrink-0 overflow-hidden rounded-sm md:h-[434px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/images/property-${L.image_seed}.svg`} alt={L.title} className="h-full w-full object-cover" />
+            <img key={L.id} src={`/images/property-${L.image_seed}.svg`} alt={L.title} className="fade-slide h-full w-full object-cover" />
+            {/* progress dots */}
+            <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+              {listings.map((_, i) => (
+                <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === active ? "w-5 bg-white" : "w-1.5 bg-white/40"}`} />
+              ))}
+            </div>
           </div>
           <div className="hidden flex-1 gap-4 md:flex">
-            {listings.slice(active + 1, active + 4).map((l) => {
-              const i = listings.indexOf(l);
+            {[1, 2, 3].map((off) => {
+              const i = (active + off) % listings.length;
+              const l = listings[i];
+              if (!l || i === active) return null;
               return (
-                <button key={l.id} onClick={() => setActive(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md transition">
+                <button key={`${l.id}-${off}`} onClick={() => pick(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md transition-all duration-500">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={`/images/property-${l.image_seed}.svg`} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
                 </button>

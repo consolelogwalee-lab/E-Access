@@ -52,18 +52,17 @@ export default async function Home() {
           alt="Verified modern interior"
           className="h-[420px] w-full object-cover md:h-[500px]"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
-        <div className="absolute inset-x-0 bottom-0">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 pb-10 md:flex-row md:items-end md:justify-between lg:px-8">
-            <h1 className="display max-w-[560px] text-[34px] leading-[1.18] text-white md:text-[46px]">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/55" />
+        <div className="absolute inset-x-0 top-0 pt-24 md:pt-28">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-5 px-6 md:flex-row md:items-start md:justify-between lg:px-8">
+            <h1 className="display max-w-[620px] text-[38px] leading-[1.12] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[54px]">
               Real Land, Real Owners
               <br />
               Real Peace of Mind
             </h1>
-            <p className="body-lg max-w-[470px] text-white/90">
-              Access verified estates from trusted developers, complete with document
-              validation, inspection support, and secure transaction guidance all in
-              one platform.
+            <p className="body-lg max-w-[340px] pt-2 text-white/85 md:text-right">
+              Verified estates from trusted developers — documents validated,
+              inspections supported, every transaction secured.
             </p>
           </div>
         </div>
@@ -153,8 +152,33 @@ export default async function Home() {
               </ul>
             </div>
           </div>
-          <div className="mx-auto mt-10 max-w-[1280px] px-6 text-right text-xs text-white/45 lg:px-12">
-            © 2026 E-Access. All rights reserved.
+          <div className="mx-auto mt-12 max-w-[1280px] px-6 lg:px-12">
+            <div className="h-px bg-white/10" />
+            <div className="flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-3">
+                {[
+                  ["X", "M4 4l16 16M20 4L4 20"],
+                  ["Instagram", "M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4zm5 5.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM17.2 6.6h.01"],
+                  ["WhatsApp", "M12 3a9 9 0 00-7.8 13.5L3 21l4.7-1.2A9 9 0 1012 3zm-3 6c.3-.8.7-.8 1-.8h.8c.2 0 .5.1.6.5l.7 1.7c.1.3 0 .5-.2.7l-.5.6c-.1.2-.2.4 0 .7.7 1.2 1.6 2 2.9 2.6.3.1.5.1.7-.1l.7-.8c.2-.2.4-.3.7-.2l1.8.9c.3.1.4.4.4.6-.1 1-.9 1.9-1.9 1.9-2.2.2-4.5-1.1-6.1-2.9C9.1 13.7 8.4 11.2 9 9z"],
+                  ["YouTube", "M22 12s0-3.3-.4-4.8a2.5 2.5 0 00-1.8-1.8C18.3 5 12 5 12 5s-6.3 0-7.8.4A2.5 2.5 0 002.4 7.2C2 8.7 2 12 2 12s0 3.3.4 4.8a2.5 2.5 0 001.8 1.8C5.7 19 12 19 12 19s6.3 0 7.8-.4a2.5 2.5 0 001.8-1.8C22 15.3 22 12 22 12zm-12 3V9l5.2 3L10 15z"],
+                ].map(([label, d]) => (
+                  <a
+                    key={label}
+                    href="#"
+                    aria-label={label}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/60 transition hover:border-white/40 hover:text-white"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill={label === "X" ? "none" : "currentColor"} stroke={label === "X" ? "currentColor" : "none"} strokeWidth="2.2" strokeLinecap="round">
+                      <path d={d} fill={label === "Instagram" ? "none" : undefined} stroke={label === "Instagram" ? "currentColor" : undefined} strokeWidth={label === "Instagram" ? 2 : undefined} />
+                    </svg>
+                  </a>
+                ))}
+              </div>
+              <div className="text-xs text-white/45">
+                Built for T-Prime Development • RC 000000
+              </div>
+              <div className="text-xs text-white/45">© 2026 E-Access. All rights reserved.</div>
+            </div>
           </div>
         </div>
       </footer>

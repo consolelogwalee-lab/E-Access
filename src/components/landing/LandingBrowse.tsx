@@ -127,7 +127,7 @@ export function LandingBrowse({ listings }: { listings: Listing[] }) {
           ) : (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {shown.map((l) => (
-                <ListingCard key={l.id} listing={l} href={`/auth?next=/dashboard/property/${l.id}`} />
+                <ListingCard key={l.id} listing={l} href={`/auth?next=/dashboard/property/${l.id}`} cartable />
               ))}
             </div>
           )}
