@@ -66,7 +66,7 @@ export function CartButton({ loggedIn }: { loggedIn: boolean }) {
                   {items.map((i) => (
                     <div key={i.id} className="flex items-center gap-3 rounded-2xl border border-neutral-100 p-3">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={`/images/property-${i.image_seed}.svg`} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
+                      <img src={i.image} alt="" className="h-14 w-20 shrink-0 rounded-lg object-cover" />
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-sm font-medium text-neutral-800">{i.title}</div>
                         <div className="text-xs text-neutral-400">{i.location}</div>

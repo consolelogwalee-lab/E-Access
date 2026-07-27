@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowUpDown, Copy, Download, FileText, MoreHorizontal, X, BadgeCheck } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { VerificationBadge } from "@/components/Badges";
+import { poolImage } from "@/lib/images";
 
 type Doc = {
   id: number; listing_id: number; doc_type: string; file_name: string; status: string; uploaded_at: string;
@@ -167,7 +168,7 @@ export default function DocumentsVaultPage() {
                 ) : <span />}
                 <span className="flex items-center gap-2 rounded-full bg-white px-2 py-1.5 pr-3 text-xs font-medium text-neutral-800">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/images/property-${viewDoc.image_seed}.svg`} alt="" className="h-6 w-6 rounded-full object-cover" />
+                  <img src={poolImage(viewDoc.image_seed)} alt="" className="h-6 w-6 rounded-full object-cover" />
                   {(viewDoc.estate_name ?? viewDoc.listing_title).slice(0, 18)}…
                 </span>
               </div>

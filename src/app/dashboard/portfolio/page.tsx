@@ -5,6 +5,7 @@ import { Plus, MapPin, ArrowRight, Pencil, Trash2 } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { naira, TYPE_LABEL } from "@/lib/format";
 import type { Listing } from "@/components/ListingCard";
+import { listingImage } from "@/lib/images";
 
 type Mine = Listing & { views: number; saves: number; status: string; estate_name: string | null };
 type Insp = { id: number; status: string; date: string };
@@ -127,7 +128,7 @@ export default function PortfolioPage() {
             <div key={l.id} className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
               <div className="relative">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/images/property-${l.image_seed}.svg`} alt="" className="aspect-[16/8] w-full object-cover" />
+                <img src={listingImage(l)} alt="" className="aspect-[16/8] w-full object-cover" />
                 <div className="absolute right-3 top-3 flex gap-1.5">
                   {l.verification_status === "verified" ? (
                     <>

@@ -8,6 +8,7 @@ import { VerificationBadge, Pill } from "@/components/Badges";
 import { BookInspectionDrawer } from "@/components/dashboard/BookInspection";
 import { MortgageCalculator } from "@/components/dashboard/MortgageCalculator";
 import { naira, TYPE_LABEL } from "@/lib/format";
+import { listingImage, poolImage } from "@/lib/images";
 
 type Doc = { id: number; doc_type: string; file_name: string; status: string };
 type Full = Listing & {
@@ -99,7 +100,7 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
         <div className="relative overflow-hidden rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`/images/property-${L.image_seed}.svg`}
+            src={listingImage(L)}
             alt={L.title}
             className="h-[320px] w-full object-cover md:h-[512px]"
           />
@@ -117,14 +118,14 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               key={k}
-              src={`/images/property-${((L.image_seed + k - 1) % 12) + 1}.svg`}
+              src={listingImage(L, k)}
               alt=""
               className="h-[165px] w-full rounded-xl object-cover"
             />
           ))}
           <div className="relative h-[165px] overflow-hidden rounded-xl">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/images/property-${((L.image_seed + 2) % 12) + 1}.svg`} alt="" className="h-full w-full object-cover" />
+            <img src={poolImage(L.image_seed, 3)} alt="" className="h-full w-full object-cover" />
             <span className="absolute inset-0 flex items-center justify-center bg-neutral-950/50 text-lg font-semibold text-white">2+</span>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { naira, TYPE_LABEL } from "@/lib/format";
 import type { Listing } from "@/components/ListingCard";
+import { listingImage } from "@/lib/images";
 
 const AUTO_MS = 6000;
 
@@ -55,14 +56,14 @@ export function Featured({ listings }: { listings: (Listing & { estate_name: str
               return (
                 <button key={`${l.id}-${off}`} onClick={() => pick(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md transition-all duration-500">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/images/property-${l.image_seed}.svg`} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
+                  <img src={listingImage(l)} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
                 </button>
               );
             })}
           </div>
           <div className="relative h-[320px] w-full max-w-[410px] shrink-0 overflow-hidden rounded-sm md:h-[434px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img key={L.id} src={`/images/property-${L.image_seed}.svg`} alt={L.title} className="fade-slide h-full w-full object-cover" />
+            <img key={L.id} src={listingImage(L)} alt={L.title} className="fade-slide h-full w-full object-cover" />
             {/* progress dots */}
             <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
               {listings.map((_, i) => (
@@ -78,7 +79,7 @@ export function Featured({ listings }: { listings: (Listing & { estate_name: str
               return (
                 <button key={`${l.id}-${off}`} onClick={() => pick(i)} className="group relative h-[140px] w-[120px] shrink-0 overflow-hidden rounded-md transition-all duration-500">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/images/property-${l.image_seed}.svg`} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
+                  <img src={listingImage(l)} alt={l.title} className="h-full w-full object-cover grayscale transition group-hover:grayscale-0" />
                 </button>
               );
             })}

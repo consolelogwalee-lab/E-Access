@@ -4,6 +4,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Search, Star, ExternalLink } from "lucide-react";
 import { naira, TYPE_LABEL } from "@/lib/format";
+import { listingImage } from "@/lib/images";
 
 type AdminListing = {
   id: number; title: string; property_type: string; price: number; location_city: string;
@@ -84,7 +85,7 @@ function AdminListingsInner() {
                 <td className="max-w-[260px] px-4 py-3">
                   <div className="flex items-center gap-2.5">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={`/images/property-${l.image_seed}.svg`} alt="" className="h-9 w-12 shrink-0 rounded-md object-cover" />
+                    <img src={listingImage(l)} alt="" className="h-9 w-12 shrink-0 rounded-md object-cover" />
                     <div className="min-w-0">
                       <Link href={`/dashboard/property/${l.id}`} target="_blank" className="flex items-center gap-1 truncate font-medium text-neutral-800 hover:underline">
                         <span className="truncate">{l.title}</span> <ExternalLink size={11} className="shrink-0 text-neutral-300" />

@@ -72,7 +72,7 @@ export default function CartPage() {
             {items.map((i) => (
               <div key={i.id} className="flex items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/images/property-${i.image_seed}.svg`} alt="" className="h-16 w-24 shrink-0 rounded-xl object-cover" />
+                <img src={i.image} alt="" className="h-16 w-24 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <Link href={`/dashboard/property/${i.id}`} className="block truncate text-sm font-semibold text-neutral-900 hover:underline">
                     {i.title}

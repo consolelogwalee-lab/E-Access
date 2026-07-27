@@ -10,6 +10,7 @@ import { Topbar } from "@/components/dashboard/Topbar";
 import { VerificationBadge } from "@/components/Badges";
 import { naira, TYPE_LABEL, timeAgo } from "@/lib/format";
 import type { Listing } from "@/components/ListingCard";
+import { listingImage, poolImage } from "@/lib/images";
 
 type Full = Listing & {
   views: number; saves: number; status: string; description: string | null;
@@ -142,7 +143,7 @@ export default function PortfolioListingPage({ params }: { params: Promise<{ id:
       {/* Header card */}
       <div className="mt-4 flex flex-wrap items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/images/property-${L.image_seed}.svg`} alt="" className="h-20 w-28 rounded-xl object-cover" />
+        <img src={listingImage(L)} alt="" className="h-20 w-28 rounded-xl object-cover" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className="truncate text-base font-semibold text-neutral-900">{L.estate_name ?? L.title}</span>
@@ -283,7 +284,7 @@ export default function PortfolioListingPage({ params }: { params: Promise<{ id:
             <div className="grid gap-3 sm:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img key={i} src={`/images/property-${((L.image_seed + i - 1) % 12) + 1}.svg`} alt="" className="aspect-[4/3] w-full rounded-xl object-cover" />
+                <img key={i} src={i < 2 ? listingImage(L, i) : poolImage(L.image_seed, i)} alt="" className="aspect-[4/3] w-full rounded-xl object-cover" />
               ))}
             </div>
           )}

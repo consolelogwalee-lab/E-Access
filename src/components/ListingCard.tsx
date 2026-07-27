@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { VerificationBadge } from "./Badges";
 import { naira } from "@/lib/format";
 import { addToCart, inCart, removeFromCart, CART_EVENT } from "@/lib/cart";
+import { listingImage } from "@/lib/images";
 
 export type Listing = {
   id: number;
@@ -55,7 +56,7 @@ export function ListingCard({
         id: listing.id,
         title: listing.title,
         price: Number(listing.price),
-        image_seed: listing.image_seed,
+        image: listingImage(listing),
         location: `${listing.location_area}, ${listing.location_city}`,
       });
   }
@@ -75,7 +76,7 @@ export function ListingCard({
       <div className="relative overflow-hidden rounded-xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`/images/property-${listing.image_seed}.svg`}
+          src={listingImage(listing)}
           alt={listing.title}
           className="aspect-[292/200] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
         />

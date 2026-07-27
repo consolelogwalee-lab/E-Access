@@ -48,19 +48,23 @@ export default async function Home() {
       <section className="relative">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/images/hero-interior.svg"
+          src="/photos/hero.jpg"
           alt="Verified modern interior"
           className="h-[420px] w-full object-cover md:h-[500px]"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/55" />
         <div className="absolute inset-x-0 top-0 pt-24 md:pt-28">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-5 px-6 md:flex-row md:items-start md:justify-between lg:px-8">
-            <h1 className="display max-w-[620px] text-[38px] leading-[1.12] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.45)] md:text-[54px]">
+          <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
+            <h1 className="headline-grotesk max-w-[720px] text-[40px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:text-[62px]">
               Real Land, Real Owners
               <br />
               Real Peace of Mind
             </h1>
-            <p className="body-lg max-w-[340px] pt-2 text-white/85 md:text-right">
+          </div>
+        </div>
+        <div className="absolute inset-x-0 bottom-0 pb-8">
+          <div className="mx-auto flex max-w-[1280px] justify-end px-6 lg:px-8">
+            <p className="body-lg max-w-[360px] text-right font-semibold text-white">
               Verified estates from trusted developers — documents validated,
               inspections supported, every transaction secured.
             </p>
@@ -89,7 +93,7 @@ export default async function Home() {
 
         <div className="mt-10 grid items-end gap-10 lg:grid-cols-[506px_1fr]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/house-3d.svg" alt="Verified modern home" className="w-full max-w-[506px] rounded-2xl" />
+          <img src="/photos/whyus.jpg" alt="Verified modern home" className="w-full max-w-[506px] rounded-2xl" />
           <div className="grid gap-3 sm:grid-cols-2">
             {WHYS.map((w) => (
               <div key={w.title} className="rounded-2xl border border-neutral-100 bg-neutral-50 p-6">
@@ -117,7 +121,7 @@ export default async function Home() {
       {/* ============ FOOTER ============ */}
       <footer className="relative overflow-hidden bg-black text-white">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/city-aerial.svg" alt="" className="h-[300px] w-full object-cover md:h-[420px]" />
+        <img src="/photos/footer-aerial.jpg" alt="" className="h-[300px] w-full object-cover md:h-[420px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
         <div className="relative -mt-24 bg-gradient-to-b from-transparent to-black pb-10">
           <div className="mx-auto grid max-w-[1280px] gap-10 px-6 md:grid-cols-[1fr_auto_auto] lg:px-12">

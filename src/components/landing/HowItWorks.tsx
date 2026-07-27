@@ -32,7 +32,7 @@ export function HowItWorks() {
     <section id="how-it-works" className="mx-auto max-w-[1280px] px-6 py-16 lg:px-[116px]">
       <div className="relative overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/aerial-land.svg" alt="" className="h-[300px] w-full object-cover md:h-[440px]" />
+        <img src="/photos/howitworks.jpg" alt="" className="h-[300px] w-full object-cover md:h-[440px]" />
         <div className="absolute inset-0 flex items-end justify-center pb-10">
           <div className="flex w-[80%] max-w-[560px] items-center gap-3 rounded-full bg-white/90 px-5 py-3 shadow-lg backdrop-blur">
             <S.icon size={18} className="text-brand-500" />
