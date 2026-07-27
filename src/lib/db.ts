@@ -88,7 +88,7 @@ function driver(): Driver {
 }
 
 async function ensureReady(): Promise<void> {
-  if (!_ready) _ready = migrate().then(seed).then(seedActivity);
+  if (!_ready) _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin);
   return _ready;
 }
 
@@ -213,8 +213,21 @@ async function migrate() {
     )`,
   ];
   for (const t of tables) await d.run(t);
+  // additive migrations (ignore "already exists")
+  try { await d.run("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
+}
+
+async function ensureAdmin() {
+  const d = driver();
+  const admin = await d.q("SELECT id FROM users WHERE email = 'admin@eaccess.demo'");
+  if (!admin.length) {
+    await d.run(
+      "INSERT INTO users (full_name, email, password_hash, email_verified, avatar_color, role) VALUES ($1,$2,$3,1,$4,'admin')",
+      ["E-Access Admin", "admin@eaccess.demo", bcrypt.hashSync("password123", 10), "#B45309"]
+    );
+  }
 }
 
 /* ------------------------------------ Seed ------------------------------------- */

@@ -26,7 +26,7 @@ const SECONDARY = [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Item = { label: string; href: string; icon: any; exact?: boolean; neverActive?: boolean };
 
-export function Sidebar({ user }: { user: { full_name: string; email: string; avatar_color: string } }) {
+export function Sidebar({ user }: { user: { full_name: string; email: string; avatar_color: string; role?: string } }) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -81,6 +81,14 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
         <ul className="mt-2.5 space-y-1">
           {SECONDARY.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
+        {user.role === "admin" && (
+          <Link
+            href="/admin"
+            className="mt-6 flex items-center gap-2 rounded-xl bg-[#e9c46a]/15 px-3.5 py-2.5 text-[13px] font-semibold text-[#e9c46a] transition hover:bg-[#e9c46a]/25"
+          >
+            Admin Panel →
+          </Link>
+        )}
       </nav>
 
       <div className="relative pt-3">
