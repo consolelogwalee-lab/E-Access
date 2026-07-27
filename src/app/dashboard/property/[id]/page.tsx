@@ -6,12 +6,14 @@ import { Topbar } from "@/components/dashboard/Topbar";
 import { ListingCard, type Listing } from "@/components/ListingCard";
 import { VerificationBadge, Pill } from "@/components/Badges";
 import { BookInspectionDrawer } from "@/components/dashboard/BookInspection";
+import { MortgageCalculator } from "@/components/dashboard/MortgageCalculator";
 import { naira, TYPE_LABEL } from "@/lib/format";
 
 type Doc = { id: number; doc_type: string; file_name: string; status: string };
 type Full = Listing & {
   description: string | null; amenities_json: string | null; views: number;
   purpose: string; toilets: number | null; estate_name: string | null;
+  owner_id: number | null; owner_name: string | null; owner_color: string | null;
 };
 
 export default function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
@@ -222,23 +224,30 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
             <h3 className="text-base font-semibold text-neutral-900">Agent Information</h3>
             <p className="body-r mt-1 text-neutral-400">Get an insight of the property from the agent</p>
             <div className="mt-4 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-900 text-sm font-bold text-white">MA</span>
+              <span className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: L.owner_color ?? "#040315" }}>
+                {(L.owner_name ?? "EA").split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+              </span>
               <div>
                 <div className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
-                  Mr. Adewale <BadgeCheck size={14} className="text-lime-600" />
+                  {L.owner_name ?? "E-Access Developer"} <BadgeCheck size={14} className="text-lime-600" />
                 </div>
-                <p className="text-xs text-neutral-400">Verified property developer with active listings across Lagos and Abuja.</p>
+                <p className="text-xs text-neutral-400">Verified property developer on E-Access.</p>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <button onClick={() => setInqOpen(true)} className="h-10 rounded-xl bg-[#e9c46a] text-sm font-semibold text-[#3a2d0d] transition hover:brightness-105">
                 Contact now
               </button>
-              <Link href="/dashboard" className="flex h-10 items-center justify-center rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-800 hover:bg-neutral-50">
+              <Link
+                href={L.owner_id ? `/dashboard/developer/${L.owner_id}` : "/dashboard"}
+                className="flex h-10 items-center justify-center rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-800 hover:bg-neutral-50"
+              >
                 View Listings
               </Link>
             </div>
           </div>
+
+          <MortgageCalculator price={L.price} />
 
           {inqOpen && (
             <div className="rounded-2xl border border-neutral-200 bg-white p-5">

@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Building2, Users, Inbox, FileCheck2, ArrowLeft, LogOut, ShieldCheck,
+  LayoutDashboard, Building2, Users, Inbox, FileCheck2, ArrowLeft, LogOut, ShieldCheck, Menu, X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
 
 const NAV = [
@@ -17,6 +18,8 @@ const NAV = [
 export function AdminSidebar({ user }: { user: { full_name: string; email: string } }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -25,8 +28,26 @@ export function AdminSidebar({ user }: { user: { full_name: string; email: strin
   }
 
   return (
-    <aside className="fixed inset-y-2 left-2 z-30 hidden w-[246px] flex-col rounded-2xl bg-[#0b0b12] p-4 text-white shadow-2xl shadow-black/40 lg:flex">
-      <Link href="/" className="px-1.5 pt-1"><LogoFull size={28} /></Link>
+    <>
+      <button
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open menu"
+        className="fixed left-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-[#0b0b12] text-white shadow-lg lg:hidden"
+      >
+        <Menu size={18} />
+      </button>
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-neutral-950/50 backdrop-blur-[2px] lg:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+    <aside className={`fixed inset-y-2 left-2 z-50 flex w-[246px] flex-col rounded-2xl bg-[#0b0b12] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:translate-x-0 ${
+      mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
+    }`}>
+      <div className="flex items-center justify-between px-1.5 pt-1">
+        <Link href="/"><LogoFull size={28} /></Link>
+        <button onClick={() => setMobileOpen(false)} className="text-white/30 lg:hidden" aria-label="Close menu">
+          <X size={18} />
+        </button>
+      </div>
       <div className="mt-3 flex items-center gap-2 rounded-xl bg-[#e9c46a]/15 px-3 py-2 text-xs font-semibold text-[#e9c46a]">
         <ShieldCheck size={14} /> Admin Panel
       </div>
@@ -64,5 +85,6 @@ export function AdminSidebar({ user }: { user: { full_name: string; email: strin
         </div>
       </div>
     </aside>
+    </>
   );
 }

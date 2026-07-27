@@ -16,7 +16,7 @@ export default function PortfolioPage() {
   const [inspections, setInspections] = useState<Insp[]>([]);
 
   useEffect(() => {
-    fetch("/api/listings?mine=1&perPage=24")
+    fetch("/api/listings?mine=1&perPage=100")
       .then((r) => r.json())
       .then((d) => setListings(d.listings ?? []));
     fetch("/api/inquiries")

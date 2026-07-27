@@ -5,8 +5,8 @@ import {
   Widget6, MagicStick3, ChatLine, Chart, FolderWithFiles, DocumentAdd,
   BellOff, Settings, SiderbarMinimalistic, AltArrowDown,
 } from "@solar-icons/react";
-import { LogOut, Plus } from "lucide-react";
-import { useState } from "react";
+import { LogOut, Plus, Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
 
 const MAIN = [
@@ -30,6 +30,9 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
   const initials = user.full_name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 
   async function logout() {
@@ -64,11 +67,30 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
   }
 
   return (
-    <aside className="fixed inset-y-2 left-2 z-30 hidden w-[286px] flex-col rounded-2xl bg-[#0b0b12] p-4 text-white shadow-2xl shadow-black/40 lg:flex">
+    <>
+      {/* Mobile hamburger */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open menu"
+        className="fixed left-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-[#0b0b12] text-white shadow-lg lg:hidden"
+      >
+        <Menu size={18} />
+      </button>
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-neutral-950/50 backdrop-blur-[2px] lg:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+    <aside className={`fixed inset-y-2 left-2 z-50 flex w-[286px] flex-col rounded-2xl bg-[#0b0b12] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:translate-x-0 ${
+      mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
+    }`}>
       <div className="flex items-center justify-between px-1.5 pt-1">
         <Link href="/"><LogoFull size={30} /></Link>
-        <button className="text-white/30 transition hover:text-white/60" aria-label="Collapse sidebar">
-          <SiderbarMinimalistic size={18} weight="LineDuotone" />
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="text-white/30 transition hover:text-white/60"
+          aria-label="Close sidebar"
+        >
+          <span className="lg:hidden"><X size={18} /></span>
+          <span className="hidden lg:inline"><SiderbarMinimalistic size={18} weight="LineDuotone" /></span>
         </button>
       </div>
 
@@ -122,5 +144,6 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
         </Link>
       </div>
     </aside>
+    </>
   );
 }

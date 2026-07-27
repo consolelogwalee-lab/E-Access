@@ -46,7 +46,7 @@ export async function GET(req: Request) {
   }
 
   const page = Math.max(1, Number(p.get("page") ?? 1));
-  const perPage = Math.min(24, Number(p.get("perPage") ?? 12));
+  const perPage = Math.min(100, Number(p.get("perPage") ?? 12));
   const totalRow = await q1<{ c: number | string }>(
     `SELECT COUNT(*) AS c FROM listings l WHERE ${where.join(" AND ")}`, params
   );

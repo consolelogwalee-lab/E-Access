@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { q, q1, run } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { notify } from "@/lib/notify";
 
 export async function GET(req: Request) {
   if (!(await requireAdmin())) return NextResponse.json({ error: "Admins only." }, { status: 403 });
@@ -41,6 +42,14 @@ export async function PATCH(req: Request) {
       [b.verificationStatus, b.verificationStatus === "verified" ? 1 : 0, Number(b.id)]);
     if (b.verificationStatus === "verified")
       await run("UPDATE listing_documents SET status = 'approved' WHERE listing_id = $1", [Number(b.id)]);
+    const owner = await q1<{ owner_id: number; title: string }>(
+      "SELECT owner_id, title FROM listings WHERE id = $1", [Number(b.id)]
+    );
+    if (owner?.owner_id) {
+      await notify(Number(owner.owner_id), "verification",
+        b.verificationStatus === "verified" ? "Listing verified 🎉" : `Verification: ${String(b.verificationStatus).replace("_", " ")}`,
+        `"${owner.title}" verification status was updated.`, "/dashboard/portfolio");
+    }
   }
   if (typeof b.featured === "boolean")
     await run("UPDATE listings SET featured = $1 WHERE id = $2", [b.featured ? 1 : 0, Number(b.id)]);

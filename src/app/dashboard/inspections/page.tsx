@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowRight, ArrowUpDown, ChevronDown, CalendarPlus, MessageSquare } from "lucide-react";
+import { ArrowRight, ArrowUpDown, ChevronDown, CalendarPlus, MessageSquare, X, BadgeCheck, Loader2 } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 
 type Insp = {
@@ -33,6 +33,22 @@ function Avatar({ name }: { name: string }) {
 export default function InspectionsPage() {
   const [items, setItems] = useState<Insp[] | null>(null);
   const [month, setMonth] = useState(() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), 1); });
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linking, setLinking] = useState("");
+  const [linked, setLinked] = useState("");
+
+  useEffect(() => {
+    setLinked(localStorage.getItem("eaccess_calendar") ?? "");
+  }, []);
+
+  function connectCalendar(provider: string) {
+    setLinking(provider);
+    setTimeout(() => {
+      localStorage.setItem("eaccess_calendar", provider);
+      setLinked(provider);
+      setLinking("");
+    }, 1500);
+  }
 
   const load = useCallback(async () => {
     const [mine, owner] = await Promise.all([
@@ -137,9 +153,15 @@ export default function InspectionsPage() {
               <span className="flex h-8 items-center gap-1.5 rounded-full bg-neutral-100 px-3 text-xs font-medium text-neutral-600">
                 All <ChevronDown size={12} />
               </span>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500">
+              <button
+                onClick={() => setLinkOpen(true)}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${
+                  linked ? "bg-lime-100 text-lime-600" : "bg-neutral-100 text-neutral-500 hover:bg-neutral-200"
+                }`}
+                title={linked ? `${linked} Calendar connected` : "Link your calendar"}
+              >
                 <CalendarPlus size={14} />
-              </span>
+              </button>
             </div>
           </div>
           <div className="mt-3 grid grid-cols-7 gap-1.5">
@@ -270,6 +292,57 @@ export default function InspectionsPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Link calendar modal */}
+      {linkOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/40 p-6 backdrop-blur-[2px]" onClick={() => setLinkOpen(false)}>
+          <div className="w-full max-w-[400px] rounded-3xl bg-white p-7" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between">
+              <h3 className="text-lg font-semibold text-neutral-900">Link Your Calendar</h3>
+              <button onClick={() => setLinkOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-neutral-100"><X size={16} /></button>
+            </div>
+            {linked ? (
+              <div className="mt-4 text-center">
+                <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lime-100">
+                  <BadgeCheck size={30} className="text-lime-600" />
+                </span>
+                <p className="mt-4 text-base font-semibold text-neutral-900">{linked} Calendar connected</p>
+                <p className="body-md mt-1 text-neutral-500">
+                  Confirmed inspections will sync to your calendar automatically, with reminders before each visit.
+                </p>
+                <button
+                  onClick={() => { localStorage.removeItem("eaccess_calendar"); setLinked(""); }}
+                  className="mt-5 text-sm font-medium text-neutral-500 underline-offset-4 hover:underline"
+                >
+                  Manage connection — disconnect
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="body-md mt-1 text-neutral-400">
+                  Sync confirmed inspections straight to your calendar so you never miss a visit.
+                </p>
+                <div className="mt-5 space-y-3">
+                  {["Google", "Apple"].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => connectCalendar(p)}
+                      disabled={!!linking}
+                      className="flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-neutral-200 text-sm font-semibold text-neutral-800 transition hover:bg-neutral-50 disabled:opacity-60"
+                    >
+                      {linking === p ? <Loader2 size={16} className="animate-spin" /> : null}
+                      {linking === p ? `Connecting to ${p} Calendar…` : `Connect ${p} Calendar`}
+                    </button>
+                  ))}
+                </div>
+                <p className="caption mt-4 text-center text-neutral-400">
+                  Demo mode — the connection is simulated. OAuth wiring comes with production credentials.
+                </p>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

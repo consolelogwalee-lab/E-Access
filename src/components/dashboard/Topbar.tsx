@@ -2,7 +2,7 @@
 import { useRouter } from "next/navigation";
 import { Search, ChevronDown, Bell, MessageSquare, Heart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function Topbar({
   initialSearch = "",
@@ -17,8 +17,14 @@ export function Topbar({
 }) {
   const router = useRouter();
   const [q, setQ] = useState(initialSearch);
+  const [unread, setUnread] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/notifications").then((r) => r.json()).then((d) => setUnread(d.unread ?? 0)).catch(() => {});
+  }, []);
+
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-4 pl-12 lg:pl-0">
       <nav className="hidden shrink-0 items-center gap-1.5 text-[13px] md:flex">
         {crumbs.map(([label, href], i) => (
           <span key={label} className="flex items-center gap-1.5">
@@ -47,8 +53,13 @@ export function Topbar({
         )}
       </div>
       <div className="flex shrink-0 items-center gap-4 pr-1">
-        <Link href="/dashboard/notifications" aria-label="Notifications" className="text-neutral-500 transition hover:text-neutral-900">
+        <Link href="/dashboard/notifications" aria-label="Notifications" className="relative text-neutral-500 transition hover:text-neutral-900">
           <Bell size={19} />
+          {unread > 0 && (
+            <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
+              {unread > 9 ? "9+" : unread}
+            </span>
+          )}
         </Link>
         <Link href="/dashboard/messages" aria-label="Messages" className="text-neutral-500 transition hover:text-neutral-900">
           <MessageSquare size={19} />

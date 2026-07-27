@@ -5,7 +5,10 @@ import { currentUser } from "@/lib/auth";
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const user = await currentUser();
-  const listing = await q1<{ property_type: string; price: number }>("SELECT * FROM listings WHERE id = $1", [Number(id)]);
+  const listing = await q1<{ property_type: string; price: number }>(
+    `SELECT l.*, u.full_name AS owner_name, u.avatar_color AS owner_color
+     FROM listings l LEFT JOIN users u ON u.id = l.owner_id WHERE l.id = $1`, [Number(id)]
+  );
   if (!listing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   await run("UPDATE listings SET views = views + 1 WHERE id = $1", [Number(id)]);
   const documents = await q("SELECT * FROM listing_documents WHERE listing_id = $1", [Number(id)]);

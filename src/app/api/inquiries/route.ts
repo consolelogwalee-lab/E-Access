@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { q, q1, run } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { notify } from "@/lib/notify";
 
 export async function GET(req: Request) {
   const user = await currentUser();
@@ -24,6 +25,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Write a message first." }, { status: 400 });
   await run("INSERT INTO inquiries (listing_id, sender_id, message) VALUES ($1,$2,$3)",
     [Number(b.listingId), user.id, String(b.message)]);
+  const owner = await q1<{ owner_id: number; title: string }>(
+    "SELECT owner_id, title FROM listings WHERE id = $1", [Number(b.listingId)]
+  );
+  if (owner?.owner_id && Number(owner.owner_id) !== user.id) {
+    await notify(Number(owner.owner_id), "inquiry", "New inquiry received",
+      `${user.full_name} asked about "${owner.title}"`, "/dashboard/portfolio");
+  }
   return NextResponse.json({ ok: true });
 }
 

@@ -204,6 +204,16 @@ async function migrate() {
       counterpart_role TEXT NOT NULL DEFAULT 'consultant',
       created_at TEXT NOT NULL DEFAULT ${NOW}
     )`,
+    `CREATE TABLE IF NOT EXISTS notifications (
+      ${ID},
+      user_id INTEGER NOT NULL,
+      kind TEXT NOT NULL DEFAULT 'info',
+      title TEXT NOT NULL,
+      body TEXT,
+      href TEXT,
+      read INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
     `CREATE TABLE IF NOT EXISTS messages (
       ${ID},
       thread_id INTEGER NOT NULL,
