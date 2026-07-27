@@ -7,21 +7,25 @@ const STEPS = [
     title: "Discover",
     body: "Browse verified properties with filters tailored to your preferred location, budget range, and property type, making it easier to compare options that match your investment goals.",
     icon: Search,
+    image: "/photos/howitworks.jpg",
   },
   {
     title: "Verify",
     body: "Review property details, verification status, developer credibility, and supporting documents before making any commitment or payment decision.",
     icon: BadgeCheck,
+    image: "/photos/duplex-10.jpg",
   },
   {
     title: "Consult & Inspect",
     body: "Request professional site inspections or receive guided remote support from verified consultants when you're unable to visit the property yourself.",
     icon: Users,
+    image: "/photos/estate-street.jpg",
   },
   {
     title: "Secure",
     body: "Complete your purchase with confidence, securely store essential property documents, and track your portfolio from a dedicated ownership dashboard.",
     icon: FolderLock,
+    image: "/photos/interior-1.jpg",
   },
 ];
 
@@ -32,7 +36,7 @@ export function HowItWorks() {
     <section id="how-it-works" className="mx-auto max-w-[1280px] px-6 py-16 lg:px-[116px]">
       <div className="relative overflow-hidden rounded-2xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/photos/howitworks.jpg" alt="" className="h-[300px] w-full object-cover md:h-[440px]" />
+        <img key={step} src={S.image} alt="" className="fade-slide h-[300px] w-full object-cover md:h-[440px]" />
         <div className="absolute inset-0 flex items-end justify-center pb-10">
           <div className="floaty flex w-[80%] max-w-[560px] items-center gap-3 rounded-full bg-white/90 px-5 py-3 shadow-lg backdrop-blur">
             <S.icon size={18} className="text-brand-500" />

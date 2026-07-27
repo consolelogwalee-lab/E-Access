@@ -6,7 +6,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
 import { CartButton } from "@/components/landing/Cart";
 
-const NAVY = "#161040";
+const NAVY = "#1B1F4E";
 
 export function Navbar() {
   const router = useRouter();

@@ -1,38 +1,29 @@
 /**
- * E-Access logo — circular badge: dark navy disc, gold ring, gold serif "E" (Fraunces).
+ * E-Access logo, matching the brand asset:
+ * navy (#1B1F4E) rounded-square tile, gold (#E2A600) circle ring,
+ * gold "E" set in Asimovian.
  */
+const NAVY = "#1B1F4E";
+const GOLD = "#E2A600";
+
 export function LogoMark({ size = 40, light = false }: { size?: number; light?: boolean }) {
-  const id = `lg${size}${light ? "l" : "d"}`;
+  void light;
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-label="E-Access">
-      <defs>
-        <radialGradient id={`${id}bg`} cx="0.5" cy="0.4" r="0.75">
-          <stop offset="0" stopColor="#1a1440" />
-          <stop offset="0.65" stopColor="#0e0a24" />
-          <stop offset="1" stopColor="#080614" />
-        </radialGradient>
-        <linearGradient id={`${id}gold`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f0d488" />
-          <stop offset="0.5" stopColor="#d9ad45" />
-          <stop offset="1" stopColor="#b8860b" />
-        </linearGradient>
-      </defs>
-      {/* soft blue aura */}
-      <circle cx="24" cy="24" r="23.5" fill="#2b3cbf" opacity={light ? "0" : "0.25"} />
-      {/* disc */}
-      <circle cx="24" cy="24" r="21" fill={`url(#${id}bg)`} />
-      {/* gold ring */}
-      <circle cx="24" cy="24" r="17.5" fill="none" stroke={`url(#${id}gold)`} strokeWidth="1.6" />
-      {/* serif E */}
+      {/* rounded-square tile */}
+      <rect x="1" y="1" width="46" height="46" rx="13" fill={NAVY} />
+      {/* gold circle ring */}
+      <circle cx="24" cy="24" r="16.5" fill="none" stroke={GOLD} strokeWidth="2.2" />
+      {/* Asimovian E */}
       <text
         x="24"
-        y="24"
+        y="24.6"
         textAnchor="middle"
         dominantBaseline="central"
-        fontFamily="Fraunces, Georgia, serif"
-        fontWeight="600"
+        fontFamily="Asimovian, 'Arial Black', sans-serif"
+        fontWeight="400"
         fontSize="21"
-        fill={`url(#${id}gold)`}
+        fill={GOLD}
       >
         E
       </text>

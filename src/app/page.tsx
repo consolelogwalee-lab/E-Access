@@ -50,7 +50,7 @@ export default async function Home() {
         {/* Three slanted photo panels: estate land, trusted homes, verified interiors */}
         {[
           { src: "/photos/hero-1.jpg", alt: "Verified estate land", clip: "polygon(0 0, 36% 0, 30% 100%, 0 100%)", delay: "0s" },
-          { src: "/photos/hero-2.jpg", alt: "Homes from trusted developers", clip: "polygon(36% 0, 69% 0, 63% 100%, 30% 100%)", delay: "-5s" },
+          { src: "/photos/hero-2.jpg", alt: "Open estate land ready for development", clip: "polygon(36% 0, 69% 0, 63% 100%, 30% 100%)", delay: "-5s" },
           { src: "/photos/hero-3.jpg", alt: "Move-in ready interiors", clip: "polygon(69% 0, 100% 0, 100% 100%, 63% 100%)", delay: "-11s" },
         ].map((p) => (
           <div key={p.src} className="absolute inset-0" style={{ clipPath: p.clip }}>
@@ -84,9 +84,9 @@ export default async function Home() {
             <line x1="69" y1="0" x2="63" y2="100" stroke="url(#hero-divider)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
           </g>
         </svg>
-        <div className="absolute inset-x-0 top-0 pt-24 md:pt-28">
-          <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
-            <h1 className="headline-grotesk max-w-[720px] text-[40px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:text-[62px]">
+        <div className="absolute inset-0 flex items-center">
+          <div className="mx-auto w-full max-w-[1280px] px-6 lg:px-8">
+            <h1 className="headline-grotesk max-w-[720px] text-[40px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)] md:text-[62px]">
               Real Land, Real Owners
               <br />
               Real Peace of Mind
