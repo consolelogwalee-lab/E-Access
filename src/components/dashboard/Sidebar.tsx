@@ -60,13 +60,20 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
       <li>
         <Link
           href={item.href}
-          className={`group flex items-center gap-3 rounded-xl px-3.5 py-[11px] text-[13.5px] font-medium tracking-[0.1px] transition-all duration-150 ${
+          className={`group relative flex items-center gap-3 overflow-hidden rounded-xl px-3.5 py-[11px] text-[13.5px] font-medium tracking-[0.1px] transition-all duration-200 ${
             active
-              ? "bg-white/[0.08] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-white/10"
-              : "text-white/55 hover:bg-white/[0.04] hover:text-white/90"
+              ? "bg-gradient-to-r from-[#E2A600]/[0.14] via-white/[0.05] to-transparent text-white ring-1 ring-[#E2A600]/25"
+              : "text-white/55 hover:translate-x-0.5 hover:bg-white/[0.05] hover:text-white/90"
           }`}
         >
-          <Icon size={19} weight="LineDuotone" className={active ? "text-white" : "text-white/50 group-hover:text-white/80"} />
+          {active && (
+            <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-gradient-to-b from-[#f3dd9a] to-[#d9ad45]" />
+          )}
+          <Icon
+            size={19}
+            weight="LineDuotone"
+            className={`transition-colors duration-200 ${active ? "text-[#E2A600]" : "text-white/50 group-hover:text-white/85"}`}
+          />
           {item.label}
         </Link>
       </li>
@@ -86,9 +93,12 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-neutral-950/50 backdrop-blur-[2px] lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
-    <aside className={`fixed inset-y-2 left-2 z-50 flex w-[286px] flex-col rounded-2xl bg-[#0b0b12] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:translate-x-0 ${
-      mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
-    }`}>
+    <aside
+      className={`fixed inset-y-2 left-2 z-50 flex w-[286px] flex-col rounded-2xl border border-white/[0.06] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:translate-x-0 ${
+        mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
+      }`}
+      style={{ background: "linear-gradient(175deg,#0d0d1a 0%,#08080f 55%,#070710 100%)" }}
+    >
       <div className="flex items-center justify-between px-1.5 pt-1">
         <Link href="/"><LogoFull size={30} /></Link>
         <button
@@ -102,20 +112,20 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
       </div>
 
       <nav className="mt-9 flex-1 overflow-y-auto scroll-thin">
-        <div className="px-3.5 text-[11px] font-medium tracking-[0.6px] text-white/30">Main</div>
+        <div className="px-3.5 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#E2A600]/70">Main</div>
         <ul className="mt-2.5 space-y-1">
           {MAIN.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
-        <div className="mt-8 px-3.5 text-[11px] font-medium tracking-[0.6px] text-white/30">Secondary</div>
+        <div className="mt-8 px-3.5 text-[10.5px] font-bold uppercase tracking-[0.18em] text-[#E2A600]/70">Secondary</div>
         <ul className="mt-2.5 space-y-1">
           {SECONDARY.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
         {user.role === "admin" && (
           <Link
             href="/admin"
-            className="mt-6 flex items-center gap-2 rounded-xl bg-[#e9c46a]/15 px-3.5 py-2.5 text-[13px] font-semibold text-[#e9c46a] transition hover:bg-[#e9c46a]/25"
+            className="mt-6 flex items-center justify-between rounded-xl border border-[#E2A600]/25 bg-gradient-to-r from-[#E2A600]/15 to-transparent px-3.5 py-2.5 text-[13px] font-semibold text-[#f3dd9a] transition hover:border-[#E2A600]/50 hover:from-[#E2A600]/25"
           >
-            Admin Panel →
+            Admin Panel <span aria-hidden>→</span>
           </Link>
         )}
       </nav>
@@ -129,7 +139,7 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
             <LogOut size={15} /> Log out
           </button>
         )}
-        <button onClick={() => setMenuOpen((o) => !o)} className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition hover:bg-white/[0.04]">
+        <button onClick={() => setMenuOpen((o) => !o)} className="flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-2 text-left transition hover:border-white/[0.12] hover:bg-white/[0.06]">
           <span
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white ring-2 ring-white/10"
             style={{ background: user.avatar_color }}
