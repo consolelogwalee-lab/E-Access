@@ -251,6 +251,9 @@ async function seed() {
     commercial: ["Open-plan office space", "Retail complex", "Warehouse facility"],
   };
 
+  // Build all 36 listings, then insert in ONE statement (serverless-timeout safe)
+  const rows: unknown[][] = [];
+  const verifications: string[] = [];
   for (let i = 0; i < 36; i++) {
     const type = types[i % types.length];
     const tlist = titles[type];
@@ -268,33 +271,48 @@ async function seed() {
         ? `${tlist[i % tlist.length]} in ${area.split(",")[0]} for ${purpose === "rent" ? "lease" : "sale"}`
         : `${beds ?? ""} ${tlist[i % tlist.length].replace(/^\d+ bedroom /, "")} in ${area.split(",")[0]} for ${purpose === "rent" ? "rent" : "sale"}`.trim();
     const verification = ["verified", "verified", "verified", "under_review", "unverified"][i % 5];
-
-    const ins = await d.q(
-      `INSERT INTO listings (owner_id, title, purpose, property_type, price, location_area, location_city, estate_name,
-        bedrooms, bathrooms, toilets, land_size_sqm, description, verification_status,
-        inspection_available, documents_approved, featured, status, views, saves, image_seed, amenities_json)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22) RETURNING id`,
-      [
-        ownerId, title, purpose, type, base, area, city, estate,
-        beds, beds, beds ? beds + 1 : null,
-        type === "land" ? 300 + (i % 6) * 150 : type === "commercial" ? 800 + (i % 4) * 400 : null,
-        `This ${type === "land" ? "plot" : type} sits inside ${estate}, ${area}, ${city}. Backed by document verification, developer credibility checks and inspection support from the E-Access team. Titled, surveyed and ready for a secure transaction.`,
-        verification, 1, verification === "verified" ? 1 : 0,
-        i % 6 === 0 ? 1 : 0, "active",
-        140 + ((i * 37) % 900), 6 + ((i * 13) % 90), (i % 12) + 1,
-        JSON.stringify(["24/7 Security", "Gated Estate", "Good Road Network", "Electricity", "Water Supply"].slice(0, 3 + (i % 3))),
-      ]
-    );
-    const listingId = Number((ins[0] as { id: number }).id);
-    const docs = ["Certificate of Occupancy", "Survey Plan", "Deed of Assignment"];
-    for (const [j, doc] of docs.entries()) {
-      await d.run(
-        "INSERT INTO listing_documents (listing_id, doc_type, file_name, status) VALUES ($1,$2,$3,$4)",
-        [listingId, doc, `${doc.toLowerCase().replace(/ /g, "_")}.pdf`,
-          verification === "verified" ? "approved" : j === 0 ? "under_review" : "pending"]
-      );
-    }
+    verifications.push(verification);
+    rows.push([
+      ownerId, title, purpose, type, base, area, city, estate,
+      beds, beds, beds ? beds + 1 : null,
+      type === "land" ? 300 + (i % 6) * 150 : type === "commercial" ? 800 + (i % 4) * 400 : null,
+      `This ${type === "land" ? "plot" : type} sits inside ${estate}, ${area}, ${city}. Backed by document verification, developer credibility checks and inspection support from the E-Access team. Titled, surveyed and ready for a secure transaction.`,
+      verification, 1, verification === "verified" ? 1 : 0,
+      i % 6 === 0 ? 1 : 0, "active",
+      140 + ((i * 37) % 900), 6 + ((i * 13) % 90), (i % 12) + 1,
+      JSON.stringify(["24/7 Security", "Gated Estate", "Good Road Network", "Electricity", "Water Supply"].slice(0, 3 + (i % 3))),
+    ]);
   }
+  const COLS = 22;
+  const valuesSql = rows
+    .map((_, r) => `(${Array.from({ length: COLS }, (_, c) => `$${r * COLS + c + 1}`).join(",")})`)
+    .join(",");
+  const inserted = await d.q(
+    `INSERT INTO listings (owner_id, title, purpose, property_type, price, location_area, location_city, estate_name,
+      bedrooms, bathrooms, toilets, land_size_sqm, description, verification_status,
+      inspection_available, documents_approved, featured, status, views, saves, image_seed, amenities_json)
+     VALUES ${valuesSql} RETURNING id`,
+    rows.flat()
+  );
+  // Documents: one batched insert for all listings
+  const docRows: unknown[][] = [];
+  const docNames = ["Certificate of Occupancy", "Survey Plan", "Deed of Assignment"];
+  inserted.forEach((row, i) => {
+    const listingId = Number((row as { id: number }).id);
+    docNames.forEach((doc, j) => {
+      docRows.push([
+        listingId, doc, `${doc.toLowerCase().replace(/ /g, "_")}.pdf`,
+        verifications[i] === "verified" ? "approved" : j === 0 ? "under_review" : "pending",
+      ]);
+    });
+  });
+  const docValuesSql = docRows
+    .map((_, r) => `($${r * 4 + 1},$${r * 4 + 2},$${r * 4 + 3},$${r * 4 + 4})`)
+    .join(",");
+  await d.run(
+    `INSERT INTO listing_documents (listing_id, doc_type, file_name, status) VALUES ${docValuesSql}`,
+    docRows.flat()
+  );
 }
 
 async function seedActivity() {

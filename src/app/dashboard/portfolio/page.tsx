@@ -35,7 +35,7 @@ export default function PortfolioPage() {
   const active = (listings ?? []).filter((l) => l.status === "active");
   const verified = (listings ?? []).filter((l) => l.verification_status === "verified");
   const underReview = (listings ?? []).filter((l) => l.verification_status === "under_review");
-  const totalValue = active.reduce((s, l) => s + l.price, 0);
+  const totalValue = active.reduce((s, l) => s + Number(l.price), 0);
   const upcoming = inspections.filter((i) => i.status === "confirmed" || i.status === "pending");
   const cityBreakdown = Object.entries(
     verified.reduce<Record<string, number>>((acc, l) => {
