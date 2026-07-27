@@ -84,18 +84,14 @@ export default async function Home() {
             <line x1="69" y1="0" x2="63" y2="100" stroke="url(#hero-divider)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
           </g>
         </svg>
-        <div className="absolute inset-0 flex items-center">
-          <div className="mx-auto w-full max-w-[1280px] px-6 lg:px-8">
-            <h1 className="headline-grotesk max-w-[720px] text-[40px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)] md:text-[62px]">
+        <div className="absolute inset-x-0 bottom-0 pb-10">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between lg:px-8">
+            <h1 className="headline-grotesk max-w-[720px] text-[38px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.55)] md:text-[56px]">
               Real Land, Real Owners
               <br />
               Real Peace of Mind
             </h1>
-          </div>
-        </div>
-        <div className="absolute inset-x-0 bottom-0 pb-8">
-          <div className="mx-auto flex max-w-[1280px] justify-end px-6 lg:px-8">
-            <p className="body-lg max-w-[360px] text-right font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)]">
+            <p className="body-lg max-w-[360px] font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)] md:pb-2 md:text-right">
               Verified estates from trusted developers. Documents validated,
               inspections supported, every transaction secured.
             </p>
@@ -107,46 +103,56 @@ export default async function Home() {
       <LandingBrowse listings={browseListings} />
 
       {/* ============ WHY US ============ */}
-      <section id="why-us" className="mx-auto max-w-[1280px] px-6 py-20 lg:px-20">
-        <div className="grid gap-8 lg:grid-cols-2">
-          <Reveal>
-            <span className="body-md text-neutral-500">Why Us</span>
-            <h2 className="display mt-4 max-w-[480px] text-[34px] leading-[1.2] text-neutral-950 md:text-[44px]">
-              Every Listing Goes Through Verification
-            </h2>
-          </Reveal>
-          <Reveal delay={120} className="lg:justify-self-end">
-            <p className="body-md max-w-[470px] pt-8 text-neutral-500">
-              Access properties backed by document verification, developer credibility
-              checks, due diligence support, and professional inspection services,
-              helping you make more informed and secure real estate decisions.
-            </p>
-          </Reveal>
-        </div>
+      <section id="why-us" className="bg-[#04040a] text-white">
+        <div className="mx-auto max-w-[1280px] px-6 py-20 lg:px-20">
+          <div className="grid gap-8 lg:grid-cols-2">
+            <Reveal>
+              <span className="text-lg font-extrabold uppercase tracking-[0.25em] text-[#E2A600]">
+                Why Us
+              </span>
+              <h2 className="display mt-4 max-w-[480px] text-[34px] leading-[1.2] text-white md:text-[44px]">
+                Every Listing Goes Through Verification
+              </h2>
+            </Reveal>
+            <Reveal delay={120} className="lg:justify-self-end">
+              <p className="body-md max-w-[470px] pt-8 text-white/60">
+                Access properties backed by document verification, developer credibility
+                checks, due diligence support, and professional inspection services,
+                helping you make more informed and secure real estate decisions.
+              </p>
+            </Reveal>
+          </div>
 
-        <div className="mt-10 grid items-end gap-10 lg:grid-cols-[506px_1fr]">
-          <Reveal>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/photos/whyus.jpg" alt="Verified modern homes" className="w-full max-w-[506px] rounded-2xl" />
-          </Reveal>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {WHYS.map((w, i) => (
-              <Reveal key={w.title} delay={i * 110}>
-                <div className="group h-full rounded-2xl border border-neutral-100 bg-neutral-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-neutral-200 hover:shadow-lg hover:shadow-neutral-900/5">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition duration-300 group-hover:scale-110">
-                    <w.icon size={19} className="text-brand-500" />
-                  </span>
-                  <h3 className="mt-14 text-base font-semibold text-neutral-900">{w.title}</h3>
-                  <ul className="mt-3 space-y-1.5">
-                    {w.points.map((p) => (
-                      <li key={p} className="flex items-center gap-2 text-sm text-neutral-400">
-                        <span className="h-1 w-1 rounded-full bg-neutral-300" /> {p}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
+          <div className="mt-10 grid gap-10 lg:grid-cols-[506px_1fr]">
+            <Reveal className="h-full">
+              <div className="h-full overflow-hidden rounded-2xl">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/photos/whyus.jpg"
+                  alt="Verified premium home"
+                  className="h-full min-h-[320px] w-full object-cover transition duration-500 hover:scale-[1.03]"
+                />
+              </div>
+            </Reveal>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {WHYS.map((w, i) => (
+                <Reveal key={w.title} delay={i * 110}>
+                  <div className="group h-full rounded-2xl border border-white/10 bg-white/5 p-6 transition duration-300 hover:-translate-y-1 hover:border-[#E2A600]/40 hover:bg-white/[0.08]">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 transition duration-300 group-hover:scale-110">
+                      <w.icon size={19} className="text-[#E2A600]" />
+                    </span>
+                    <h3 className="mt-14 text-base font-semibold text-white">{w.title}</h3>
+                    <ul className="mt-3 space-y-1.5">
+                      {w.points.map((p) => (
+                        <li key={p} className="flex items-center gap-2 text-sm text-white/50">
+                          <span className="h-1 w-1 rounded-full bg-[#E2A600]/60" /> {p}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -160,21 +166,25 @@ export default async function Home() {
       </Reveal>
 
       {/* ============ FOOTER ============ */}
-      <footer className="relative overflow-hidden bg-black text-white">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/photos/footer-aerial.jpg" alt="" className="h-[300px] w-full object-cover md:h-[420px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
-        <div className="relative -mt-24 bg-gradient-to-b from-transparent to-black pb-10">
-          <div className="mx-auto grid max-w-[1280px] gap-10 px-6 md:grid-cols-[1fr_auto_auto] lg:px-12">
+      <footer className="relative overflow-hidden bg-[#04040a] text-white">
+        <div className="relative h-[280px] md:h-[360px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/photos/footer-aerial.jpg" alt="" className="h-full w-full object-cover opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#04040a]/70 via-[#04040a]/30 to-[#04040a]" />
+        </div>
+        <div className="relative -mt-40 pb-10">
+          <div className="mx-auto grid max-w-[1280px] gap-12 px-6 md:grid-cols-[1fr_auto_auto] md:gap-20 lg:px-12">
             <div className="flex flex-col justify-between gap-10">
               <LogoFull />
-              <h2 className="display max-w-[400px] text-[28px] leading-[1.25] md:text-[34px]">
-                Secure Property Discovery Starts Here
+              <h2 className="display max-w-[420px] text-[28px] leading-[1.25] md:text-[36px]">
+                Secure Property Discovery
+                <br />
+                Starts Here
               </h2>
             </div>
             <div>
-              <div className="caption text-white/45">Pages</div>
-              <ul className="mt-5 space-y-4 text-[15px]">
+              <div className="text-xs font-bold uppercase tracking-[0.22em] text-[#E2A600]">Pages</div>
+              <ul className="mt-6 space-y-4 text-[15px]">
                 {[
                   ["Home", "/"],
                   ["Why Us", "#why-us"],
@@ -182,23 +192,23 @@ export default async function Home() {
                   ["Featured Listings", "#featured"],
                 ].map(([l, h]) => (
                   <li key={l}>
-                    <a href={h} className="text-white/85 transition hover:text-white">{l}</a>
+                    <a href={h} className="text-white/75 transition hover:text-white">{l}</a>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <div className="caption text-white/45">Contact/Legal</div>
-              <ul className="mt-5 space-y-4 text-[15px]">
-                <li><a href="#" className="text-white/85 hover:text-white">Privacy Policy</a></li>
-                <li><a href="#" className="text-white/85 hover:text-white">Terms of Use</a></li>
-                <li><a href="mailto:hello.eaccess@gmail.com" className="text-white/85 underline underline-offset-4 hover:text-white">hello.eaccess@gmail.com</a></li>
-                <li><a href="tel:+2340000001111" className="text-white/85 underline underline-offset-4 hover:text-white">call us ( +234 000 000 1111 )</a></li>
+              <div className="text-xs font-bold uppercase tracking-[0.22em] text-[#E2A600]">Contact / Legal</div>
+              <ul className="mt-6 space-y-4 text-[15px]">
+                <li><a href="#" className="text-white/75 transition hover:text-white">Privacy Policy</a></li>
+                <li><a href="#" className="text-white/75 transition hover:text-white">Terms of Use</a></li>
+                <li><a href="mailto:hello.eaccess@gmail.com" className="text-white/75 underline decoration-white/25 underline-offset-4 transition hover:text-white hover:decoration-[#E2A600]">hello.eaccess@gmail.com</a></li>
+                <li><a href="tel:+2340000001111" className="text-white/75 underline decoration-white/25 underline-offset-4 transition hover:text-white hover:decoration-[#E2A600]">+234 000 000 1111</a></li>
               </ul>
             </div>
           </div>
-          <div className="mx-auto mt-12 max-w-[1280px] px-6 lg:px-12">
-            <div className="h-px bg-white/10" />
+          <div className="mx-auto mt-14 max-w-[1280px] px-6 lg:px-12">
+            <div className="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
             <div className="flex flex-col gap-4 py-6 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-3">
                 {[
