@@ -231,6 +231,8 @@ async function migrate() {
   try { await d.run("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
+  // Wale's account gets admin so the Admin Panel link is visible in the sidebar
+  await d.run("UPDATE users SET role = 'admin' WHERE email = 'wale@eaccess.demo'");
 }
 
 async function ensureAdmin() {

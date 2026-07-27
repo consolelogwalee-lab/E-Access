@@ -40,6 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# local artifacts
-_transfer*.zip.bak
-data/
+_to_delete/
+_t*.zip
+_p*.zip

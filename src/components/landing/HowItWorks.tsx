@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, Search, BadgeCheck, Users, FolderLock } from "lu
 const STEPS = [
   {
     title: "Discover",
-    body: "Browse verified properties with filters tailored to your preferred location, budget range, and property type — making it easier to compare options that match your investment goals.",
+    body: "Browse verified properties with filters tailored to your preferred location, budget range, and property type, making it easier to compare options that match your investment goals.",
     icon: Search,
   },
   {
@@ -34,7 +34,7 @@ export function HowItWorks() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/photos/howitworks.jpg" alt="" className="h-[300px] w-full object-cover md:h-[440px]" />
         <div className="absolute inset-0 flex items-end justify-center pb-10">
-          <div className="flex w-[80%] max-w-[560px] items-center gap-3 rounded-full bg-white/90 px-5 py-3 shadow-lg backdrop-blur">
+          <div className="floaty flex w-[80%] max-w-[560px] items-center gap-3 rounded-full bg-white/90 px-5 py-3 shadow-lg backdrop-blur">
             <S.icon size={18} className="text-brand-500" />
             <span className="text-sm font-medium text-neutral-700">{S.title}</span>
           </div>
@@ -76,7 +76,7 @@ export function HowItWorks() {
         </div>
       </div>
 
-      <div className="mx-auto mt-10 max-w-[560px]">
+      <div key={step} className="fade-slide mx-auto mt-10 max-w-[560px]">
         <h3 className="text-[26px] font-semibold leading-9 text-neutral-900">{S.title}</h3>
         <p className="body-lg mt-3 text-neutral-500">{S.body}</p>
       </div>

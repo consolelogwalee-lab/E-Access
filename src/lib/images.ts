@@ -4,10 +4,10 @@
  * image_seed keeps assignment stable per listing.
  */
 export const PHOTO_COUNTS: Record<string, number> = {
-  land: 2,
-  apartment: 3,
-  duplex: 5,
-  commercial: 2,
+  land: 6,
+  apartment: 7,
+  duplex: 11,
+  commercial: 4,
 };
 
 export function listingImage(
@@ -24,6 +24,10 @@ export function listingImage(
 const POOL = [
   "duplex-1", "apartment-1", "duplex-2", "commercial-1", "apartment-2",
   "duplex-3", "land-1", "duplex-4", "apartment-3", "duplex-5", "commercial-2", "land-2",
+  "duplex-6", "apartment-4", "interior-1", "duplex-7", "land-3", "apartment-5",
+  "duplex-8", "commercial-3", "interior-2", "duplex-9", "apartment-6", "land-4",
+  "duplex-10", "estate-aerial", "interior-3", "apartment-7", "duplex-11", "land-5",
+  "commercial-4", "land-6",
 ];
 export function poolImage(seed: number | string, offset = 0): string {
   const i = Math.abs(Number(seed) - 1 + offset) % POOL.length;

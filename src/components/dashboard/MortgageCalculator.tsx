@@ -63,7 +63,7 @@ export function MortgageCalculator({ price }: { price: number | string }) {
         </div>
       </div>
       <p className="caption mt-3 text-neutral-400">
-        Estimates only — actual mortgage terms depend on your lender and eligibility.
+        Estimates only. Actual mortgage terms depend on your lender and eligibility.
       </p>
     </div>
   );

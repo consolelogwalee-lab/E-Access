@@ -34,13 +34,13 @@ function EntryInner() {
           <Mail size={17} /> Continue with Email
         </button>
         <button
-          onClick={() => alert("Google sign-in is not configured in this demo build — use email instead.")}
+          onClick={() => alert("Google sign-in is not configured in this demo build. Please use email instead.")}
           className="btn-text flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition hover:bg-neutral-50"
         >
           <GoogleIcon /> Continue with Google
         </button>
         <button
-          onClick={() => alert("Apple sign-in is not configured in this demo build — use email instead.")}
+          onClick={() => alert("Apple sign-in is not configured in this demo build. Please use email instead.")}
           className="btn-text flex h-[52px] w-full items-center justify-center gap-2.5 rounded-xl border border-neutral-200 bg-white text-neutral-900 transition hover:bg-neutral-50"
         >
           <AppleIcon /> Continue with Apple

@@ -61,7 +61,7 @@ export default function AdminLeads() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="h3 text-neutral-900">Leads</h1>
-          <p className="body-md text-neutral-400">Every inquiry and inspection request on the platform — CRM-ready.</p>
+          <p className="body-md text-neutral-400">Every inquiry and inspection request on the platform, ready for your CRM.</p>
         </div>
         <button onClick={exportCsv} className="btn-text flex h-10 items-center gap-2 rounded-xl bg-brand-900 px-5 text-white transition hover:bg-brand-500">
           <Download size={15} /> Export CSV

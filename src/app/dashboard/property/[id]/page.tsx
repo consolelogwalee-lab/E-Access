@@ -253,7 +253,7 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
           {inqOpen && (
             <div className="rounded-2xl border border-neutral-200 bg-white p-5">
               {inqSent ? (
-                <p className="body-md text-lime-600">Message sent — the consultant will reply in Messages.</p>
+                <p className="body-md text-lime-600">Message sent. The consultant will reply in Messages.</p>
               ) : (
                 <>
                   <textarea

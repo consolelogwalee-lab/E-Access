@@ -101,7 +101,7 @@ export default function PortfolioListingPage({ params }: { params: Promise<{ id:
     setConfirmModal(null);
     setReschedule(null);
     setSuccessMsg(
-      status === "confirmed" ? "Inspection confirmed — the requester has been notified."
+      status === "confirmed" ? "Inspection confirmed. The requester has been notified."
       : status === "cancelled" ? "Inspection cancelled."
       : "Inspection rescheduled."
     );
@@ -436,7 +436,7 @@ export default function PortfolioListingPage({ params }: { params: Promise<{ id:
               {confirmModal.action === "confirmed" ? "Confirm this inspection?" : "Cancel this inspection?"}
             </h3>
             <p className="body-md mt-2 text-neutral-500">
-              {confirmModal.insp.requester_name} — {confirmModal.insp.date} at {confirmModal.insp.time} ({confirmModal.insp.mode}).
+              {confirmModal.insp.requester_name}: {confirmModal.insp.date} at {confirmModal.insp.time} ({confirmModal.insp.mode}).
             </p>
             <div className="mt-6 grid grid-cols-2 gap-3">
               <button onClick={() => setConfirmModal(null)} className="btn-text h-11 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50">Back</button>

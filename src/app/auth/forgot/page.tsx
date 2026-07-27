@@ -34,7 +34,7 @@ export default function Forgot() {
       />
       {link ? (
         <div className="rounded-xl border border-dashed border-lime-600/40 bg-lime-50 p-5 text-center">
-          <p className="caption text-neutral-500">Demo mode — no real email is sent.</p>
+          <p className="caption text-neutral-500">Demo mode: no real email is sent.</p>
           <p className="body-md mt-2 text-neutral-700">Your reset link:</p>
           <Link href={link} className="mt-1 inline-block break-all text-sm font-semibold text-support-blue underline">
             Open reset link →

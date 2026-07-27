@@ -79,6 +79,34 @@ body {
 }
 .fade-slide { animation: fadeSlide 0.65s cubic-bezier(0.22, 1, 0.36, 1); }
 
+/* Slow ken-burns drift for hero panels */
+@keyframes kenburns {
+  from { transform: scale(1.08) translateX(0); }
+  to { transform: scale(1.16) translateX(-1.5%); }
+}
+.kenburns {
+  animation: kenburns 16s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+/* Gentle float for accent elements */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.floaty { animation: floaty 5s ease-in-out infinite; }
+
+/* Shimmer sweep along hero divider lines */
+@keyframes dividerGlow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.divider-glow { animation: dividerGlow 3.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .kenburns, .floaty, .divider-glow, .fade-slide { animation: none; }
+}
+
 .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 3px; }
 .scroll-thin::-webkit-scrollbar-track { background: transparent; }

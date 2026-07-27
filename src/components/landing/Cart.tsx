@@ -93,7 +93,7 @@ export function CartButton({ loggedIn }: { loggedIn: boolean }) {
                     {loggedIn ? "Continue to Purchase" : "Log in to Continue"} <ArrowRight size={16} />
                   </button>
                   <p className="caption mt-2 text-center text-neutral-400">
-                    No payment is taken online — continuing starts the verified purchase process with our consultants.
+                    No payment is taken online. Continuing starts the verified purchase process with our consultants.
                   </p>
                 </div>
               </>

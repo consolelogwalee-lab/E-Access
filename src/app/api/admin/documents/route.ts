@@ -46,7 +46,7 @@ export async function PATCH(req: Request) {
       owner.verification_status === "verified" ? "Listing verified 🎉"
         : b.status === "action_required" ? "Action required on your documents"
         : "Document review update",
-      `"${owner.title}" — a document was marked ${String(b.status).replace("_", " ")}.`,
+      `A document on "${owner.title}" was marked ${String(b.status).replace("_", " ")}.`,
       "/dashboard/documents");
   }
   return NextResponse.json({ ok: true });

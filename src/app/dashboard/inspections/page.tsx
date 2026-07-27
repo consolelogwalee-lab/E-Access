@@ -316,7 +316,7 @@ export default function InspectionsPage() {
                   onClick={() => { localStorage.removeItem("eaccess_calendar"); setLinked(""); }}
                   className="mt-5 text-sm font-medium text-neutral-500 underline-offset-4 hover:underline"
                 >
-                  Manage connection — disconnect
+                  Manage connection / disconnect
                 </button>
               </div>
             ) : (
@@ -338,7 +338,7 @@ export default function InspectionsPage() {
                   ))}
                 </div>
                 <p className="caption mt-4 text-center text-neutral-400">
-                  Demo mode — the connection is simulated. OAuth wiring comes with production credentials.
+                  Demo mode: the connection is simulated until production credentials are added.
                 </p>
               </>
             )}

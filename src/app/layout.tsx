@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "E-Access — Real Land. Real Owners. Real Peace of Mind.",
+  title: "E-Access | Real Land. Real Owners. Real Peace of Mind.",
   description:
     "Access verified estates from trusted developers, complete with document validation, inspection support, and secure transaction guidance all in one platform.",
 };

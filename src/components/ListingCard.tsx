@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Heart, MapPin, BedDouble, Bath, Ruler, BadgeCheck, ShoppingBag, Check } from "lucide-react";
+import { Heart, MapPin, BedDouble, Bath, Ruler, ShoppingBag, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { VerificationBadge } from "./Badges";
 import { naira } from "@/lib/format";
@@ -91,12 +91,7 @@ export function ListingCard({
           />
         </button>
       </div>
-      <div className="relative space-y-1.5 px-2 pb-2 pt-3">
-        {listing.verification_status === "verified" && (
-          <span className="absolute bottom-3 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-lime-600">
-            <BadgeCheck size={13} className="text-white" />
-          </span>
-        )}
+      <div className="space-y-1.5 px-2 pb-2 pt-3">
         <div className="text-lg font-bold leading-7 text-brand-500">{naira(listing.price)}</div>
         <div className="body-md truncate text-neutral-600">{listing.title}</div>
         <div className="flex items-center gap-1 text-xs text-neutral-500">
@@ -106,7 +101,9 @@ export function ListingCard({
           </span>
         </div>
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          <VerificationBadge status={listing.verification_status} />
+          {listing.verification_status === "verified" && (
+            <VerificationBadge status="verified" />
+          )}
           {listing.bedrooms ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
               <BedDouble size={12} /> {listing.bedrooms} Bed

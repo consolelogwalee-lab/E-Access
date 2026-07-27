@@ -116,7 +116,7 @@ export default function DocumentsVaultPage() {
               </button>
             ))}
             {docs !== null && types.length === 0 && (
-              <p className="body-md col-span-full text-neutral-400">No documents yet — they appear here when you add listings.</p>
+              <p className="body-md col-span-full text-neutral-400">No documents yet. They appear here when you add listings.</p>
             )}
           </div>
         </>
@@ -199,7 +199,7 @@ export default function DocumentsVaultPage() {
               {[
                 ["Upload Date", new Date(viewDoc.uploaded_at + "Z").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })],
                 ["Document Type", viewDoc.doc_type],
-                ["Status", viewDoc.status === "approved" ? "Reviewed and approved" : viewDoc.status === "under_review" ? "Under review by the verification team" : viewDoc.status === "action_required" ? "Action required — see notes" : "Pending review"],
+                ["Status", viewDoc.status === "approved" ? "Reviewed and approved" : viewDoc.status === "under_review" ? "Under review by the verification team" : viewDoc.status === "action_required" ? "Action required, see notes" : "Pending review"],
                 ["Uploaded By", "You"],
                 ["File Size", "2.8 MB • PDF Document"],
                 ["Verification Authority", "E-Access Verification Team"],

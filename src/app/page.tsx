@@ -3,6 +3,7 @@ import { Navbar } from "@/components/landing/Navbar";
 import { LandingBrowse } from "@/components/landing/LandingBrowse";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Featured } from "@/components/landing/Featured";
+import { Reveal } from "@/components/landing/Reveal";
 import { LogoFull } from "@/components/Logo";
 import { q } from "@/lib/db";
 import type { Listing } from "@/components/ListingCard";
@@ -44,15 +45,45 @@ export default async function Home() {
     <main className="bg-white">
       <Navbar />
 
-      {/* ============ HERO ============ */}
-      <section className="relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/photos/hero.jpg"
-          alt="Verified modern interior"
-          className="h-[420px] w-full object-cover md:h-[500px]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/25 to-black/55" />
+      {/* ============ HERO: three panels, slanted dividers ============ */}
+      <section className="relative h-[440px] overflow-hidden bg-neutral-950 md:h-[540px]">
+        {/* Three slanted photo panels: estate land, trusted homes, verified interiors */}
+        {[
+          { src: "/photos/hero-1.jpg", alt: "Verified estate land", clip: "polygon(0 0, 36% 0, 30% 100%, 0 100%)", delay: "0s" },
+          { src: "/photos/hero-2.jpg", alt: "Homes from trusted developers", clip: "polygon(36% 0, 69% 0, 63% 100%, 30% 100%)", delay: "-5s" },
+          { src: "/photos/hero-3.jpg", alt: "Move-in ready interiors", clip: "polygon(69% 0, 100% 0, 100% 100%, 63% 100%)", delay: "-11s" },
+        ].map((p) => (
+          <div key={p.src} className="absolute inset-0" style={{ clipPath: p.clip }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={p.src}
+              alt={p.alt}
+              className="kenburns h-full w-full object-cover"
+              style={{ animationDelay: p.delay }}
+            />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/60" />
+        {/* Fine, fancy divider lines tracing the panel seams */}
+        <svg
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="hero-divider" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.3" />
+              <stop offset="35%" stopColor="#ffffff" stopOpacity="1" />
+              <stop offset="62%" stopColor="#f0d488" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+          <g className="divider-glow">
+            <line x1="36" y1="0" x2="30" y2="100" stroke="url(#hero-divider)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+            <line x1="69" y1="0" x2="63" y2="100" stroke="url(#hero-divider)" strokeWidth="3" vectorEffect="non-scaling-stroke" />
+          </g>
+        </svg>
         <div className="absolute inset-x-0 top-0 pt-24 md:pt-28">
           <div className="mx-auto max-w-[1280px] px-6 lg:px-8">
             <h1 className="headline-grotesk max-w-[720px] text-[40px] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)] md:text-[62px]">
@@ -64,8 +95,8 @@ export default async function Home() {
         </div>
         <div className="absolute inset-x-0 bottom-0 pb-8">
           <div className="mx-auto flex max-w-[1280px] justify-end px-6 lg:px-8">
-            <p className="body-lg max-w-[360px] text-right font-semibold text-white">
-              Verified estates from trusted developers — documents validated,
+            <p className="body-lg max-w-[360px] text-right font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)]">
+              Verified estates from trusted developers. Documents validated,
               inspections supported, every transaction secured.
             </p>
           </div>
@@ -78,45 +109,55 @@ export default async function Home() {
       {/* ============ WHY US ============ */}
       <section id="why-us" className="mx-auto max-w-[1280px] px-6 py-20 lg:px-20">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div>
+          <Reveal>
             <span className="body-md text-neutral-500">Why Us</span>
             <h2 className="display mt-4 max-w-[480px] text-[34px] leading-[1.2] text-neutral-950 md:text-[44px]">
               Every Listing Goes Through Verification
             </h2>
-          </div>
-          <p className="body-md max-w-[470px] pt-8 text-neutral-500 lg:justify-self-end">
-            Access properties backed by document verification, developer credibility
-            checks, due diligence support, and professional inspection services —
-            helping you make more informed and secure real estate decisions.
-          </p>
+          </Reveal>
+          <Reveal delay={120} className="lg:justify-self-end">
+            <p className="body-md max-w-[470px] pt-8 text-neutral-500">
+              Access properties backed by document verification, developer credibility
+              checks, due diligence support, and professional inspection services,
+              helping you make more informed and secure real estate decisions.
+            </p>
+          </Reveal>
         </div>
 
         <div className="mt-10 grid items-end gap-10 lg:grid-cols-[506px_1fr]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/photos/whyus.jpg" alt="Verified modern home" className="w-full max-w-[506px] rounded-2xl" />
+          <Reveal>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/photos/whyus.jpg" alt="Verified modern homes" className="w-full max-w-[506px] rounded-2xl" />
+          </Reveal>
           <div className="grid gap-3 sm:grid-cols-2">
-            {WHYS.map((w) => (
-              <div key={w.title} className="rounded-2xl border border-neutral-100 bg-neutral-50 p-6">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm">
-                  <w.icon size={19} className="text-brand-500" />
-                </span>
-                <h3 className="mt-14 text-base font-semibold text-neutral-900">{w.title}</h3>
-                <ul className="mt-3 space-y-1.5">
-                  {w.points.map((p) => (
-                    <li key={p} className="flex items-center gap-2 text-sm text-neutral-400">
-                      <span className="h-1 w-1 rounded-full bg-neutral-300" /> {p}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {WHYS.map((w, i) => (
+              <Reveal key={w.title} delay={i * 110}>
+                <div className="group h-full rounded-2xl border border-neutral-100 bg-neutral-50 p-6 transition duration-300 hover:-translate-y-1 hover:border-neutral-200 hover:shadow-lg hover:shadow-neutral-900/5">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition duration-300 group-hover:scale-110">
+                    <w.icon size={19} className="text-brand-500" />
+                  </span>
+                  <h3 className="mt-14 text-base font-semibold text-neutral-900">{w.title}</h3>
+                  <ul className="mt-3 space-y-1.5">
+                    {w.points.map((p) => (
+                      <li key={p} className="flex items-center gap-2 text-sm text-neutral-400">
+                        <span className="h-1 w-1 rounded-full bg-neutral-300" /> {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <HowItWorks />
+      <Reveal>
+        <HowItWorks />
+      </Reveal>
 
-      <Featured listings={featured} />
+      <Reveal>
+        <Featured listings={featured} />
+      </Reveal>
 
       {/* ============ FOOTER ============ */}
       <footer className="relative overflow-hidden bg-black text-white">
