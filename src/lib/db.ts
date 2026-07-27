@@ -88,7 +88,11 @@ function driver(): Driver {
 }
 
 async function ensureReady(): Promise<void> {
-  if (!_ready) _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin);
+  if (!_ready) {
+    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin);
+    // Don't cache failures — allow retry on the next request (e.g. transient DB outage at boot)
+    _ready.catch(() => { _ready = null; });
+  }
   return _ready;
 }
 

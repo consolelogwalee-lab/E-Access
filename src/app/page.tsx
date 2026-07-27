@@ -1,12 +1,10 @@
-import Link from "next/link";
 import { FileCheck2, ShieldCheck, MapPinCheckInside, Lock } from "lucide-react";
 import { Navbar } from "@/components/landing/Navbar";
-import { HeroSearch } from "@/components/landing/Hero";
+import { LandingBrowse } from "@/components/landing/LandingBrowse";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Featured } from "@/components/landing/Featured";
 import { LogoFull } from "@/components/Logo";
 import { q } from "@/lib/db";
-import { naira } from "@/lib/format";
 import type { Listing } from "@/components/ListingCard";
 
 export const dynamic = "force-dynamic";
@@ -35,8 +33,8 @@ const WHYS = [
 ];
 
 export default async function Home() {
-  const heroListings = (await q(
-    "SELECT * FROM listings WHERE status='active' AND verification_status='verified' ORDER BY id LIMIT 3"
+  const browseListings = (await q(
+    "SELECT * FROM listings WHERE status='active' ORDER BY verification_status = 'verified' DESC, created_at DESC LIMIT 100"
   )) as unknown as Listing[];
   const featured = (await q(
     "SELECT * FROM listings WHERE status='active' ORDER BY featured DESC, saves DESC LIMIT 7"
@@ -47,53 +45,32 @@ export default async function Home() {
       <Navbar />
 
       {/* ============ HERO ============ */}
-      <section className="mx-auto max-w-[1280px] px-6 pb-4 pt-24 lg:px-8">
-        <div className="grid items-start gap-8 lg:grid-cols-[1.4fr_1fr]">
-          <h1 className="display text-[40px] leading-[1.15] text-neutral-900 md:text-[54px]">
-            <span className="font-normal text-neutral-400">Real</span> Land{" "}
-            <span className="font-normal text-neutral-400">Real</span> Owners
-            <br />
-            <span className="font-normal text-neutral-400">Real</span> Peace of Mind
-          </h1>
-          <p className="body-lg pt-3 text-neutral-500">
-            Access verified estates from trusted developers, complete with document
-            validation, inspection support, and secure transaction guidance all in
-            one platform.
-          </p>
-        </div>
-
-        <div className="mt-10">
-          <HeroSearch />
-        </div>
-
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {heroListings.map((l) => (
-            <Link
-              key={l.id}
-              href={`/explore?focus=${l.id}`}
-              className="group relative overflow-hidden rounded-2xl"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`/images/property-${l.image_seed}.svg`}
-                alt={l.title}
-                className="aspect-[413/414] w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-x-3 bottom-3 flex items-center justify-between rounded-xl bg-white px-4 py-3 shadow-md">
-                <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold text-neutral-900">
-                    {(l as Listing & { estate_name: string | null }).estate_name ?? l.title}
-                  </div>
-                  <div className="truncate text-xs text-neutral-500">
-                    {l.location_area}, {l.location_city}
-                  </div>
-                </div>
-                <div className="shrink-0 pl-3 text-sm font-bold text-neutral-900">{naira(l.price)}</div>
-              </div>
-            </Link>
-          ))}
+      <section className="relative">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/hero-interior.svg"
+          alt="Verified modern interior"
+          className="h-[420px] w-full object-cover md:h-[500px]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/60" />
+        <div className="absolute inset-x-0 bottom-0">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-6 px-6 pb-10 md:flex-row md:items-end md:justify-between lg:px-8">
+            <h1 className="display max-w-[560px] text-[34px] leading-[1.18] text-white md:text-[46px]">
+              Real Land, Real Owners
+              <br />
+              Real Peace of Mind
+            </h1>
+            <p className="body-lg max-w-[470px] text-white/90">
+              Access verified estates from trusted developers, complete with document
+              validation, inspection support, and secure transaction guidance all in
+              one platform.
+            </p>
+          </div>
         </div>
       </section>
+
+      {/* ============ BROWSE ============ */}
+      <LandingBrowse listings={browseListings} />
 
       {/* ============ WHY US ============ */}
       <section id="why-us" className="mx-auto max-w-[1280px] px-6 py-20 lg:px-20">

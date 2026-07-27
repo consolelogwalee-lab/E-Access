@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
 
 const MAIN = [
-  { label: "Home", href: "/dashboard", icon: Widget6, neverActive: true },
+  { label: "Home", href: "/", icon: Widget6, neverActive: true },
   { label: "Discover", href: "/dashboard", icon: MagicStick3, exact: true },
   { label: "Saved Listings", href: "/dashboard/saved", icon: Widget6 },
   { label: "Messages", href: "/dashboard/messages", icon: ChatLine },
@@ -43,6 +43,13 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
 
   function isActive(item: Item) {
     if (item.neverActive) return false;
+    if (item.label === "Discover") {
+      return (
+        pathname === "/dashboard" ||
+        pathname.startsWith("/dashboard/property") ||
+        pathname.startsWith("/dashboard/developer")
+      );
+    }
     return item.exact ? pathname === item.href : pathname.startsWith(item.href);
   }
 
