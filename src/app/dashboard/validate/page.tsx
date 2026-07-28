@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FileText, ImagePlus, Plus, ShieldCheck, Trash2, X } from "lucide-react";
+import { FileText, ImagePlus, Plus, ShieldCheck, Stamp, Trash2, X } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 
 type Request = {
@@ -73,11 +73,11 @@ export default function ValidatePage() {
 
       <div className="mt-6 overflow-hidden rounded-2xl bg-[#04040a] text-white">
         <div className="flex flex-wrap items-center gap-6 p-7 md:p-9">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E2A600]/15">
-            <ShieldCheck size={26} className="text-[#E2A600]" />
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#E2A600]/40 bg-[#E2A600]/10">
+            <Stamp size={25} className="text-[#E2A600]" />
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="display text-[26px] leading-8">Property & Document Validation</h1>
+            <h1 className="text-[25px] font-extrabold leading-8 tracking-[-0.02em]">Property & Document Validation</h1>
             <p className="body-md mt-1.5 max-w-[560px] text-white/60">
               Own a property already? Upload your documents and photos, and the E-Access team,
               working with legal partners, will verify the title, check the registry, and stamp
@@ -86,7 +86,7 @@ export default function ValidatePage() {
           </div>
           <button
             onClick={() => setOpen(true)}
-            className="btn-text flex h-12 items-center gap-2 rounded-full bg-[#E2A600] px-6 text-[#3f3005] transition hover:brightness-105"
+            className="btn-gold flex h-12 items-center gap-2 rounded-xl px-6 text-[14px]"
           >
             <Plus size={16} /> Verify a property
           </button>

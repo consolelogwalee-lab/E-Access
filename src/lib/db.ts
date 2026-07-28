@@ -309,6 +309,43 @@ async function migrate() {
       actor TEXT NOT NULL DEFAULT 'team',
       created_at TEXT NOT NULL DEFAULT ${NOW}
     )`,
+    `CREATE TABLE IF NOT EXISTS agents (
+      ${ID},
+      user_id INTEGER NOT NULL UNIQUE,
+      agency_name TEXT NOT NULL,
+      phone TEXT NOT NULL,
+      whatsapp TEXT,
+      bio TEXT,
+      areas TEXT,
+      rc_number TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS property_requests (
+      ${ID},
+      user_id INTEGER NOT NULL,
+      property_type TEXT NOT NULL,
+      purpose TEXT NOT NULL DEFAULT 'buy',
+      budget_min BIGINT,
+      budget_max BIGINT,
+      locations TEXT NOT NULL,
+      details TEXT,
+      whatsapp TEXT,
+      status TEXT NOT NULL DEFAULT 'new',
+      admin_note TEXT,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS transactions (
+      ${ID},
+      listing_id INTEGER NOT NULL,
+      buyer_id INTEGER NOT NULL,
+      seller_id INTEGER,
+      offer_id INTEGER,
+      stage TEXT NOT NULL DEFAULT 'offer_accepted',
+      note TEXT,
+      created_at TEXT NOT NULL DEFAULT ${NOW},
+      updated_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
   ];
   for (const t of tables) await d.run(t);
   // additive migrations (ignore "already exists")

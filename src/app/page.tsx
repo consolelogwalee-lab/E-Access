@@ -40,7 +40,7 @@ type Post = {
 
 const PILLARS = [
   {
-    kicker: "01 · Buy & Sell",
+    kicker: "01 . Buy & Sell",
     title: "Verified Property Marketplace",
     body: "Browse land, apartments, duplexes and commercial property that has already passed document and developer checks. Save, compare, make offers and book inspections.",
     image: "/photos/estate-street.jpg",
@@ -48,7 +48,7 @@ const PILLARS = [
     href: "/#browse",
   },
   {
-    kicker: "02 · Protect Yourself",
+    kicker: "02 . Protect Yourself",
     title: "Property & Document Validation",
     body: "Already own property, or about to pay for one? Upload the documents and our team, with legal partners, verifies the title and stamps it. No more buying wahala.",
     image: "/photos/duplex-8.jpg",
@@ -56,7 +56,7 @@ const PILLARS = [
     href: "/dashboard/validate",
   },
   {
-    kicker: "03 · Stay Sharp",
+    kicker: "03 . Stay Sharp",
     title: "News, Reels & Market Insights",
     body: "Real estate news, videos, offers and opportunities from T-Prime and around the world, so every decision you make is an informed one.",
     image: "/photos/apartment-6.jpg",
@@ -134,6 +134,31 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ============ TRUSTED BY (marquee) ============ */}
+      <section className="border-b border-neutral-100 py-9">
+        <div className="mx-auto flex max-w-[1280px] flex-col items-center gap-6 px-6 md:flex-row md:gap-10 lg:px-20">
+          <p className="w-full shrink-0 text-center text-[15px] font-semibold text-neutral-700 md:w-[240px] md:text-left">
+            Trusted by 1,000+ realtors, developers and agents in Nigeria
+          </p>
+          <div className="marquee-mask min-w-0 flex-1 overflow-hidden">
+            <div className="marquee-track flex w-max items-center gap-14 pr-14">
+              {[0, 1].map((dup) => (
+                <div key={dup} className="flex items-center gap-14" aria-hidden={dup === 1}>
+                  <span className="whitespace-nowrap font-serif text-[19px] font-semibold tracking-tight text-neutral-400">Eko Prime Realty</span>
+                  <span className="whitespace-nowrap text-[17px] font-extrabold uppercase tracking-[0.2em] text-neutral-400">GIDIHOMES</span>
+                  <span className="whitespace-nowrap text-[19px] font-bold italic text-neutral-400">Lekki Shore Estates</span>
+                  <span className="whitespace-nowrap font-serif text-[18px] tracking-wide text-neutral-400">Crown &amp; Acres</span>
+                  <span className="whitespace-nowrap text-[17px] font-black uppercase text-neutral-400">BLUEROOF</span>
+                  <span className="whitespace-nowrap text-[19px] font-semibold tracking-tight text-neutral-400">PalmField Realty</span>
+                  <span className="whitespace-nowrap font-serif text-[18px] font-semibold italic text-neutral-400">Abuja Crest</span>
+                  <span className="whitespace-nowrap text-[17px] font-extrabold tracking-[0.14em] text-neutral-400">ZARIA HEIGHTS</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ THREE PILLARS ============ */}
       <section className="mx-auto max-w-[1280px] px-6 py-16 lg:px-20">
         <Reveal>
@@ -149,7 +174,7 @@ export default async function Home() {
                 <div className="relative overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.image} alt="" className="aspect-[400/230] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
-                  <span className="absolute left-4 top-4 rounded-full bg-neutral-950/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2A600] backdrop-blur">
+                  <span className="absolute left-4 top-4 rounded-full bg-[#1B1F4E] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white shadow-md shadow-black/20">
                     {p.kicker}
                   </span>
                 </div>
@@ -166,8 +191,39 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ============ DIVIDER ============ */}
+      <div className="mx-auto flex max-w-[1280px] items-center gap-5 px-6 pb-2 lg:px-20" aria-hidden="true">
+        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-300 to-neutral-300" />
+        <span className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2A600]" />
+          <span className="h-2 w-2 rotate-45 border border-[#1B1F4E] bg-white" />
+          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2A600]" />
+        </span>
+        <span className="h-px flex-1 bg-gradient-to-l from-transparent via-neutral-300 to-neutral-300" />
+      </div>
+
       {/* ============ BROWSE ============ */}
       <LandingBrowse listings={browseListings} />
+
+      {/* ============ CONCIERGE CTA ============ */}
+      <section className="mx-auto max-w-[1280px] px-6 pb-4 lg:px-20">
+        <Reveal>
+          <div className="flex flex-wrap items-center gap-6 rounded-3xl border border-neutral-200 bg-neutral-50 p-8 md:p-10">
+            <div className="min-w-0 flex-1">
+              <h2 className="display text-[24px] leading-8 text-neutral-950 md:text-[30px]">
+                Can&apos;t find what you&apos;re looking for?
+              </h2>
+              <p className="body-md mt-2 max-w-[520px] text-neutral-500">
+                Tell us exactly what you want: type, budget, location. Our team and network of verified
+                agents will hunt it down and bring you options, all verified first.
+              </p>
+            </div>
+            <a href="/dashboard/request" className="btn-gold flex h-12 items-center rounded-xl px-7 text-[14px]">
+              Request a property
+            </a>
+          </div>
+        </Reveal>
+      </section>
 
       {/* ============ WHY US ============ */}
       <section id="why-us" className="bg-[#04040a] text-white">

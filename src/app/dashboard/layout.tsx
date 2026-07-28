@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div className="min-h-screen bg-neutral-100">
       <Sidebar user={{ full_name: user.full_name, email: user.email, avatar_color: user.avatar_color, role: user.role }} />
-      <div className="min-h-screen p-2 lg:pl-[304px]">
+      <div className="dash-main min-h-screen p-2 transition-[padding] duration-200 lg:pl-[304px]">
         <div className="min-h-[calc(100vh-16px)] rounded-2xl p-4 md:p-6">{children}</div>
       </div>
       <CompareBar />

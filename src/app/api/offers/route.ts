@@ -66,7 +66,20 @@ export async function PATCH(req: Request) {
   if (offer.status !== "pending")
     return NextResponse.json({ error: "This offer was already resolved." }, { status: 400 });
   await run("UPDATE offers SET status = $1 WHERE id = $2", [status, id]);
-  const listing = await q1<{ title: string }>("SELECT title FROM listings WHERE id = $1", [offer.listing_id]);
+  const listing = await q1<{ title: string; owner_id: number | null }>(
+    "SELECT title, owner_id FROM listings WHERE id = $1", [offer.listing_id]
+  );
+  if (status === "accepted") {
+    // Open a transaction linking the buyer with the seller/agent (no payments, just coordination)
+    await run(
+      "INSERT INTO transactions (listing_id, buyer_id, seller_id, offer_id) VALUES ($1,$2,$3,$4)",
+      [offer.listing_id, offer.user_id, listing?.owner_id ?? null, offer.id]
+    );
+    if (listing?.owner_id) {
+      await notify(Number(listing.owner_id), "success", "Offer accepted, transaction opened",
+        `A transaction has been opened for ${listing.title}. Track its progress with the buyer.`, "/dashboard/transactions");
+    }
+  }
   await notify(
     Number(offer.user_id),
     status === "accepted" ? "success" : "info",

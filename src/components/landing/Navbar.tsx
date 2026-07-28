@@ -70,6 +70,7 @@ export function Navbar() {
                 ["How e-access works", "/#how-it-works"],
                 ["Featured listings", "/#featured"],
                 ["News & info center", "/news"],
+                ["Verified agents", "/agents"],
               ].map(([label, href]) => (
                 <a
                   key={href}
