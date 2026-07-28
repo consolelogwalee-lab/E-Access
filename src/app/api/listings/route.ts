@@ -1,6 +1,38 @@
 import { NextResponse } from "next/server";
 import { q, q1, run } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { notify } from "@/lib/notify";
+
+/** Notify owners of saved searches that match a newly added listing. */
+async function alertSavedSearches(listing: {
+  id: number; title: string; property_type: string; price: number;
+  location_area: string; location_city: string; purpose: string; owner_id: number;
+}) {
+  try {
+    const searches = await q<{ id: number; user_id: number; name: string; filters_json: string }>(
+      "SELECT * FROM saved_searches"
+    );
+    for (const s of searches) {
+      if (Number(s.user_id) === Number(listing.owner_id)) continue;
+      let f: { purpose?: string; types?: string[]; minPrice?: number; maxPrice?: number; location?: string };
+      try { f = JSON.parse(s.filters_json); } catch { continue; }
+      if (f.purpose && f.purpose !== listing.purpose) continue;
+      if (f.types?.length && !f.types.includes(listing.property_type)) continue;
+      if (f.minPrice && listing.price < f.minPrice) continue;
+      if (f.maxPrice && listing.price > f.maxPrice) continue;
+      if (f.location) {
+        const loc = f.location.toLowerCase();
+        const hay = `${listing.location_area} ${listing.location_city}`.toLowerCase();
+        if (!hay.includes(loc)) continue;
+      }
+      await notify(
+        Number(s.user_id), "alert", `New match for "${s.name}"`,
+        `${listing.title} just landed and matches your saved search.`,
+        `/dashboard/property/${listing.id}`
+      );
+    }
+  } catch { /* alerts are best-effort */ }
+}
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -15,6 +47,13 @@ export async function GET(req: Request) {
     params.push(...vals);
   };
 
+  if (p.get("ids")) {
+    const ids = p.get("ids")!.split(",").map(Number).filter((n) => Number.isFinite(n) && n > 0).slice(0, 12);
+    if (!ids.length) return NextResponse.json({ listings: [], total: 0 });
+    const start = params.length + 1;
+    where.push(`l.id IN (${ids.map((_, i) => `$${start + i}`).join(",")})`);
+    params.push(...ids);
+  }
   if (p.get("purpose")) add((n) => `l.purpose = $${n}`, p.get("purpose"));
   const types = p.get("type")?.split(",").filter(Boolean) ?? [];
   if (types.length) {
@@ -99,6 +138,13 @@ export async function POST(req: Request) {
       "INSERT INTO listing_documents (listing_id, doc_type, file_name, status) VALUES ($1,$2,$3,'under_review')",
       [id, doc.type, doc.fileName]
     );
+  }
+  if (!b.draft) {
+    await alertSavedSearches({
+      id, title: b.title, property_type: b.propertyType, price: Number(b.price),
+      location_area: b.locationArea, location_city: b.locationCity ?? "",
+      purpose: b.purpose ?? "sale", owner_id: user.id,
+    });
   }
   return NextResponse.json({ ok: true, id });
 }

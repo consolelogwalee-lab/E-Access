@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  LayoutDashboard, Building2, Users, Inbox, FileCheck2, ArrowLeft, LogOut, ShieldCheck, Menu, X,
+  LayoutDashboard, Building2, Users, Inbox, FileCheck2, ArrowLeft, LogOut, ShieldCheck, Menu, X, Newspaper, HandCoins,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
@@ -12,7 +12,9 @@ const NAV = [
   { label: "Listings", href: "/admin/listings", icon: Building2 },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Leads", href: "/admin/leads", icon: Inbox },
+  { label: "Offers", href: "/admin/offers", icon: HandCoins },
   { label: "Verifications", href: "/admin/verifications", icon: FileCheck2 },
+  { label: "Info Center", href: "/admin/posts", icon: Newspaper },
 ];
 
 export function AdminSidebar({ user }: { user: { full_name: string; email: string } }) {

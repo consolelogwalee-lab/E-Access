@@ -2,7 +2,7 @@ import { run } from "./db";
 
 export async function notify(
   userId: number,
-  kind: "inquiry" | "inspection" | "verification" | "info",
+  kind: "inquiry" | "inspection" | "verification" | "info" | "success" | "alert",
   title: string,
   body?: string,
   href?: string

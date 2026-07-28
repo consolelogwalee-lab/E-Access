@@ -9,6 +9,7 @@ import { BookInspectionDrawer } from "@/components/dashboard/BookInspection";
 import { MortgageCalculator } from "@/components/dashboard/MortgageCalculator";
 import { naira, TYPE_LABEL } from "@/lib/format";
 import { listingImage, poolImage } from "@/lib/images";
+import { trackRecent } from "@/lib/compare";
 
 type Doc = { id: number; doc_type: string; file_name: string; status: string };
 type Full = Listing & {
@@ -27,11 +28,17 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
   const [quickTime, setQuickTime] = useState("");
   const [inqMsg, setInqMsg] = useState("");
   const [inqSent, setInqSent] = useState(false);
+  const [offerOpen, setOfferOpen] = useState(false);
+  const [offerAmount, setOfferAmount] = useState("");
+  const [offerMsg, setOfferMsg] = useState("");
+  const [offerState, setOfferState] = useState<"" | "sent" | string>("");
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     fetch(`/api/listings/${id}`)
       .then((r) => r.json())
       .then((d) => { setData(d); setSaved(!!d.saved); });
+    trackRecent(Number(id));
   }, [id]);
 
   if (!data?.listing) {
@@ -60,6 +67,32 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
     setInqSent(true);
   }
 
+  async function submitOffer() {
+    const res = await fetch("/api/offers", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ listingId: L.id, amount: Number(offerAmount), message: offerMsg }),
+    });
+    const d = await res.json();
+    if (!res.ok) { setOfferState(d.error ?? "Could not send the offer."); return; }
+    setOfferState("sent");
+  }
+
+  async function share() {
+    const url = `${window.location.origin}/listing/${L.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: L.title, url });
+        return;
+      }
+    } catch { /* fall through to clipboard */ }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 1800);
+    } catch { window.open(url, "_blank"); }
+  }
+
   return (
     <div>
       <Topbar />
@@ -81,8 +114,11 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
-            <Share2 size={14} /> Share
+          <button
+            onClick={share}
+            className="flex h-9 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+          >
+            <Share2 size={14} /> {shared ? "Link copied!" : "Share"}
           </button>
           <button
             onClick={toggleSave}
@@ -219,6 +255,14 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
             >
               <MessageSquare size={15} /> Message Consultant
             </button>
+            {L.purpose !== "rent" && (
+              <button
+                onClick={() => setOfferOpen(true)}
+                className="btn-text mt-2 h-11 w-full rounded-xl bg-[#E2A600] text-[#3f3005] transition hover:brightness-105"
+              >
+                Make an Offer
+              </button>
+            )}
           </div>
 
           <div className="rounded-2xl border border-neutral-200 bg-white p-5">
@@ -294,6 +338,48 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
         open={book}
         onClose={() => setBook(false)}
       />
+
+      {offerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/50 p-4 backdrop-blur-[2px]" onClick={() => setOfferOpen(false)}>
+          <div className="w-full max-w-[420px] rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            {offerState === "sent" ? (
+              <div className="py-4 text-center">
+                <p className="h4 text-neutral-900">Offer sent</p>
+                <p className="body-md mt-2 text-neutral-500">
+                  The team will review your offer and you will get a notification once it is accepted or declined.
+                </p>
+                <button onClick={() => setOfferOpen(false)} className="btn-text mt-5 h-11 w-full rounded-xl bg-neutral-950 text-white">Done</button>
+              </div>
+            ) : (
+              <>
+                <h3 className="h4 text-neutral-900">Make an Offer</h3>
+                <p className="body-md mt-1 text-neutral-500">Asking price is {naira(L.price)}. Enter what you are willing to pay.</p>
+                <label className="mt-4 block text-xs font-semibold text-neutral-500">Your offer (₦)</label>
+                <input
+                  type="number"
+                  value={offerAmount}
+                  onChange={(e) => setOfferAmount(e.target.value)}
+                  className="mt-1.5 w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-neutral-400"
+                  placeholder="e.g. 42000000"
+                />
+                <label className="mt-4 block text-xs font-semibold text-neutral-500">Message (optional)</label>
+                <textarea
+                  value={offerMsg}
+                  onChange={(e) => setOfferMsg(e.target.value)}
+                  rows={3}
+                  className="mt-1.5 w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm outline-none focus:border-neutral-400"
+                  placeholder="Any conditions, e.g. payment timeline"
+                />
+                {offerState && offerState !== "sent" && <p className="mt-2 text-sm text-red-600">{offerState}</p>}
+                <div className="mt-5 flex gap-2">
+                  <button onClick={() => setOfferOpen(false)} className="btn-text h-12 flex-1 rounded-xl bg-neutral-100 text-neutral-700 hover:bg-neutral-200">Cancel</button>
+                  <button onClick={submitOffer} className="btn-text h-12 flex-1 rounded-xl bg-[#E2A600] text-[#3f3005] hover:brightness-105">Send offer</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

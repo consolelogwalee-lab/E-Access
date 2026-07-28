@@ -89,7 +89,7 @@ function driver(): Driver {
 
 async function ensureReady(): Promise<void> {
   if (!_ready) {
-    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin);
+    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin).then(seedExtras);
     // Don't cache failures — allow retry on the next request (e.g. transient DB outage at boot)
     _ready.catch(() => { _ready = null; });
   }
@@ -223,6 +223,58 @@ async function migrate() {
       thread_id INTEGER NOT NULL,
       sender_id INTEGER NOT NULL,
       body TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS posts (
+      ${ID},
+      title TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'news',
+      body TEXT NOT NULL,
+      video_url TEXT,
+      cover_image TEXT,
+      published INTEGER NOT NULL DEFAULT 1,
+      author_name TEXT NOT NULL DEFAULT 'E-Access Team',
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS saved_searches (
+      ${ID},
+      user_id INTEGER NOT NULL,
+      name TEXT NOT NULL,
+      filters_json TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS reviews (
+      ${ID},
+      developer_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      rating INTEGER NOT NULL,
+      comment TEXT,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS installments (
+      ${ID},
+      user_id INTEGER NOT NULL,
+      listing_id INTEGER NOT NULL,
+      total_amount BIGINT NOT NULL,
+      amount_paid BIGINT NOT NULL DEFAULT 0,
+      next_due_date TEXT,
+      note TEXT,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS installment_payments (
+      ${ID},
+      installment_id INTEGER NOT NULL,
+      amount BIGINT NOT NULL,
+      paid_at TEXT NOT NULL DEFAULT ${NOW},
+      note TEXT
+    )`,
+    `CREATE TABLE IF NOT EXISTS offers (
+      ${ID},
+      listing_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      amount BIGINT NOT NULL,
+      message TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
       created_at TEXT NOT NULL DEFAULT ${NOW}
     )`,
   ];
@@ -374,4 +426,88 @@ async function seedActivity() {
     [ids[0], buyerId, "Good day, is this property still available? I'm interested in a physical inspection and would also like to see the survey plan.", "new"]);
   await d.run("INSERT INTO inquiries (listing_id, sender_id, message, status) VALUES ($1,$2,$3,$4)",
     [ids[1], buyerId, "Can you share the payment structure? Is an instalment plan possible over 6 months?", "new"]);
+}
+
+async function seedExtras() {
+  const d = driver();
+  const has = await d.q("SELECT COUNT(*) AS c FROM posts");
+  if (Number((has[0] as { c: number | string }).c) > 0) return;
+
+  const posts: [string, string, string, string | null, string][] = [
+    [
+      "Lagos State Announces New Land Title Digitization Drive",
+      "news",
+      "The Lagos State government has unveiled a new digitization programme for land titles, aiming to cut Certificate of Occupancy processing from months to weeks. For buyers, this means faster verification timelines and fewer opportunities for document fraud.\n\nWhat it means for you: properties in Lagos listed on E-Access will progressively show digital title references, and our verification team will cross-check every listing against the new registry as it rolls out.\n\nWe advise all buyers to insist on registry-verified documents before making any payment. Every verified listing on E-Access has already passed this check.",
+      null,
+      "estate-aerial.jpg",
+    ],
+    [
+      "Limited Offer: Zero Verification Fees on Ibeju-Lekki Plots This Month",
+      "offer",
+      "For the rest of this month, E-Access is waiving verification service fees on all residential plots in Ibeju-Lekki and the Lekki Free Trade Zone corridor.\n\nThe corridor continues to attract investors ahead of the completion of major infrastructure projects, and demand for verified dry land has more than doubled this year.\n\nHow to claim: browse verified land listings, book an inspection, and the verification fee is automatically waived at documentation stage. No code needed.",
+      null,
+      "land-4.jpg",
+    ],
+    [
+      "Why Off-Plan Property Can Be a Smart Buy, If You Verify First",
+      "opportunity",
+      "Off-plan purchases (buying before construction completes) can save you 20 to 40 percent compared to finished units in the same estate. The catch: you are trusting a developer to deliver.\n\nBefore committing to any off-plan deal, confirm three things: the developer's track record of delivered projects, the land's title status (not just the developer's word), and a written, dated delivery schedule with penalties.\n\nE-Access developer profiles now show credibility ratings and past reviews from verified buyers, so you can check a track record before you pay a kobo.",
+      "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "duplex-6.jpg",
+    ],
+    [
+      "How E-Access Verifies a Listing, Step by Step",
+      "update",
+      "Ever wondered what happens between a developer submitting a property and that green Verified badge appearing?\n\nOur team reviews the survey plan against state records, confirms the Certificate of Occupancy or Governor's Consent, checks the developer's identity and history, and where possible conducts a physical site visit.\n\nOnly when every check passes does a listing earn the badge. If any document fails, the listing stays unverified and the developer is notified of what to fix. You will never see a Verified badge that we have not stood behind ourselves.",
+      null,
+      "howitworks.jpg",
+    ],
+    [
+      "Diaspora Buyers: How to Purchase Property in Nigeria Remotely and Safely",
+      "opportunity",
+      "Thousands of Nigerians abroad buy property back home every year, and many get burned by unverifiable agents and fake documents. It does not have to be that way.\n\nUse remote inspections: E-Access consultants conduct guided video inspections on your behalf and file a written report. Insist on document verification before transferring any funds. Use traceable payments only, never cash through relatives.\n\nEvery listing on this platform can be inspected remotely, and our documents vault keeps your paperwork accessible from anywhere in the world.",
+      null,
+      "duplex-10.jpg",
+    ],
+    [
+      "Market Watch: Abuja Rental Yields Hit Five-Year High",
+      "news",
+      "Rental yields in Abuja's Katampe Extension, Gwarinpa and Wuse 2 districts have reached their strongest levels in five years, driven by sustained demand for secure, serviced accommodation.\n\nFor investors, buy-to-let apartments in these districts are currently outperforming several traditional asset classes. Verified apartment listings in these areas are available now on E-Access, with inspection support included.",
+      null,
+      "apartment-6.jpg",
+    ],
+  ];
+  for (const [title, category, body, video, cover] of posts) {
+    await d.run(
+      "INSERT INTO posts (title, category, body, video_url, cover_image) VALUES ($1,$2,$3,$4,$5)",
+      [title, category, body, video, cover]
+    );
+  }
+
+  // Developer reviews from the demo buyer
+  const owner = await d.q("SELECT id FROM users WHERE email = 'wale@eaccess.demo'");
+  const buyer = await d.q("SELECT id FROM users WHERE email = 'buyer@eaccess.demo'");
+  if (owner.length && buyer.length) {
+    const oid = Number((owner[0] as { id: number }).id);
+    const bid = Number((buyer[0] as { id: number }).id);
+    await d.run("INSERT INTO reviews (developer_id, user_id, rating, comment) VALUES ($1,$2,5,$3)",
+      [oid, bid, "Documents were exactly as listed and the inspection was well organized. Transaction closed without any surprises."]);
+    // Demo payment plan for the buyer on a listing
+    const l = await d.q("SELECT id, price FROM listings WHERE property_type = 'duplex' ORDER BY id LIMIT 1");
+    if (l.length) {
+      const lid = Number((l[0] as { id: number }).id);
+      const price = Number((l[0] as { price: number | string }).price);
+      const due = new Date(Date.now() + 21 * 86400000).toISOString().slice(0, 10);
+      await d.run(
+        "INSERT INTO installments (user_id, listing_id, total_amount, amount_paid, next_due_date, note) VALUES ($1,$2,$3,$4,$5,$6)",
+        [bid, lid, price, Math.round(price * 0.4), due, "6-month structured plan agreed with developer"]
+      );
+      const inst = await d.q("SELECT id FROM installments WHERE user_id = $1 ORDER BY id DESC LIMIT 1", [bid]);
+      const iid = Number((inst[0] as { id: number }).id);
+      await d.run("INSERT INTO installment_payments (installment_id, amount, note) VALUES ($1,$2,$3)",
+        [iid, Math.round(price * 0.25), "Initial deposit"]);
+      await d.run("INSERT INTO installment_payments (installment_id, amount, note) VALUES ($1,$2,$3)",
+        [iid, Math.round(price * 0.15), "Second instalment"]);
+    }
+  }
 }

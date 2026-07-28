@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Heart, MapPin, BedDouble, Bath, Ruler, ShoppingBag, Check } from "lucide-react";
+import { Heart, MapPin, BedDouble, Bath, Ruler, ShoppingBag, Check, Scale } from "lucide-react";
 import { useEffect, useState } from "react";
 import { VerificationBadge } from "./Badges";
 import { naira } from "@/lib/format";
 import { addToCart, inCart, removeFromCart, CART_EVENT } from "@/lib/cart";
 import { listingImage } from "@/lib/images";
+import { getCompare, toggleCompare, COMPARE_EVENT } from "@/lib/compare";
 
 export type Listing = {
   id: number;
@@ -30,13 +31,16 @@ export function ListingCard({
   listing,
   href,
   cartable = false,
+  comparable = false,
 }: {
   listing: Listing;
   href?: string;
   cartable?: boolean;
+  comparable?: boolean;
 }) {
   const [saved, setSaved] = useState(!!listing.saved);
   const [carted, setCarted] = useState(false);
+  const [comparing, setComparing] = useState(false);
   const url = href ?? `/dashboard/property/${listing.id}`;
 
   useEffect(() => {
@@ -46,6 +50,21 @@ export function ListingCard({
     window.addEventListener(CART_EVENT, sync);
     return () => window.removeEventListener(CART_EVENT, sync);
   }, [cartable, listing.id]);
+
+  useEffect(() => {
+    if (!comparable) return;
+    const sync = () => setComparing(getCompare().includes(listing.id));
+    sync();
+    window.addEventListener(COMPARE_EVENT, sync);
+    return () => window.removeEventListener(COMPARE_EVENT, sync);
+  }, [comparable, listing.id]);
+
+  function onCompare(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const r = toggleCompare(listing.id);
+    if (r.full) alert("You can compare up to 3 properties at a time. Remove one first.");
+  }
 
   function toggleCart(e: React.MouseEvent) {
     e.preventDefault();
@@ -90,6 +109,17 @@ export function ListingCard({
             className={saved ? "fill-red-500 text-red-500" : "text-neutral-700"}
           />
         </button>
+        {comparable && (
+          <button
+            onClick={onCompare}
+            aria-label="Compare listing"
+            className={`absolute left-2 top-2 flex h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-semibold shadow-sm backdrop-blur transition ${
+              comparing ? "bg-[#E2A600] text-[#3f3005]" : "bg-white/90 text-neutral-700 hover:bg-white"
+            }`}
+          >
+            <Scale size={13} /> {comparing ? "Comparing" : "Compare"}
+          </button>
+        )}
       </div>
       <div className="space-y-1.5 px-2 pb-2 pt-3">
         <div className="text-lg font-bold leading-7 text-brand-500">{naira(listing.price)}</div>

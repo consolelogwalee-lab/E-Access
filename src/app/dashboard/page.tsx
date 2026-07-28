@@ -5,6 +5,8 @@ import { SlidersHorizontal, ArrowUpDown, X } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { ListingCard, type Listing } from "@/components/ListingCard";
 import { FilterDrawer, EMPTY_FILTERS, PRICE_BANDS, type Filters } from "@/components/dashboard/FilterDrawer";
+import { RecentlyViewed } from "@/components/dashboard/RecentlyViewed";
+import { SaveSearchButton } from "@/components/dashboard/SaveSearchButton";
 
 function DiscoverInner() {
   const sp = useSearchParams();
@@ -60,6 +62,15 @@ function DiscoverInner() {
           Welcome Back, {me ? me.full_name.split(" ")[0] : "…"}
         </h1>
         <div className="flex items-center gap-2">
+          <SaveSearchButton
+            filters={{
+              purpose: applied.purpose || undefined,
+              types: applied.types.length ? applied.types : undefined,
+              minPrice: applied.band >= 0 && PRICE_BANDS[applied.band].min ? Number(PRICE_BANDS[applied.band].min) : undefined,
+              maxPrice: applied.band >= 0 && PRICE_BANDS[applied.band].max ? Number(PRICE_BANDS[applied.band].max) : undefined,
+              location: applied.location || undefined,
+            }}
+          />
           <button
             onClick={() => setSort((s) => (s === "" ? "price_asc" : s === "price_asc" ? "price_desc" : ""))}
             className="flex h-[34px] items-center gap-2 rounded-full border border-neutral-200 bg-white px-3.5 text-xs font-medium text-neutral-600 transition hover:border-neutral-400"
@@ -111,11 +122,13 @@ function DiscoverInner() {
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {listings.map((l) => (
-              <ListingCard key={l.id} listing={l} />
+              <ListingCard key={l.id} listing={l} comparable />
             ))}
           </div>
         )}
       </div>
+
+      <RecentlyViewed />
 
       <FilterDrawer
         open={drawer}

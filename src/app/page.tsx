@@ -190,6 +190,7 @@ export default async function Home() {
                   ["Why Us", "#why-us"],
                   ["How it Works", "#how-it-works"],
                   ["Featured Listings", "#featured"],
+                  ["News & Info Center", "/news"],
                 ].map(([l, h]) => (
                   <li key={l}>
                     <a href={h} className="text-white/75 transition hover:text-white">{l}</a>

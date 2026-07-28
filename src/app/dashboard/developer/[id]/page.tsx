@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, BadgeCheck, Building2, MessageSquare } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { ListingCard, type Listing } from "@/components/ListingCard";
+import { Reviews } from "@/components/dashboard/Reviews";
 import { timeAgo } from "@/lib/format";
 
 type Dev = { id: number; full_name: string; avatar_color: string; created_at: string };
@@ -74,6 +75,8 @@ export default function DeveloperPage({ params }: { params: Promise<{ id: string
       <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {data.listings.map((l) => <ListingCard key={l.id} listing={l} />)}
       </div>
+
+      <Reviews developerId={d.id} />
     </div>
   );
 }

@@ -65,10 +65,11 @@ export function Navbar() {
           >
             <div className="space-y-1">
               {[
-                ["Browse listings", "#browse"],
-                ["Why us", "#why-us"],
-                ["How e-access works", "#how-it-works"],
-                ["Featured listings", "#featured"],
+                ["Browse listings", "/#browse"],
+                ["Why us", "/#why-us"],
+                ["How e-access works", "/#how-it-works"],
+                ["Featured listings", "/#featured"],
+                ["News & info center", "/news"],
               ].map(([label, href]) => (
                 <a
                   key={href}
