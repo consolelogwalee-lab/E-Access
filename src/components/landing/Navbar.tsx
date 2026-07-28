@@ -28,7 +28,7 @@ export function Navbar() {
       <div className="pointer-events-none fixed inset-x-0 top-3 z-50 flex justify-center px-4">
         <nav className="pointer-events-auto flex items-center gap-3 rounded-full bg-neutral-950/95 py-1.5 pl-1.5 pr-1.5 shadow-xl shadow-black/20 backdrop-blur">
           <button onClick={goHome} aria-label="E-Access home">
-            <LogoMark size={36} />
+            <LogoMark size={36} mono />
           </button>
           <button
             onClick={() => setOpen((o) => !o)}

@@ -4,7 +4,7 @@ import { LandingBrowse } from "@/components/landing/LandingBrowse";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Featured } from "@/components/landing/Featured";
 import { Reveal } from "@/components/landing/Reveal";
-import { LogoFull } from "@/components/Logo";
+import { LogoFull, LogoHero } from "@/components/Logo";
 import { q } from "@/lib/db";
 import type { Listing } from "@/components/ListingCard";
 
@@ -126,10 +126,15 @@ export default async function Home() {
               <br />
               Real Peace of Mind
             </h1>
-            <p className="body-lg max-w-[360px] font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)] md:pb-2 md:text-right">
-              Verified estates from trusted developers. Documents validated,
-              inspections supported, every transaction secured.
-            </p>
+            <div className="flex flex-col items-start gap-4 md:items-end md:pb-2">
+              <span className="hero-logo-in drop-shadow-[0_4px_18px_rgba(0,0,0,0.55)]">
+                <LogoHero size={62} />
+              </span>
+              <p className="body-lg max-w-[360px] font-semibold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.6)] md:text-right">
+                Verified estates from trusted developers. Documents validated,
+                inspections supported, every transaction secured.
+              </p>
+            </div>
           </div>
         </div>
       </section>
