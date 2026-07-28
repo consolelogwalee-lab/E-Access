@@ -10,8 +10,8 @@ export function LogoMark({ size = 40, light = false }: { size?: number; light?: 
   void light;
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-label="E-Access">
-      {/* rounded-square tile */}
-      <rect x="1" y="1" width="46" height="46" rx="13" fill={NAVY} />
+      {/* circular tile, matching the gold ring */}
+      <circle cx="24" cy="24" r="23" fill={NAVY} />
       {/* gold circle ring */}
       <circle cx="24" cy="24" r="16.5" fill="none" stroke={GOLD} strokeWidth="2.2" />
       {/* Asimovian E */}

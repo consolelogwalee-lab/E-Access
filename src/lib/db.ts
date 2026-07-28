@@ -277,6 +277,38 @@ async function migrate() {
       status TEXT NOT NULL DEFAULT 'pending',
       created_at TEXT NOT NULL DEFAULT ${NOW}
     )`,
+    `CREATE TABLE IF NOT EXISTS validation_requests (
+      ${ID},
+      user_id INTEGER NOT NULL,
+      reference TEXT NOT NULL,
+      property_title TEXT NOT NULL,
+      property_type TEXT NOT NULL,
+      address TEXT NOT NULL,
+      city TEXT NOT NULL,
+      state TEXT NOT NULL,
+      title_type TEXT,
+      notes TEXT,
+      status TEXT NOT NULL DEFAULT 'submitted',
+      admin_note TEXT,
+      stamped_at TEXT,
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS validation_files (
+      ${ID},
+      request_id INTEGER NOT NULL,
+      kind TEXT NOT NULL DEFAULT 'document',
+      doc_type TEXT,
+      file_name TEXT NOT NULL,
+      uploaded_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
+    `CREATE TABLE IF NOT EXISTS validation_events (
+      ${ID},
+      request_id INTEGER NOT NULL,
+      status TEXT NOT NULL,
+      note TEXT,
+      actor TEXT NOT NULL DEFAULT 'team',
+      created_at TEXT NOT NULL DEFAULT ${NOW}
+    )`,
   ];
   for (const t of tables) await d.run(t);
   // additive migrations (ignore "already exists")

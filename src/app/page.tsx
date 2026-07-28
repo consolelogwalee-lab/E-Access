@@ -33,6 +33,38 @@ const WHYS = [
   },
 ];
 
+type Post = {
+  id: number; title: string; category: string; video_url: string | null;
+  cover_image: string | null; created_at: string;
+};
+
+const PILLARS = [
+  {
+    kicker: "01 · Buy & Sell",
+    title: "Verified Property Marketplace",
+    body: "Browse land, apartments, duplexes and commercial property that has already passed document and developer checks. Save, compare, make offers and book inspections.",
+    image: "/photos/estate-street.jpg",
+    cta: "Browse listings",
+    href: "/#browse",
+  },
+  {
+    kicker: "02 · Protect Yourself",
+    title: "Property & Document Validation",
+    body: "Already own property, or about to pay for one? Upload the documents and our team, with legal partners, verifies the title and stamps it. No more buying wahala.",
+    image: "/photos/duplex-8.jpg",
+    cta: "Verify a property",
+    href: "/dashboard/validate",
+  },
+  {
+    kicker: "03 · Stay Sharp",
+    title: "News, Reels & Market Insights",
+    body: "Real estate news, videos, offers and opportunities from T-Prime and around the world, so every decision you make is an informed one.",
+    image: "/photos/apartment-6.jpg",
+    cta: "Open the Info Center",
+    href: "/news",
+  },
+];
+
 export default async function Home() {
   const browseListings = (await q(
     "SELECT * FROM listings WHERE status='active' ORDER BY verification_status = 'verified' DESC, created_at DESC LIMIT 100"
@@ -40,6 +72,9 @@ export default async function Home() {
   const featured = (await q(
     "SELECT * FROM listings WHERE status='active' ORDER BY featured DESC, saves DESC LIMIT 7"
   )) as unknown as (Listing & { estate_name: string | null })[];
+  const reels = (await q(
+    "SELECT id, title, category, video_url, cover_image, created_at FROM posts WHERE published = 1 ORDER BY video_url IS NULL, created_at DESC LIMIT 8"
+  )) as unknown as Post[];
 
   return (
     <main className="bg-white">
@@ -96,6 +131,38 @@ export default async function Home() {
               inspections supported, every transaction secured.
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ============ THREE PILLARS ============ */}
+      <section className="mx-auto max-w-[1280px] px-6 py-16 lg:px-20">
+        <Reveal>
+          <span className="text-sm font-extrabold uppercase tracking-[0.25em] text-[#E2A600]">One Platform</span>
+          <h2 className="display mt-3 max-w-[560px] text-[30px] leading-[1.2] text-neutral-950 md:text-[40px]">
+            Three Ways E-Access Works For You
+          </h2>
+        </Reveal>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {PILLARS.map((p, i) => (
+            <Reveal key={p.title} delay={i * 120} className="h-full">
+              <a href={p.href} className="group flex h-full flex-col overflow-hidden rounded-3xl border border-neutral-200 bg-white transition duration-300 hover:-translate-y-1.5 hover:border-[#E2A600]/50 hover:shadow-2xl hover:shadow-neutral-900/10">
+                <div className="relative overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={p.image} alt="" className="aspect-[400/230] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
+                  <span className="absolute left-4 top-4 rounded-full bg-neutral-950/70 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2A600] backdrop-blur">
+                    {p.kicker}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="text-[19px] font-semibold leading-6 text-neutral-900">{p.title}</h3>
+                  <p className="body-md mt-2.5 flex-1 text-neutral-500">{p.body}</p>
+                  <span className="btn-text mt-5 inline-flex items-center gap-1.5 text-neutral-900 transition group-hover:gap-3">
+                    {p.cta} <span aria-hidden>→</span>
+                  </span>
+                </div>
+              </a>
+            </Reveal>
+          ))}
         </div>
       </section>
 
@@ -160,6 +227,53 @@ export default async function Home() {
       <Reveal>
         <HowItWorks />
       </Reveal>
+
+      {/* ============ REELS & INSIGHTS ============ */}
+      {reels.length > 0 && (
+        <section id="reels" className="mx-auto max-w-[1280px] px-6 pb-20 lg:px-20">
+          <Reveal>
+            <div className="flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <span className="text-sm font-extrabold uppercase tracking-[0.25em] text-[#E2A600]">Reels & Insights</span>
+                <h2 className="display mt-3 max-w-[520px] text-[30px] leading-[1.2] text-neutral-950 md:text-[38px]">
+                  Real Estate, Explained
+                </h2>
+              </div>
+              <a href="/news" className="btn-text flex items-center gap-1.5 rounded-full border border-neutral-200 px-5 py-2.5 text-neutral-800 transition hover:border-neutral-400">
+                View all <span aria-hidden>→</span>
+              </a>
+            </div>
+          </Reveal>
+          <div className="scroll-thin mt-7 flex gap-4 overflow-x-auto pb-3">
+            {reels.map((r) => (
+              <a
+                key={r.id}
+                href={`/news/${r.id}`}
+                className="group relative h-[340px] w-[220px] shrink-0 overflow-hidden rounded-3xl bg-neutral-950"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`/photos/${r.cover_image ?? "estate-street.jpg"}`}
+                  alt=""
+                  className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.06] group-hover:opacity-100"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/80" />
+                {r.video_url && (
+                  <span className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 backdrop-blur transition group-hover:scale-110 group-hover:bg-[#E2A600]/90">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z" /></svg>
+                  </span>
+                )}
+                <span className="absolute left-3 top-3 rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white backdrop-blur">
+                  {r.category === "news" ? "News" : r.category === "offer" ? "Offer" : r.category === "opportunity" ? "Opportunity" : "Update"}
+                </span>
+                <span className="absolute inset-x-3 bottom-3 line-clamp-3 text-[14px] font-semibold leading-5 text-white">
+                  {r.title}
+                </span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <Reveal>
         <Featured listings={featured} />

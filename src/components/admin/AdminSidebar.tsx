@@ -13,6 +13,7 @@ const NAV = [
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Leads", href: "/admin/leads", icon: Inbox },
   { label: "Offers", href: "/admin/offers", icon: HandCoins },
+  { label: "Validations", href: "/admin/validations", icon: ShieldCheck },
   { label: "Verifications", href: "/admin/verifications", icon: FileCheck2 },
   { label: "Info Center", href: "/admin/posts", icon: Newspaper },
 ];

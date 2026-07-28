@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Widget6, MagicStick3, ChatLine, Chart, FolderWithFiles, DocumentAdd,
-  BellOff, Settings, SiderbarMinimalistic, AltArrowDown, WalletMoney, Notebook,
+  BellOff, Settings, SiderbarMinimalistic, AltArrowDown, WalletMoney, Notebook, ShieldCheck,
 } from "@solar-icons/react";
 import { LogOut, Plus, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -18,6 +18,7 @@ const MAIN = [
   { label: "Documents Vault", href: "/dashboard/documents", icon: FolderWithFiles },
   { label: "Inspections", href: "/dashboard/inspections", icon: DocumentAdd },
   { label: "Payment Plans", href: "/dashboard/payments", icon: WalletMoney },
+  { label: "Verify Property", href: "/dashboard/validate", icon: ShieldCheck },
 ];
 const SECONDARY = [
   { label: "News & Info", href: "/news", icon: Notebook, neverActive: true },
