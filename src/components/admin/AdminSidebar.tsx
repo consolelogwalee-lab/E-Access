@@ -59,7 +59,7 @@ export function AdminSidebar({ user }: { user: { full_name: string; email: strin
         <ShieldCheck size={14} /> Admin Panel
       </div>
 
-      <nav className="mt-6 flex-1">
+      <nav className="scroll-thin mt-6 min-h-0 flex-1 overflow-y-auto">
         <ul className="space-y-1">
           {NAV.map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
