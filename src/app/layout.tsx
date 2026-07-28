@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "E-Access | Real Land. Real Owners. Real Peace of Mind.",
   description:
-    "Access verified estates from trusted developers, complete with document validation, inspection support, and secure transaction guidance all in one platform.",
+    "A reliable hub for verified properties across Nigeria. Land. Property. Possibilities. Document validation, inspection support, and secure transaction guidance in one platform, by T-Prime Development.",
 };
 
 export default function RootLayout({

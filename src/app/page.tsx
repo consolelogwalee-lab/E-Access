@@ -40,7 +40,7 @@ type Post = {
 
 const PILLARS = [
   {
-    kicker: "01 . Buy & Sell",
+    kicker: "01 · Buy & Sell",
     title: "Verified Property Marketplace",
     body: "Browse land, apartments, duplexes and commercial property that has already passed document and developer checks. Save, compare, make offers and book inspections.",
     image: "/photos/estate-street.jpg",
@@ -48,7 +48,7 @@ const PILLARS = [
     href: "/#browse",
   },
   {
-    kicker: "02 . Protect Yourself",
+    kicker: "02 · Protect Your Property",
     title: "Property & Document Validation",
     body: "Already own property, or about to pay for one? Upload the documents and our team, with legal partners, verifies the title and stamps it. No more buying wahala.",
     image: "/photos/duplex-8.jpg",
@@ -56,7 +56,7 @@ const PILLARS = [
     href: "/dashboard/validate",
   },
   {
-    kicker: "03 . Stay Sharp",
+    kicker: "03 · Stay Ahead",
     title: "News, Reels & Market Insights",
     body: "Real estate news, videos, offers and opportunities from T-Prime and around the world, so every decision you make is an informed one.",
     image: "/photos/apartment-6.jpg",
@@ -152,6 +152,9 @@ export default async function Home() {
                   <span className="whitespace-nowrap text-[19px] font-semibold tracking-tight text-neutral-400">PalmField Realty</span>
                   <span className="whitespace-nowrap font-serif text-[18px] font-semibold italic text-neutral-400">Abuja Crest</span>
                   <span className="whitespace-nowrap text-[17px] font-extrabold tracking-[0.14em] text-neutral-400">ZARIA HEIGHTS</span>
+                  <span className="whitespace-nowrap text-[19px] font-bold tracking-tight text-neutral-500">T-Prime Development</span>
+                  <span className="whitespace-nowrap font-serif text-[19px] font-semibold text-neutral-400">Pearl Haven</span>
+                  <span className="whitespace-nowrap text-[18px] font-extrabold uppercase tracking-[0.1em] text-neutral-400">Triconna Real Estate</span>
                 </div>
               ))}
             </div>
@@ -174,7 +177,7 @@ export default async function Home() {
                 <div className="relative overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.image} alt="" className="aspect-[400/230] w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
-                  <span className="absolute left-4 top-4 rounded-full bg-[#1B1F4E] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white shadow-md shadow-black/20">
+                  <span className="absolute left-4 top-4 rounded-full bg-[#1B1F4E]/70 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E2A600] shadow-md shadow-black/20 backdrop-blur">
                     {p.kicker}
                   </span>
                 </div>
@@ -192,14 +195,9 @@ export default async function Home() {
       </section>
 
       {/* ============ DIVIDER ============ */}
-      <div className="mx-auto flex max-w-[1280px] items-center gap-5 px-6 pb-2 lg:px-20" aria-hidden="true">
-        <span className="h-px flex-1 bg-gradient-to-r from-transparent via-neutral-300 to-neutral-300" />
-        <span className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2A600]" />
-          <span className="h-2 w-2 rotate-45 border border-[#1B1F4E] bg-white" />
-          <span className="h-1.5 w-1.5 rotate-45 bg-[#E2A600]" />
-        </span>
-        <span className="h-px flex-1 bg-gradient-to-l from-transparent via-neutral-300 to-neutral-300" />
+      <div className="relative mx-auto max-w-[1280px] px-6 pb-10 pt-2 lg:px-20" aria-hidden="true">
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
+        <div className="absolute left-1/2 top-2 h-[3px] w-28 -translate-x-1/2 -translate-y-[1px] rounded-full bg-gradient-to-r from-[#1B1F4E] via-[#E2A600] to-[#1B1F4E] shadow-[0_0_14px_rgba(226,166,0,0.45)]" />
       </div>
 
       {/* ============ BROWSE ============ */}
@@ -390,7 +388,13 @@ export default async function Home() {
                 ].map(([label, d]) => (
                   <a
                     key={label}
-                    href="#"
+                    href={
+                      label === "Instagram" ? "https://www.instagram.com/tprime.dev/"
+                      : label === "YouTube" ? "https://youtube.com/@tprimedevelopment"
+                      : "#"
+                    }
+                    target={label === "Instagram" || label === "YouTube" ? "_blank" : undefined}
+                    rel={label === "Instagram" || label === "YouTube" ? "noreferrer" : undefined}
                     aria-label={label}
                     className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white/60 transition hover:border-white/40 hover:text-white"
                   >
@@ -401,7 +405,7 @@ export default async function Home() {
                 ))}
               </div>
               <div className="text-xs text-white/45">
-                Built for T-Prime Development • RC 000000
+                Built for T-Prime Development, Port Harcourt • Land. Property. Possibilities.
               </div>
               <div className="text-xs text-white/45">© 2026 E-Access. All rights reserved.</div>
             </div>
