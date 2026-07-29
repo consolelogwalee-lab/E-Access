@@ -12,6 +12,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   if (!listing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   await run("UPDATE listings SET views = views + 1 WHERE id = $1", [Number(id)]);
   const documents = await q("SELECT * FROM listing_documents WHERE listing_id = $1", [Number(id)]);
+  const media = await q("SELECT * FROM listing_media WHERE listing_id = $1 ORDER BY position", [Number(id)]);
   const saved = user
     ? await q1("SELECT 1 AS s FROM saved_listings WHERE user_id = $1 AND listing_id = $2", [user.id, Number(id)])
     : null;
@@ -20,7 +21,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
      AND property_type = $2 ORDER BY ABS(price - $3) LIMIT 3`,
     [Number(id), listing.property_type, listing.price]
   );
-  return NextResponse.json({ listing, documents, similar, saved: !!saved });
+  return NextResponse.json({ listing, documents, media, similar, saved: !!saved });
 }
 
 export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {

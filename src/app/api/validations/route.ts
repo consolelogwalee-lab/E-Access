@@ -19,7 +19,7 @@ export async function POST(req: Request) {
   const b = await req.json();
   if (!b.propertyTitle || !b.propertyType || !b.address || !b.city || !b.state)
     return NextResponse.json({ error: "Property name, type, address, city and state are required." }, { status: 400 });
-  const docs: { docType: string; fileName: string }[] = Array.isArray(b.documents) ? b.documents : [];
+  const docs: { docType: string; fileName: string; storagePath?: string | null }[] = Array.isArray(b.documents) ? b.documents : [];
   if (!docs.length)
     return NextResponse.json({ error: "Attach at least one property document." }, { status: 400 });
 
@@ -35,12 +35,15 @@ export async function POST(req: Request) {
   );
   const id = Number(row!.id);
   for (const d of docs.slice(0, 12)) {
-    await run("INSERT INTO validation_files (request_id, kind, doc_type, file_name) VALUES ($1,'document',$2,$3)",
-      [id, String(d.docType ?? "Supporting Document").slice(0, 60), String(d.fileName).slice(0, 160)]);
+    await run("INSERT INTO validation_files (request_id, kind, doc_type, file_name, storage_path) VALUES ($1,'document',$2,$3,$4)",
+      [id, String(d.docType ?? "Supporting Document").slice(0, 60), String(d.fileName).slice(0, 160), d.storagePath ?? null]);
   }
   for (const p of (Array.isArray(b.photos) ? b.photos : []).slice(0, 12)) {
-    await run("INSERT INTO validation_files (request_id, kind, file_name) VALUES ($1,'photo',$2)",
-      [id, String(p).slice(0, 160)]);
+    const fileName = typeof p === "string" ? p : p?.fileName;
+    const storagePath = typeof p === "string" ? null : p?.storagePath ?? null;
+    if (!fileName) continue;
+    await run("INSERT INTO validation_files (request_id, kind, file_name, storage_path) VALUES ($1,'photo',$2,$3)",
+      [id, String(fileName).slice(0, 160), storagePath]);
   }
   await run("INSERT INTO validation_events (request_id, status, note, actor) VALUES ($1,'submitted',$2,'you')",
     [id, "Request submitted with documents for review."]);

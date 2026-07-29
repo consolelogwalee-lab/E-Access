@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "node:crypto";
 import bcrypt from "bcryptjs";
 import { q1, run } from "@/lib/db";
+import { sendResetLink } from "@/lib/email";
 
 export async function POST(req: Request) {
   const { email } = await req.json();
@@ -10,7 +11,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "No account found with that email." }, { status: 404 });
   const token = crypto.randomBytes(16).toString("hex");
   await run("UPDATE users SET reset_token = $1 WHERE id = $2", [token, user.id]);
-  return NextResponse.json({ ok: true, simulatedResetLink: `/auth/reset?token=${token}` });
+  const origin = new URL(req.url).origin;
+  const emailed = await sendResetLink(String(email).toLowerCase(), `${origin}/auth/reset?token=${token}`);
+  return NextResponse.json(emailed ? { ok: true, emailed: true } : { ok: true, simulatedResetLink: `/auth/reset?token=${token}` });
 }
 
 export async function PUT(req: Request) {

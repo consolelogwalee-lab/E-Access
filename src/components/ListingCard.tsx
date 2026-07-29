@@ -25,6 +25,7 @@ export type Listing = {
   documents_approved: number;
   image_seed: number;
   saved?: number;
+  cover_url?: string | null;
 };
 
 export function ListingCard({
@@ -95,7 +96,7 @@ export function ListingCard({
       <div className="relative overflow-hidden rounded-xl">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={listingImage(listing)}
+          src={listing.cover_url ?? listingImage(listing)}
           alt={listing.title}
           className="aspect-[292/200] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
         />

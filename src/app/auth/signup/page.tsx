@@ -29,7 +29,8 @@ function SignupInner() {
     const data = await res.json();
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Something went wrong.");
-    sessionStorage.setItem("eaccess_demo_code", data.simulatedEmailCode);
+    if (data.simulatedEmailCode) sessionStorage.setItem("eaccess_demo_code", data.simulatedEmailCode);
+    else sessionStorage.removeItem("eaccess_demo_code");
     const next = sp.get("next");
     router.push(`/auth/verify${next ? `?next=${encodeURIComponent(next)}` : ""}`);
   }

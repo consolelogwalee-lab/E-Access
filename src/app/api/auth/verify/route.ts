@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { q1, run } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { sendVerificationCode } from "@/lib/email";
 
 export async function POST(req: Request) {
   const user = await currentUser();
@@ -18,5 +19,6 @@ export async function PUT() {
   if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   const code = String(Math.floor(100000 + Math.random() * 900000));
   await run("UPDATE users SET verify_code = $1 WHERE id = $2", [code, user.id]);
-  return NextResponse.json({ ok: true, simulatedEmailCode: code });
+  const emailed = await sendVerificationCode(user.email, user.full_name, code);
+  return NextResponse.json(emailed ? { ok: true, emailed: true } : { ok: true, simulatedEmailCode: code });
 }

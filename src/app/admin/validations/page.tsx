@@ -8,7 +8,7 @@ type Req = {
   status: string; admin_note: string | null; created_at: string;
   owner_name: string; owner_email: string; doc_count: number | string; photo_count: number | string;
 };
-type File_ = { id: number; kind: string; doc_type: string | null; file_name: string };
+type File_ = { id: number; kind: string; doc_type: string | null; file_name: string; storage_path: string | null };
 type Event_ = { id: number; status: string; note: string | null; actor: string; created_at: string };
 
 const STATUS_META: Record<string, { label: string; cls: string }> = {
@@ -122,7 +122,10 @@ export default function AdminValidationsPage() {
                   {detail?.files.map((f) => (
                     <li key={f.id} className="flex items-center gap-2.5 rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-700">
                       {f.kind === "photo" ? <Camera size={15} className="shrink-0 text-neutral-400" /> : <FileText size={15} className="shrink-0 text-neutral-400" />}
-                      <span className="min-w-0 truncate">{f.doc_type ? `${f.doc_type}: ` : ""}{f.file_name}</span>
+                      <span className="min-w-0 flex-1 truncate">{f.doc_type ? `${f.doc_type}: ` : ""}{f.file_name}</span>
+                      {f.storage_path && (
+                        <a href={`/api/files?path=${encodeURIComponent(f.storage_path)}`} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-support-blue hover:underline">Open</a>
+                      )}
                     </li>
                   ))}
                 </ul>

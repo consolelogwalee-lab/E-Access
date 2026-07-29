@@ -8,6 +8,7 @@ export default function Forgot() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [link, setLink] = useState("");
+  const [emailed, setEmailed] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -23,7 +24,8 @@ export default function Forgot() {
     const data = await res.json();
     setBusy(false);
     if (!res.ok) return setError(data.error ?? "Something went wrong.");
-    setLink(data.simulatedResetLink);
+    if (data.emailed) setEmailed(true);
+    else setLink(data.simulatedResetLink);
   }
 
   return (
@@ -32,7 +34,14 @@ export default function Forgot() {
         title="Forgot Your Password?"
         sub="Enter the email linked to your account and we'll send you a link to reset your password."
       />
-      {link ? (
+      {emailed ? (
+        <div className="rounded-xl border border-lime-200 bg-lime-50 p-5 text-center">
+          <p className="body-md text-lime-700">
+            Check your inbox. We sent a password reset link to <span className="font-semibold">{email}</span>.
+          </p>
+          <p className="caption mt-2 text-neutral-400">It can take a minute. Check spam too.</p>
+        </div>
+      ) : link ? (
         <div className="rounded-xl border border-dashed border-lime-600/40 bg-lime-50 p-5 text-center">
           <p className="caption text-neutral-500">Demo mode: no real email is sent.</p>
           <p className="body-md mt-2 text-neutral-700">Your reset link:</p>

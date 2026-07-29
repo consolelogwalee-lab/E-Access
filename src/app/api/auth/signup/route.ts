@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { q1 } from "@/lib/db";
 import { createSession } from "@/lib/auth";
+import { sendVerificationCode } from "@/lib/email";
 
 export async function POST(req: Request) {
   const { fullName, email, password } = await req.json();
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
     [fullName, email.toLowerCase(), hash, code, colors[Math.floor(Math.random() * colors.length)]]
   );
   await createSession(Number(row!.id));
-  // Simulated email: return the code so the UI can display it (swap for a real provider in production)
-  return NextResponse.json({ ok: true, simulatedEmailCode: code });
+  // Real email when configured; otherwise the UI displays the code (demo mode)
+  const emailed = await sendVerificationCode(email.toLowerCase(), fullName, code);
+  return NextResponse.json(emailed ? { ok: true, emailed: true } : { ok: true, simulatedEmailCode: code });
 }

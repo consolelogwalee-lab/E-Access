@@ -52,7 +52,7 @@ function VerifyInner() {
   async function resend() {
     const res = await fetch("/api/auth/verify", { method: "PUT" });
     const data = await res.json();
-    if (res.ok) {
+    if (res.ok && data.simulatedEmailCode) {
       setDemoCode(data.simulatedEmailCode);
       sessionStorage.setItem("eaccess_demo_code", data.simulatedEmailCode);
     }

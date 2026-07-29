@@ -41,7 +41,7 @@ function Label({ children }: { children: React.ReactNode }) {
   return <span className="label-sm mb-2 block text-neutral-900">{children}</span>;
 }
 
-type FileMeta = { name: string; size: number; kind: "media" | "doc" };
+type FileMeta = { name: string; size: number; kind: "media" | "doc"; path?: string; url?: string | null; uploading?: boolean };
 
 export default function AddListingWizard() {
   const router = useRouter();
@@ -93,11 +93,29 @@ export default function AddListingWizard() {
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
   }
 
-  function addFiles(list: FileList | null, kind: "media" | "doc") {
+  async function addFiles(list: FileList | null, kind: "media" | "doc") {
     if (!list) return;
-    const metas = Array.from(list).map((f) => ({ name: f.name, size: f.size, kind }));
-    if (kind === "media") setMedia((m) => [...m, ...metas].slice(0, 12));
-    else setDocs((d) => [...d, ...metas].slice(0, 8));
+    const files = Array.from(list);
+    const setter = kind === "media" ? setMedia : setDocs;
+    const cap = kind === "media" ? 12 : 8;
+    // show immediately as uploading
+    setter((prev) => [...prev, ...files.map((f) => ({ name: f.name, size: f.size, kind, uploading: true }))].slice(0, cap));
+    for (const f of files) {
+      try {
+        const fd = new FormData();
+        fd.append("file", f);
+        fd.append("kind", kind === "media" ? "photo" : "document");
+        const res = await fetch("/api/upload", { method: "POST", body: fd });
+        const d = await res.json();
+        setter((prev) => prev.map((m) =>
+          m.name === f.name && m.uploading
+            ? { ...m, uploading: false, path: d.ok ? d.path : undefined, url: d.ok ? d.url : undefined }
+            : m
+        ));
+      } catch {
+        setter((prev) => prev.map((m) => (m.name === f.name && m.uploading ? { ...m, uploading: false } : m)));
+      }
+    }
   }
 
   async function submit() {
@@ -122,8 +140,9 @@ export default function AddListingWizard() {
         amenities: [...infra, ...amenities, ...(isLand ? [landCategory, topography, estateStatus, roadAccess, suitableFor] : [furnishing, floorLevel, occupancy])].filter(Boolean),
         documents: [
           ...titleDocs.map((t) => ({ type: t, fileName: `${t.toLowerCase().replace(/[^a-z]+/g, "_")}.pdf` })),
-          ...docs.map((d) => ({ type: "Supporting Document", fileName: d.name })),
+          ...docs.map((d) => ({ type: "Supporting Document", fileName: d.name, storagePath: d.path ?? null })),
         ],
+        photos: media.filter((m) => m.url).map((m) => m.url),
       }),
     });
     const data = await res.json();

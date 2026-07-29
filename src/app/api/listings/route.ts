@@ -104,7 +104,9 @@ export async function GET(req: Request) {
   params.push(perPage, (page - 1) * perPage);
 
   const listings = await q(
-    `SELECT l.*, ${savedSel} FROM listings l WHERE ${where.join(" AND ")}
+    `SELECT l.*, ${savedSel},
+       (SELECT m.url FROM listing_media m WHERE m.listing_id = l.id AND m.kind = 'photo' ORDER BY m.position LIMIT 1) AS cover_url
+     FROM listings l WHERE ${where.join(" AND ")}
      ORDER BY ${sort} LIMIT $${limitN} OFFSET $${limitN + 1}`,
     params
   );
@@ -135,9 +137,13 @@ export async function POST(req: Request) {
   const id = Number(row!.id);
   for (const doc of b.documents ?? []) {
     await run(
-      "INSERT INTO listing_documents (listing_id, doc_type, file_name, status) VALUES ($1,$2,$3,'under_review')",
-      [id, doc.type, doc.fileName]
+      "INSERT INTO listing_documents (listing_id, doc_type, file_name, status, storage_path) VALUES ($1,$2,$3,'under_review',$4)",
+      [id, doc.type, doc.fileName, doc.storagePath ?? null]
     );
+  }
+  const photos: string[] = Array.isArray(b.photos) ? b.photos.filter((p: unknown) => typeof p === "string" && String(p).startsWith("http")).slice(0, 12) : [];
+  for (let i = 0; i < photos.length; i++) {
+    await run("INSERT INTO listing_media (listing_id, kind, url, position) VALUES ($1,'photo',$2,$3)", [id, photos[i], i]);
   }
   if (!b.draft) {
     await alertSavedSearches({

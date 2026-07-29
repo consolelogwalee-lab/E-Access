@@ -32,8 +32,20 @@ export default function ValidatePage() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ propertyTitle: "", propertyType: "land", address: "", city: "", state: "Lagos", titleType: TITLE_TYPES[0], notes: "" });
-  const [docs, setDocs] = useState<{ docType: string; fileName: string }[]>([]);
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [docs, setDocs] = useState<{ docType: string; fileName: string; storagePath?: string | null; uploading?: boolean }[]>([]);
+  const [photos, setPhotos] = useState<{ fileName: string; storagePath?: string | null }[]>([]);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
+
+  async function uploadOne(f: File): Promise<string | null> {
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("kind", "document");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const d = await res.json();
+      return d.ok ? d.path : null;
+    } catch { return null; }
+  }
   const [docType, setDocType] = useState(DOC_TYPES[0]);
   const [err, setErr] = useState("");
   const [done, setDone] = useState<null | { reference: string; id: number }>(null);
@@ -209,17 +221,24 @@ export default function ValidatePage() {
                       <button onClick={() => docInput.current?.click()} className="btn-text flex h-[46px] items-center gap-2 rounded-xl border border-neutral-300 px-4 text-neutral-800 hover:bg-neutral-50">
                         <FileText size={15} /> Attach
                       </button>
-                      <input ref={docInput} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={(e) => {
+                      <input ref={docInput} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={async (e) => {
                         const f = e.target.files?.[0];
-                        if (f) setDocs((d) => [...d, { docType, fileName: f.name }]);
                         e.target.value = "";
+                        if (!f) return;
+                        const entry = { docType, fileName: f.name, uploading: true };
+                        setDocs((d) => [...d, entry]);
+                        const path = await uploadOne(f);
+                        setDocs((d) => d.map((x) => (x === entry || (x.fileName === f.name && x.uploading) ? { ...x, uploading: false, storagePath: path } : x)));
                       }} />
                     </div>
                     {docs.length > 0 && (
                       <ul className="mt-3 space-y-1.5">
                         {docs.map((d, i) => (
                           <li key={i} className="flex items-center justify-between rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm">
-                            <span className="min-w-0 truncate text-neutral-700"><span className="font-medium">{d.docType}:</span> {d.fileName}</span>
+                            <span className="min-w-0 truncate text-neutral-700">
+                              <span className="font-medium">{d.docType}:</span> {d.fileName}
+                              {d.uploading ? <span className="ml-2 text-xs text-amber-600">uploading…</span> : d.storagePath ? <span className="ml-2 text-xs text-lime-600">uploaded</span> : null}
+                            </span>
                             <button onClick={() => setDocs(docs.filter((_, j) => j !== i))} aria-label="Remove document" className="ml-2 text-neutral-400 hover:text-red-500"><Trash2 size={14} /></button>
                           </li>
                         ))}
@@ -229,13 +248,22 @@ export default function ValidatePage() {
                     <button onClick={() => photoInput.current?.click()} className="btn-text mt-4 flex h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-dashed border-neutral-300 text-neutral-600 hover:bg-neutral-50">
                       <ImagePlus size={15} /> Add property photos (optional)
                     </button>
-                    <input ref={photoInput} type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
-                      const names = Array.from(e.target.files ?? []).map((f) => f.name);
-                      if (names.length) setPhotos((p) => [...p, ...names]);
+                    <input ref={photoInput} type="file" accept="image/*" multiple className="hidden" onChange={async (e) => {
+                      const files = Array.from(e.target.files ?? []);
                       e.target.value = "";
+                      if (!files.length) return;
+                      setUploadingPhotos(true);
+                      for (const f of files) {
+                        const path = await uploadOne(f);
+                        setPhotos((p) => [...p, { fileName: f.name, storagePath: path }]);
+                      }
+                      setUploadingPhotos(false);
                     }} />
-                    {photos.length > 0 && (
-                      <p className="mt-2 text-xs text-neutral-500">{photos.length} photo{photos.length === 1 ? "" : "s"} attached: {photos.join(", ")}</p>
+                    {(photos.length > 0 || uploadingPhotos) && (
+                      <p className="mt-2 text-xs text-neutral-500">
+                        {photos.length} photo{photos.length === 1 ? "" : "s"} attached: {photos.map((p) => p.fileName).join(", ")}
+                        {uploadingPhotos ? " (uploading…)" : ""}
+                      </p>
                     )}
 
                     {err && <p className="mt-3 text-sm text-red-600">{err}</p>}

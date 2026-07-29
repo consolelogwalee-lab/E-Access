@@ -20,7 +20,7 @@ type Full = Listing & {
 
 export default function PropertyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const [data, setData] = useState<{ listing: Full; documents: Doc[]; similar: Listing[]; saved: boolean } | null>(null);
+  const [data, setData] = useState<{ listing: Full; documents: Doc[]; media?: { url: string }[]; similar: Listing[]; saved: boolean } | null>(null);
   const [book, setBook] = useState(false);
   const [saved, setSaved] = useState(false);
   const [inqOpen, setInqOpen] = useState(false);
@@ -136,12 +136,14 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
         <div className="relative overflow-hidden rounded-2xl">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={listingImage(L)}
+            src={data.media?.[0]?.url ?? listingImage(L)}
             alt={L.title}
             className="h-[320px] w-full object-cover md:h-[512px]"
           />
           <div className="absolute right-3 top-3 flex items-center gap-2">
-            <span className="rounded-full bg-neutral-950/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">12 Photos</span>
+            <span className="rounded-full bg-neutral-950/60 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
+              {data.media?.length ? `${data.media.length} Photo${data.media.length === 1 ? "" : "s"}` : "12 Photos"}
+            </span>
             {L.verification_status === "verified" && (
               <span className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800">
                 <BadgeCheck size={13} className="text-lime-600" /> Verified Listing
@@ -154,7 +156,7 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
               key={k}
-              src={listingImage(L, k)}
+              src={data.media?.[k]?.url ?? listingImage(L, k)}
               alt=""
               className="h-[165px] w-full rounded-xl object-cover"
             />

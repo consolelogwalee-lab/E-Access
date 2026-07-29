@@ -10,7 +10,7 @@ type Req = {
   address: string; city: string; state: string; title_type: string | null; notes: string | null;
   status: string; admin_note: string | null; stamped_at: string | null; created_at: string;
 };
-type File_ = { id: number; kind: string; doc_type: string | null; file_name: string };
+type File_ = { id: number; kind: string; doc_type: string | null; file_name: string; storage_path: string | null };
 type Event_ = { id: number; status: string; note: string | null; actor: string; created_at: string };
 
 const STATUS_META: Record<string, { label: string; cls: string; dot: string }> = {
@@ -132,7 +132,10 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
               {docs.map((f) => (
                 <li key={f.id} className="flex items-center gap-2.5 rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-700">
                   <FileText size={15} className="shrink-0 text-neutral-400" />
-                  <span className="min-w-0 truncate"><span className="font-medium">{f.doc_type}:</span> {f.file_name}</span>
+                  <span className="min-w-0 flex-1 truncate"><span className="font-medium">{f.doc_type}:</span> {f.file_name}</span>
+                  {f.storage_path && (
+                    <a href={`/api/files?path=${encodeURIComponent(f.storage_path)}`} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-support-blue hover:underline">View</a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -143,7 +146,10 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
                   {photos.map((f) => (
                     <li key={f.id} className="flex items-center gap-2.5 rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-700">
                       <Camera size={15} className="shrink-0 text-neutral-400" />
-                      <span className="min-w-0 truncate">{f.file_name}</span>
+                      <span className="min-w-0 flex-1 truncate">{f.file_name}</span>
+                      {f.storage_path && (
+                        <a href={`/api/files?path=${encodeURIComponent(f.storage_path)}`} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-support-blue hover:underline">View</a>
+                      )}
                     </li>
                   ))}
                 </ul>

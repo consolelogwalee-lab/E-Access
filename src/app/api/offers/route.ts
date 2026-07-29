@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { q, q1, run } from "@/lib/db";
 import { currentUser, requireAdmin } from "@/lib/auth";
 import { notify } from "@/lib/notify";
+import { sendNotice } from "@/lib/email";
 
 export async function GET() {
   const admin = await requireAdmin();
@@ -78,6 +79,14 @@ export async function PATCH(req: Request) {
     if (listing?.owner_id) {
       await notify(Number(listing.owner_id), "success", "Offer accepted, transaction opened",
         `A transaction has been opened for ${listing.title}. Track its progress with the buyer.`, "/dashboard/transactions");
+    }
+  }
+  if (status === "accepted") {
+    const buyer = await q1<{ email: string }>("SELECT email FROM users WHERE id = $1", [Number(offer.user_id)]);
+    if (buyer?.email && !buyer.email.endsWith("@eaccess.demo")) {
+      await sendNotice(buyer.email, "Your offer was accepted",
+        `Great news: your offer on ${listing?.title ?? "the property"} has been accepted. A transaction has been opened and the E-Access team will guide the next steps.`,
+        "View your transaction", `${new URL(req.url).origin}/dashboard/transactions`);
     }
   }
   await notify(

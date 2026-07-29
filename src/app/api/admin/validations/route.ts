@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { q, q1, run } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { notify } from "@/lib/notify";
+import { sendNotice } from "@/lib/email";
 
 const FLOW: Record<string, string> = {
   in_review: "Review started by the verification team.",
@@ -47,6 +48,14 @@ export async function PATCH(req: Request) {
   }
   await run("INSERT INTO validation_events (request_id, status, note, actor) VALUES ($1,$2,$3,'team')",
     [id, status, note ?? FLOW[status]]);
+  if (status === "approved") {
+    const owner = await q1<{ email: string }>("SELECT email FROM users WHERE id = $1", [Number(v.user_id)]);
+    if (owner?.email && !owner.email.endsWith("@eaccess.demo")) {
+      await sendNotice(owner.email, `${v.reference} approved and stamped`,
+        "Your property passed document, title and registry checks. Your Certificate of Verification is ready.",
+        "View your certificate", `${new URL(req.url).origin}/dashboard/validate/${id}`);
+    }
+  }
   await notify(
     Number(v.user_id),
     status === "approved" ? "success" : "verification",
