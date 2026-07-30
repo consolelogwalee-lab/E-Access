@@ -145,7 +145,7 @@ export default async function Home() {
           <p className="w-full shrink-0 text-center text-[15px] font-semibold text-neutral-700 md:w-[240px] md:text-left">
             Trusted by 1,000+ realtors, developers and agents in Nigeria
           </p>
-          <div className="marquee-mask min-w-0 flex-1 overflow-hidden">
+          <div className="marquee-mask w-full min-w-0 flex-1 overflow-hidden md:w-auto">
             <div className="marquee-track flex w-max items-center gap-14 pr-14">
               {[0, 1].map((dup) => (
                 <div key={dup} className="flex items-center gap-14" aria-hidden={dup === 1}>
@@ -374,8 +374,8 @@ export default async function Home() {
             <div>
               <div className="text-xs font-bold uppercase tracking-[0.22em] text-[#E2A600]">Contact / Legal</div>
               <ul className="mt-6 space-y-4 text-[15px]">
-                <li><a href="#" className="text-white/75 transition hover:text-white">Privacy Policy</a></li>
-                <li><a href="#" className="text-white/75 transition hover:text-white">Terms of Use</a></li>
+                <li><a href="/legal/privacy" className="text-white/75 transition hover:text-white">Privacy Policy</a></li>
+                <li><a href="/legal/terms" className="text-white/75 transition hover:text-white">Terms of Use</a></li>
                 <li><a href="mailto:hello.eaccess@gmail.com" className="text-white/75 underline decoration-white/25 underline-offset-4 transition hover:text-white hover:decoration-[#E2A600]">hello.eaccess@gmail.com</a></li>
                 <li><a href="tel:+2340000001111" className="text-white/75 underline decoration-white/25 underline-offset-4 transition hover:text-white hover:decoration-[#E2A600]">+234 000 000 1111</a></li>
               </ul>
