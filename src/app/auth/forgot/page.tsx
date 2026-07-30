@@ -42,11 +42,10 @@ export default function Forgot() {
           <p className="caption mt-2 text-neutral-400">It can take a minute. Check spam too.</p>
         </div>
       ) : link ? (
-        <div className="rounded-xl border border-dashed border-lime-600/40 bg-lime-50 p-5 text-center">
-          <p className="caption text-neutral-500">Demo mode: no real email is sent.</p>
-          <p className="body-md mt-2 text-neutral-700">Your reset link:</p>
-          <Link href={link} className="mt-1 inline-block break-all text-sm font-semibold text-support-blue underline">
-            Open reset link →
+        <div className="rounded-xl border border-neutral-200 bg-neutral-50 p-5 text-center">
+          <p className="caption text-neutral-500">We couldn&apos;t reach your inbox right now. Use this secure link instead:</p>
+          <Link href={link} className="mt-2 inline-block break-all text-sm font-semibold text-support-blue underline">
+            Reset my password →
           </Link>
         </div>
       ) : (

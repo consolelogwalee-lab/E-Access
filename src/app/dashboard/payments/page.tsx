@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { CalendarClock, Plus, Trash2, Wallet, X } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
+import { appConfirm } from "@/components/Ui";
 import { naira } from "@/lib/format";
 import { listingImage } from "@/lib/images";
 
@@ -76,7 +77,7 @@ export default function PaymentsPage() {
   }
 
   async function removePlan(id: number) {
-    if (!confirm("Remove this payment plan and its history?")) return;
+    if (!(await appConfirm("Remove this payment plan and its history?", "Remove plan"))) return;
     await fetch(`/api/installments/${id}`, { method: "DELETE" });
     load();
   }

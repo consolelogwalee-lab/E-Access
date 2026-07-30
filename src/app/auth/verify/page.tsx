@@ -81,11 +81,9 @@ function VerifyInner() {
       </div>
       {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
       {demoCode && (
-        <div className="mx-auto mt-8 max-w-[340px] rounded-xl border border-dashed border-lime-600/40 bg-lime-50 p-4 text-center">
-          <p className="caption text-neutral-500">Demo mode: no real email is sent.</p>
-          <p className="mt-1 text-sm text-neutral-700">
-            Your verification code is <span className="text-lg font-bold tracking-widest text-lime-600">{demoCode}</span>
-          </p>
+        <div className="mx-auto mt-8 max-w-[340px] rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-center">
+          <p className="caption text-neutral-500">We couldn&apos;t reach your inbox right now, so here is your code:</p>
+          <p className="mt-1 text-lg font-bold tracking-widest text-neutral-800">{demoCode}</p>
         </div>
       )}
       <p className="mt-6 text-center text-sm text-neutral-500">

@@ -351,6 +351,7 @@ async function migrate() {
   // additive migrations (ignore "already exists")
   try { await d.run("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'user'"); } catch { /* exists */ }
   try { await d.run("ALTER TABLE validation_files ADD COLUMN storage_path TEXT"); } catch { /* exists */ }
+  try { await d.run("ALTER TABLE users ADD COLUMN oauth_provider TEXT"); } catch { /* exists */ }
   try { await d.run("ALTER TABLE listing_documents ADD COLUMN storage_path TEXT"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");

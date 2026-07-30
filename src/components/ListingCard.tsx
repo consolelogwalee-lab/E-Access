@@ -7,6 +7,7 @@ import { naira } from "@/lib/format";
 import { addToCart, inCart, removeFromCart, CART_EVENT } from "@/lib/cart";
 import { listingImage } from "@/lib/images";
 import { getCompare, toggleCompare, COMPARE_EVENT } from "@/lib/compare";
+import { toast } from "@/components/Ui";
 
 export type Listing = {
   id: number;
@@ -64,7 +65,7 @@ export function ListingCard({
     e.preventDefault();
     e.stopPropagation();
     const r = toggleCompare(listing.id);
-    if (r.full) alert("You can compare up to 3 properties at a time. Remove one first.");
+    if (r.full) toast("You can compare up to 3 properties at a time. Remove one first.", "warn");
   }
 
   function toggleCart(e: React.MouseEvent) {

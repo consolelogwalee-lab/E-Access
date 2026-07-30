@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { AuthShell, AuthHeading, Field, inputCls } from "@/components/auth/AuthShell";
+import { SocialButtons } from "@/components/auth/SocialButtons";
 
 function LoginInner() {
   const router = useRouter();
@@ -72,10 +73,8 @@ function LoginInner() {
         >
           {busy ? "Logging in…" : "Log In"} <ArrowRight size={16} />
         </button>
-        <p className="pt-2 text-center text-xs text-neutral-400">
-          Demo account: <span className="font-mono">wale@eaccess.demo</span> / <span className="font-mono">password123</span>
-        </p>
       </form>
+      <SocialButtons className="mt-6" />
     </AuthShell>
   );
 }

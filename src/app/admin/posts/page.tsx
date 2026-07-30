@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { Newspaper, Pencil, Plus, Trash2, Video, X } from "lucide-react";
+import { appConfirm } from "@/components/Ui";
 
 type Post = {
   id: number; title: string; category: string; body: string;
@@ -46,7 +47,7 @@ export default function AdminPostsPage() {
   }
 
   async function remove(id: number) {
-    if (!confirm("Delete this post? This cannot be undone.")) return;
+    if (!(await appConfirm("Delete this post? This cannot be undone.", "Delete post"))) return;
     await fetch(`/api/posts/${id}`, { method: "DELETE" });
     load();
   }

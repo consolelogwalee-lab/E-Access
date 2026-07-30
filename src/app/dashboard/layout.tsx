@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { currentUser } from "@/lib/auth";
 import { Sidebar } from "@/components/dashboard/Sidebar";
 import { CompareBar } from "@/components/dashboard/CompareBar";
+import { Tour } from "@/components/dashboard/Tour";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <div className="min-h-[calc(100vh-16px)] rounded-2xl p-4 md:p-6">{children}</div>
       </div>
       <CompareBar />
+      <Tour />
     </div>
   );
 }

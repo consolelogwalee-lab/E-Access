@@ -140,6 +140,13 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
         <ul className="mt-2.5 space-y-1">
           {SECONDARY.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
+        <button
+          onClick={() => window.dispatchEvent(new Event("eaccess-tour-open"))}
+          className="mt-4 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-medium text-white/45 transition hover:bg-white/[0.04] hover:text-white/80"
+        >
+          <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/25 text-[10px] font-bold">?</span>
+          How E-Access works
+        </button>
         {user.role === "admin" && (
           <Link
             href="/admin"
