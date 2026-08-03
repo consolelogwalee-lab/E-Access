@@ -13,6 +13,7 @@ import bcrypt from "bcryptjs";
 import { DatabaseSync } from "node:sqlite";
 import path from "node:path";
 import fs from "node:fs";
+import { randomBytes } from "node:crypto";
 import { Pool } from "pg";
 
 export function nowIso(): string {
@@ -89,7 +90,7 @@ function driver(): Driver {
 
 async function ensureReady(): Promise<void> {
   if (!_ready) {
-    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin).then(seedExtras);
+    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin).then(seedExtras).then(lockDownDemoLogins);
     // Don't cache failures — allow retry on the next request (e.g. transient DB outage at boot)
     _ready.catch(() => { _ready = null; });
   }
@@ -225,6 +226,12 @@ async function migrate() {
       body TEXT NOT NULL,
       created_at TEXT NOT NULL DEFAULT ${NOW}
     )`,
+    `CREATE TABLE IF NOT EXISTS thread_reads (
+      thread_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      last_read_id INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (thread_id, user_id)
+    )`,
     `CREATE TABLE IF NOT EXISTS posts (
       ${ID},
       title TEXT NOT NULL,
@@ -353,10 +360,17 @@ async function migrate() {
   try { await d.run("ALTER TABLE validation_files ADD COLUMN storage_path TEXT"); } catch { /* exists */ }
   try { await d.run("ALTER TABLE users ADD COLUMN oauth_provider TEXT"); } catch { /* exists */ }
   try { await d.run("ALTER TABLE listing_documents ADD COLUMN storage_path TEXT"); } catch { /* exists */ }
+  // real user-to-user messaging: a thread is a conversation between user_id (creator)
+  // and peer_id (the other real user); listing_id is optional context. Legacy demo
+  // threads have peer_id NULL and are simply never listed as real conversations.
+  try { await d.run("ALTER TABLE threads ADD COLUMN peer_id INTEGER"); } catch { /* exists */ }
+  try { await d.run("ALTER TABLE threads ADD COLUMN listing_id INTEGER"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
   // Wale's account gets admin so the Admin Panel link is visible in the sidebar
   await d.run("UPDATE users SET role = 'admin' WHERE email = 'wale@eaccess.demo'");
+  // Wale's real account is admin too, so he never depends on a demo login for admin access
+  await d.run("UPDATE users SET role = 'admin' WHERE email = 'console.log.walee@gmail.com'");
 }
 
 async function ensureAdmin() {
@@ -367,6 +381,32 @@ async function ensureAdmin() {
       "INSERT INTO users (full_name, email, password_hash, email_verified, avatar_color, role) VALUES ($1,$2,$3,1,$4,'admin')",
       ["E-Access Admin", "admin@eaccess.demo", bcrypt.hashSync("password123", 10), "#B45309"]
     );
+  }
+}
+
+/**
+ * Close the seeded-account backdoor. The demo/seed accounts ship with the
+ * well-known password "password123"; on a public site that is an open door,
+ * especially for the two admin accounts. Any account STILL using that password
+ * gets its hash replaced with a random, unguessable one — login by that
+ * password stops working while the account stays intact as the owner of its
+ * seeded listings/reviews. Accounts whose password has since been changed are
+ * left untouched. Real admin access is via the genuine account
+ * (console.log.walee@gmail.com), reachable through Google sign-in or reset.
+ */
+async function lockDownDemoLogins() {
+  const d = driver();
+  const seedEmails = ["admin@eaccess.demo", "wale@eaccess.demo", "buyer@eaccess.demo"];
+  for (const email of seedEmails) {
+    const rows = await d.q("SELECT id, password_hash FROM users WHERE email = $1", [email]);
+    const row = rows[0] as { id: number; password_hash: string } | undefined;
+    if (!row) continue;
+    let stillDefault = false;
+    try { stillDefault = bcrypt.compareSync("password123", row.password_hash); } catch { /* ignore */ }
+    if (stillDefault) {
+      const randomSecret = bcrypt.hashSync(`${email}:${randomBytes(24).toString("hex")}`, 10);
+      await d.run("UPDATE users SET password_hash = $1 WHERE id = $2", [randomSecret, Number(row.id)]);
+    }
   }
 }
 

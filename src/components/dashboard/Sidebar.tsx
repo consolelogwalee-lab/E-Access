@@ -38,8 +38,20 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [unread, setUnread] = useState(0);
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      fetch("/api/messages/unread")
+        .then((r) => r.json())
+        .then((d) => { if (alive) setUnread(d.unread ?? 0); })
+        .catch(() => {});
+    load();
+    const t = setInterval(load, 25000);
+    return () => { alive = false; clearInterval(t); };
+  }, [pathname]);
   useEffect(() => {
     document.body.dataset.sidebar = collapsed ? "collapsed" : "open";
     return () => { delete document.body.dataset.sidebar; };
@@ -86,6 +98,11 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
             className={`transition-colors duration-200 ${active ? "text-white" : "text-white/50 group-hover:text-white/85"}`}
           />
           {item.label}
+          {item.label === "Messages" && unread > 0 && (
+            <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-support-blue px-1.5 text-[10px] font-bold text-white">
+              {unread > 99 ? "99+" : unread}
+            </span>
+          )}
         </Link>
       </li>
     );

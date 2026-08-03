@@ -308,9 +308,9 @@ export default function InspectionsPage() {
                 <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-lime-100">
                   <BadgeCheck size={30} className="text-lime-600" />
                 </span>
-                <p className="mt-4 text-base font-semibold text-neutral-900">{linked} Calendar connected</p>
+                <p className="mt-4 text-base font-semibold text-neutral-900">{linked} Calendar saved</p>
                 <p className="body-md mt-1 text-neutral-500">
-                  Confirmed inspections will sync to your calendar automatically, with reminders before each visit.
+                  You&apos;re on the list. As soon as calendar sync goes live, your confirmed inspections will appear here automatically.
                 </p>
                 <button
                   onClick={() => { localStorage.removeItem("eaccess_calendar"); setLinked(""); }}
@@ -338,7 +338,7 @@ export default function InspectionsPage() {
                   ))}
                 </div>
                 <p className="caption mt-4 text-center text-neutral-400">
-                  Demo mode: the connection is simulated until production credentials are added.
+                  Calendar sync is rolling out soon. We&apos;ll email you the moment it&apos;s live on your account.
                 </p>
               </>
             )}

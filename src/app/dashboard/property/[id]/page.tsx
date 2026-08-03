@@ -28,6 +28,7 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
   const [quickTime, setQuickTime] = useState("");
   const [inqMsg, setInqMsg] = useState("");
   const [inqSent, setInqSent] = useState(false);
+  const [inqThreadId, setInqThreadId] = useState<number | null>(null);
   const [offerOpen, setOfferOpen] = useState(false);
   const [offerAmount, setOfferAmount] = useState("");
   const [offerMsg, setOfferMsg] = useState("");
@@ -59,11 +60,13 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
 
   async function sendInquiry() {
     if (!inqMsg.trim()) return;
-    await fetch("/api/inquiries", {
+    const res = await fetch("/api/inquiries", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ listingId: L.id, message: inqMsg }),
     });
+    const d = await res.json().catch(() => ({}));
+    if (d?.threadId) setInqThreadId(Number(d.threadId));
     setInqSent(true);
   }
 
@@ -299,7 +302,15 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
           {inqOpen && (
             <div className="rounded-2xl border border-neutral-200 bg-white p-5">
               {inqSent ? (
-                <p className="body-md text-lime-600">Message sent. The consultant will reply in Messages.</p>
+                <div>
+                  <p className="body-md text-lime-600">Message sent. Continue the conversation in Messages.</p>
+                  <Link
+                    href={inqThreadId ? `/dashboard/messages?thread=${inqThreadId}` : "/dashboard/messages"}
+                    className="mt-2 inline-block text-sm font-semibold text-support-blue hover:underline"
+                  >
+                    Open Messages →
+                  </Link>
+                </div>
               ) : (
                 <>
                   <textarea

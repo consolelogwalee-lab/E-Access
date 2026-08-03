@@ -19,14 +19,19 @@ export default function DeveloperPage({ params }: { params: Promise<{ id: string
     fetch(`/api/developers/${id}`).then((r) => r.json()).then(setData);
   }, [id]);
 
+  const [msgBusy, setMsgBusy] = useState(false);
   async function message() {
-    if (!data) return;
+    if (!data || msgBusy) return;
+    setMsgBusy(true);
     const res = await fetch("/api/threads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ counterpartName: data.developer.full_name, role: "developer" }),
+      body: JSON.stringify({ peerId: data.developer.id }),
     });
-    if (res.ok) router.push("/dashboard/messages");
+    const d = await res.json().catch(() => ({}));
+    setMsgBusy(false);
+    if (res.ok && d.id) router.push(`/dashboard/messages?thread=${d.id}`);
+    else router.push("/dashboard/messages");
   }
 
   if (!data?.developer) {

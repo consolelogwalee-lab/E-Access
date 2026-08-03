@@ -73,7 +73,7 @@ export default function AddListingWizard() {
   const [amenities, setAmenities] = useState<string[]>([]);
   const [description, setDescription] = useState("");
 
-  // Steps 2/3 uploads (metadata only in demo)
+  // Steps 2/3 uploads — real files go to Supabase Storage via /api/upload
   const [media, setMedia] = useState<FileMeta[]>([]);
   const [docs, setDocs] = useState<FileMeta[]>([]);
   const mediaRef = useRef<HTMLInputElement>(null);

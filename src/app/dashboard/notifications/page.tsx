@@ -12,6 +12,7 @@ type Notif = {
 
 const ICONS: Record<string, typeof Bell> = {
   inquiry: MessageSquare,
+  message: MessageSquare,
   inspection: CalendarCheck2,
   verification: BadgeCheck,
   info: Bell,

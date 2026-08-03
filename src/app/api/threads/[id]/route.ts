@@ -1,36 +1,64 @@
 import { NextResponse } from "next/server";
-import { q, q1, run } from "@/lib/db";
+import { q1 } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
+import { participantThread, threadMessages, markRead, postMessage } from "@/lib/messaging";
 
-async function ownThread(id: number) {
-  const user = await currentUser();
-  if (!user) return null;
-  const thread = await q1("SELECT * FROM threads WHERE id = $1 AND user_id = $2", [id, user.id]);
-  return thread ? { user, thread } : null;
+// Counterpart display info for the open conversation.
+async function counterpart(threadUserId: number, threadPeerId: number | null, meId: number) {
+  const otherId = threadUserId === meId ? threadPeerId : threadUserId;
+  if (!otherId) return null;
+  return q1<{
+    id: number;
+    full_name: string;
+    role: string;
+    avatar_color: string;
+    verified: number;
+  }>(
+    `SELECT u.id, u.full_name, u.role, u.avatar_color,
+        CASE WHEN u.role IN ('agent','admin')
+             OR EXISTS (SELECT 1 FROM agents a WHERE a.user_id = u.id AND a.status = 'approved')
+             THEN 1 ELSE 0 END AS verified
+     FROM users u WHERE u.id = $1`,
+    [otherId]
+  );
 }
 
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
-  const own = await ownThread(Number(id));
-  if (!own) return NextResponse.json({ error: "Not found." }, { status: 404 });
-  const messages = await q("SELECT * FROM messages WHERE thread_id = $1 ORDER BY id ASC", [Number(id)]);
-  return NextResponse.json({ thread: own.thread, messages, meId: own.user.id });
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+
+  const thread = await participantThread(Number(id), user.id);
+  if (!thread) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  const messages = await threadMessages(Number(id));
+  await markRead(Number(id), user.id);
+  const peer = await counterpart(Number(thread.user_id), thread.peer_id, user.id);
+  const listing = thread.listing_id
+    ? await q1<{ title: string }>("SELECT title FROM listings WHERE id = $1", [thread.listing_id])
+    : null;
+
+  return NextResponse.json({
+    messages,
+    meId: user.id,
+    counterpart: peer,
+    listing_title: listing?.title ?? null,
+  });
 }
 
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
-  const own = await ownThread(Number(id));
-  if (!own) return NextResponse.json({ error: "Not found." }, { status: 404 });
-  const b = await req.json();
-  if (!b.body?.trim()) return NextResponse.json({ error: "Empty message." }, { status: 400 });
-  await run("INSERT INTO messages (thread_id, sender_id, body) VALUES ($1,$2,$3)", [Number(id), own.user.id, String(b.body)]);
-  const count = await q1<{ c: number | string }>(
-    "SELECT COUNT(*) AS c FROM messages WHERE thread_id = $1 AND sender_id = 0", [Number(id)]
-  );
-  const reply = Number(count?.c ?? 0) === 0 || Math.random() < 0.6
-    ? "Hello thanks for reaching out! I'll respond to you shortly as I'm not available at the moment"
-    : null;
-  if (reply) await run("INSERT INTO messages (thread_id, sender_id, body) VALUES ($1,0,$2)", [Number(id), reply]);
-  const messages = await q("SELECT * FROM messages WHERE thread_id = $1 ORDER BY id ASC", [Number(id)]);
-  return NextResponse.json({ ok: true, messages });
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+
+  const b = await req.json().catch(() => ({}));
+  const body = typeof b.body === "string" ? b.body.trim() : "";
+  if (!body) return NextResponse.json({ error: "Empty message." }, { status: 400 });
+
+  try {
+    const messages = await postMessage(Number(id), user.id, user.full_name, body);
+    return NextResponse.json({ ok: true, messages });
+  } catch {
+    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  }
 }
