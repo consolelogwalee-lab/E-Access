@@ -90,7 +90,7 @@ function driver(): Driver {
 
 async function ensureReady(): Promise<void> {
   if (!_ready) {
-    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin).then(seedExtras).then(lockDownDemoLogins);
+    _ready = migrate().then(seed).then(seedActivity).then(ensureAdmin).then(seedExtras).then(lockDownDemoLogins).then(reassignSeedListings);
     // Don't cache failures — allow retry on the next request (e.g. transient DB outage at boot)
     _ready.catch(() => { _ready = null; });
   }
@@ -408,6 +408,24 @@ async function lockDownDemoLogins() {
       await d.run("UPDATE users SET password_hash = $1 WHERE id = $2", [randomSecret, Number(row.id)]);
     }
   }
+}
+
+/**
+ * The sample listings are seeded under the demo developer persona
+ * (wale@eaccess.demo), whose login is now disabled. Hand them — and the seeded
+ * developer reviews — to the real account so inbound inquiries/messages about
+ * sample listings reach a mailbox someone actually reads. Idempotent: once
+ * moved, nothing is owned by the demo account, so re-runs are no-ops.
+ */
+async function reassignSeedListings() {
+  const d = driver();
+  const realRows = await d.q("SELECT id FROM users WHERE email = 'console.log.walee@gmail.com'");
+  const demoRows = await d.q("SELECT id FROM users WHERE email = 'wale@eaccess.demo'");
+  const realId = (realRows[0] as { id: number } | undefined)?.id;
+  const demoId = (demoRows[0] as { id: number } | undefined)?.id;
+  if (!realId || !demoId || Number(realId) === Number(demoId)) return;
+  await d.run("UPDATE listings SET owner_id = $1 WHERE owner_id = $2", [Number(realId), Number(demoId)]);
+  await d.run("UPDATE reviews SET developer_id = $1 WHERE developer_id = $2", [Number(realId), Number(demoId)]);
 }
 
 /* ------------------------------------ Seed ------------------------------------- */
