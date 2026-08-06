@@ -8,10 +8,12 @@ import { timeAgo } from "@/lib/format";
 
 type Thread = {
   id: number;
-  counterpart_id: number;
+  kind?: string;
+  counterpart_id: number | null;
   counterpart_name: string;
   counterpart_role: string;
   counterpart_color: string;
+  counterpart_url: string | null;
   verified: number;
   listing_id: number | null;
   listing_title: string | null;
@@ -21,7 +23,19 @@ type Thread = {
   unread: number;
 };
 type Msg = { id: number; thread_id: number; sender_id: number; body: string; created_at: string };
-type Counterpart = { id: number; full_name: string; role: string; avatar_color: string; verified: number };
+type Counterpart = { id: number | null; full_name: string; role: string; avatar_color: string; avatar_url: string | null; verified: number };
+
+function Avatar({ name, color, url, size = 36 }: { name: string; color: string; url?: string | null; size?: number }) {
+  if (url) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={url} alt="" className="shrink-0 rounded-full object-cover" style={{ width: size, height: size }} />;
+  }
+  return (
+    <span className="flex shrink-0 items-center justify-center rounded-full font-bold text-white" style={{ width: size, height: size, background: color, fontSize: size * 0.34 }}>
+      {name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+    </span>
+  );
+}
 
 const QUICK_CHIPS = [
   "Request property documents",
@@ -30,8 +44,6 @@ const QUICK_CHIPS = [
   "Inquire about infrastructure",
 ];
 
-const initials = (name: string) =>
-  name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 
 function roleLabel(role: string) {
   if (role === "agent") return "Agent";
@@ -200,12 +212,7 @@ function MessagesInner() {
                   onClick={() => setActiveId(t.id)}
                   className={`flex w-full items-center gap-3 px-1 py-3 text-left transition ${activeId === t.id ? "" : "hover:bg-white/70"}`}
                 >
-                  <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ background: t.counterpart_color || "#040315" }}
-                  >
-                    {initials(t.counterpart_name)}
-                  </span>
+                  <Avatar name={t.counterpart_name} color={t.counterpart_color || "#040315"} url={t.counterpart_url} size={36} />
                   <span className="min-w-0 flex-1">
                     <span
                       className={`block truncate text-sm font-semibold ${activeId === t.id ? "text-support-blue" : "text-neutral-900"}`}
@@ -255,12 +262,12 @@ function MessagesInner() {
             <>
               <div className="flex items-center justify-between border-b border-neutral-100 px-5 py-3.5">
                 <div className="flex items-center gap-3">
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ background: peer?.avatar_color || active.counterpart_color || "#040315" }}
-                  >
-                    {initials(peer?.full_name ?? active.counterpart_name)}
-                  </span>
+                  <Avatar
+                    name={peer?.full_name ?? active.counterpart_name}
+                    color={peer?.avatar_color || active.counterpart_color || "#040315"}
+                    url={peer?.avatar_url ?? active.counterpart_url}
+                    size={40}
+                  />
                   <div>
                     <div className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900">
                       {peer?.full_name ?? active.counterpart_name}

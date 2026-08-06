@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   if (owner?.owner_id && Number(owner.owner_id) !== user.id) {
     try {
       threadId = await getOrCreateThread(user.id, Number(owner.owner_id), Number(b.listingId));
-      await postMessage(threadId, user.id, user.full_name, message);
+      await postMessage(threadId, user.id, user.full_name, message, user.role === "admin");
     } catch {
       // fall back to just the notification if the thread can't be opened
       await notify(Number(owner.owner_id), "inquiry", "New inquiry received",

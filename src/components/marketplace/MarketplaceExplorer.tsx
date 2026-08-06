@@ -98,7 +98,7 @@ function Explorer({ authed, userName }: Props) {
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-neutral-100 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 py-3 lg:px-8">
-          <Link href="/"><LogoFull size={28} /></Link>
+          <Link href="/"><LogoFull light size={30} /></Link>
           <div className="hidden flex-1 items-center px-6 md:flex">
             <div className="relative w-full max-w-[520px]">
               <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" />
@@ -335,7 +335,7 @@ function Explorer({ authed, userName }: Props) {
         </section>
 
         <footer className="mt-12 border-t border-neutral-100 py-8 text-center">
-          <div className="flex justify-center"><LogoFull size={26} /></div>
+          <div className="flex justify-center"><LogoFull light size={26} /></div>
           <p className="mt-3 text-xs text-neutral-400">
             Land. Property. Possibilities. · <Link href="/legal/privacy" className="hover:underline">Privacy</Link> · <Link href="/legal/terms" className="hover:underline">Terms</Link>
           </p>

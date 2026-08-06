@@ -19,6 +19,10 @@ export async function PATCH(req: Request) {
     await run("UPDATE users SET full_name = $1 WHERE id = $2", [String(b.fullName).trim(), user.id]);
   }
 
+  if (typeof b.avatarUrl === "string") {
+    await run("UPDATE users SET avatar_url = $1 WHERE id = $2", [b.avatarUrl.trim() || null, user.id]);
+  }
+
   if (b.newPassword) {
     if (String(b.newPassword).length < 8)
       return NextResponse.json({ error: "New password must be at least 8 characters." }, { status: 400 });

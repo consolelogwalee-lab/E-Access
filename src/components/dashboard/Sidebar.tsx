@@ -32,7 +32,7 @@ const SECONDARY = [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Item = { label: string; href: string; icon: any; exact?: boolean; neverActive?: boolean };
 
-export function Sidebar({ user }: { user: { full_name: string; email: string; avatar_color: string; role?: string } }) {
+export function Sidebar({ user }: { user: { full_name: string; email: string; avatar_color: string; avatar_url?: string | null; role?: string } }) {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -193,12 +193,17 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
           </button>
         )}
         <button onClick={() => setMenuOpen((o) => !o)} className="flex w-full items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.03] px-2.5 py-2 text-left transition hover:border-white/[0.12] hover:bg-white/[0.06]">
-          <span
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white ring-2 ring-white/10"
-            style={{ background: user.avatar_color }}
-          >
-            {initials}
-          </span>
+          {user.avatar_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.avatar_url} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-white/10" />
+          ) : (
+            <span
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white ring-2 ring-white/10"
+              style={{ background: user.avatar_color }}
+            >
+              {initials}
+            </span>
+          )}
           <span className="min-w-0 flex-1">
             <span className="block truncate text-[13.5px] font-semibold text-white">{user.full_name}</span>
             <span className="block truncate text-[11.5px] text-white/35">{user.email}</span>

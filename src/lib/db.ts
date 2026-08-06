@@ -365,6 +365,11 @@ async function migrate() {
   // threads have peer_id NULL and are simply never listed as real conversations.
   try { await d.run("ALTER TABLE threads ADD COLUMN peer_id INTEGER"); } catch { /* exists */ }
   try { await d.run("ALTER TABLE threads ADD COLUMN listing_id INTEGER"); } catch { /* exists */ }
+  // 'consultant' threads are a shared queue: peer_id stays NULL until an admin
+  // replies and claims it. Any admin can see and answer unclaimed requests.
+  try { await d.run("ALTER TABLE threads ADD COLUMN kind TEXT NOT NULL DEFAULT 'direct'"); } catch { /* exists */ }
+  // profile photo (falls back to coloured initials when null)
+  try { await d.run("ALTER TABLE users ADD COLUMN avatar_url TEXT"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
   // Wale's account gets admin so the Admin Panel link is visible in the sidebar

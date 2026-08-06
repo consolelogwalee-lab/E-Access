@@ -5,5 +5,5 @@ import { totalUnread } from "@/lib/messaging";
 export async function GET() {
   const user = await currentUser();
   if (!user) return NextResponse.json({ unread: 0 });
-  return NextResponse.json({ unread: await totalUnread(user.id) });
+  return NextResponse.json({ unread: await totalUnread(user.id, user.role === "admin") });
 }

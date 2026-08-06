@@ -43,7 +43,7 @@ export function FloatingMenu({
       <div className="pop-up absolute inset-x-0 bottom-0 max-h-[82vh] overflow-y-auto rounded-t-3xl bg-white p-5 pb-8 shadow-2xl">
         <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-neutral-200" />
         <div className="mb-4 flex items-center justify-between">
-          <LogoFull size={26} />
+          <LogoFull light size={26} />
           <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100" aria-label="Close menu">
             <X size={16} />
           </button>

@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, Camera, Trash2 } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 
 const TYPES = ["land", "apartment", "duplex", "commercial"];
@@ -12,6 +12,9 @@ type Prefs = { purpose?: string; types?: string[]; budget?: string; locations?: 
 export default function SettingsPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarColor, setAvatarColor] = useState("#0D06A7");
+  const fileRef = useRef<HTMLInputElement>(null);
   const [prefs, setPrefs] = useState<Prefs>({});
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -23,6 +26,8 @@ export default function SettingsPage() {
       if (d.user) {
         setFullName(d.user.full_name);
         setEmail(d.user.email);
+        setAvatarUrl(d.user.avatar_url ?? null);
+        setAvatarColor(d.user.avatar_color ?? "#0D06A7");
         try { setPrefs(JSON.parse(d.user.preferences_json ?? "{}") ?? {}); } catch { /* ignore */ }
       }
     });
@@ -36,6 +41,31 @@ export default function SettingsPage() {
     });
     const d = await res.json();
     setMsg({ section: "profile", text: res.ok ? "Profile saved." : d.error, ok: res.ok });
+    setBusy("");
+  }
+
+  async function uploadAvatar(file: File) {
+    setBusy("avatar");
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("kind", "photo");
+    const up = await fetch("/api/upload", { method: "POST", body: fd });
+    const d = await up.json().catch(() => ({}));
+    if (!d.ok || !d.url) {
+      setMsg({ section: "profile", text: d.disabled ? "Photo storage isn't set up yet." : (d.error ?? "Upload failed."), ok: false });
+      setBusy("");
+      return;
+    }
+    await fetch("/api/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ avatarUrl: d.url }) });
+    setAvatarUrl(d.url);
+    setMsg({ section: "profile", text: "Photo updated.", ok: true });
+    setBusy("");
+  }
+  async function removeAvatar() {
+    setBusy("avatar");
+    await fetch("/api/me", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ avatarUrl: "" }) });
+    setAvatarUrl(null);
+    setMsg({ section: "profile", text: "Photo removed.", ok: true });
     setBusy("");
   }
 
@@ -83,6 +113,33 @@ export default function SettingsPage() {
         {/* Profile */}
         <div className="rounded-2xl border border-neutral-200 bg-white p-6">
           <h2 className="text-base font-semibold text-neutral-900">Profile</h2>
+
+          {/* Profile photo */}
+          <div className="mt-4 flex items-center gap-4">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="" className="h-16 w-16 rounded-full object-cover ring-2 ring-neutral-200" />
+            ) : (
+              <span className="flex h-16 w-16 items-center justify-center rounded-full text-lg font-bold text-white ring-2 ring-neutral-200" style={{ background: avatarColor }}>
+                {fullName.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase() || "EA"}
+              </span>
+            )}
+            <div>
+              <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={(e) => e.target.files?.[0] && uploadAvatar(e.target.files[0])} />
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => fileRef.current?.click()} disabled={busy === "avatar"} className="flex items-center gap-1.5 rounded-xl border border-neutral-200 px-3.5 py-2 text-sm font-semibold text-neutral-700 transition hover:bg-neutral-50 disabled:opacity-60">
+                  <Camera size={15} /> {busy === "avatar" ? "Uploading…" : avatarUrl ? "Change photo" : "Upload photo"}
+                </button>
+                {avatarUrl && (
+                  <button onClick={removeAvatar} disabled={busy === "avatar"} className="flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50">
+                    <Trash2 size={15} /> Remove
+                  </button>
+                )}
+              </div>
+              <p className="mt-1.5 text-xs text-neutral-400">JPG, PNG or WebP, up to 10MB. Otherwise your initials are used.</p>
+            </div>
+          </div>
+
           <label className="mt-4 block">
             <span className="caption mb-1.5 block text-neutral-500">Full Name</span>
             <input className={inputCls} value={fullName} onChange={(e) => setFullName(e.target.value)} />

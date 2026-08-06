@@ -9,6 +9,7 @@ export type SessionUser = {
   email_verified: number;
   preferences_json: string | null;
   avatar_color: string;
+  avatar_url: string | null;
   role: string;
 };
 
@@ -40,7 +41,7 @@ export async function currentUser(): Promise<SessionUser | null> {
   const token = jar.get(COOKIE)?.value;
   if (!token) return null;
   return q1<SessionUser>(
-    `SELECT u.id, u.full_name, u.email, u.email_verified, u.preferences_json, u.avatar_color, u.role
+    `SELECT u.id, u.full_name, u.email, u.email_verified, u.preferences_json, u.avatar_color, u.avatar_url, u.role
      FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.token = $1 AND s.expires_at > $2`,
     [token, nowIso()]

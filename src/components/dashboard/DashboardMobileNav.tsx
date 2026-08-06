@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { LogoFull } from "@/components/Logo";
 
-type User = { full_name: string; email: string; avatar_color: string; role?: string };
+type User = { full_name: string; email: string; avatar_color: string; role?: string; avatar_url?: string | null };
 
 const SECTIONS = [
   { label: "Verify Property", href: "/dashboard/validate", icon: ShieldIcon },
@@ -56,24 +56,29 @@ export function DashboardMobileNav({ user }: { user: User }) {
     router.push("/auth/login");
   }
 
-  const iconBtn = "flex h-10 w-10 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700 transition active:scale-95";
+  const iconBtn = "flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 active:scale-95";
 
   return (
     <>
       {/* ===== Top bar (Figma header) ===== */}
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-neutral-100 bg-white lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-30 border-b border-neutral-100 bg-white/95 backdrop-blur lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard"><LogoFull size={26} /></Link>
+          <Link href="/dashboard" className="shrink-0"><LogoFull light size={32} /></Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-10 w-10 overflow-hidden rounded-full">
-              <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white" style={{ background: user.avatar_color }}>
-                {initials}
-              </span>
+            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-neutral-200 transition active:scale-95">
+              {user.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white" style={{ background: user.avatar_color }}>
+                  {initials}
+                </span>
+              )}
             </button>
             <button onClick={() => window.dispatchEvent(new Event("eaccess-filters-open"))} aria-label="Filters" className={iconBtn}>
               <SlidersHorizontal size={18} />
             </button>
-            <Link href="/dashboard/notifications" aria-label="Notifications" className={iconBtn}>
+            <Link href="/dashboard/notifications" aria-label="Notifications" className={`${iconBtn} relative`}>
               <Bell size={18} />
             </Link>
           </div>
@@ -163,7 +168,12 @@ export function DashboardMobileNav({ user }: { user: User }) {
             <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-neutral-200" />
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: user.avatar_color }}>{initials}</span>
+                {user.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={user.avatar_url} alt="" className="h-11 w-11 rounded-full object-cover" />
+                ) : (
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: user.avatar_color }}>{initials}</span>
+                )}
                 <div className="min-w-0">
                   <div className="truncate text-sm font-semibold text-neutral-900">{user.full_name}</div>
                   <div className="truncate text-xs text-neutral-400">{user.email}</div>
