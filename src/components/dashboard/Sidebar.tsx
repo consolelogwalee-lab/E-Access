@@ -5,7 +5,7 @@ import {
   Widget6, MagicStick3, ChatLine, Chart, FolderWithFiles, DocumentAdd,
   BellOff, Settings, SiderbarMinimalistic, AltArrowDown, WalletMoney, Notebook, ShieldCheck,
 } from "@solar-icons/react";
-import { LogOut, Plus, Menu, X, Headphones } from "lucide-react";
+import { LogOut, Plus, Headphones } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
 
@@ -36,11 +36,9 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [unread, setUnread] = useState(0);
 
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
   useEffect(() => {
     let alive = true;
     const load = () =>
@@ -110,14 +108,7 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
 
   return (
     <>
-      {/* Mobile hamburger */}
-      <button
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
-        className="fixed left-4 top-4 z-40 flex h-10 w-10 items-center justify-center rounded-full bg-[#0b0b12] text-white shadow-lg lg:hidden"
-      >
-        <Menu size={18} />
-      </button>
+      {/* Desktop-only: collapsed reopen button (mobile uses the bottom navigation instead) */}
       {collapsed && (
         <button
           onClick={() => setCollapsed(false)}
@@ -127,24 +118,20 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
           <SiderbarMinimalistic size={17} weight="LineDuotone" />
         </button>
       )}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-40 bg-neutral-950/50 backdrop-blur-[2px] lg:hidden" onClick={() => setMobileOpen(false)} />
-      )}
     <aside
-      className={`fixed inset-y-2 left-2 z-50 flex w-[286px] flex-col rounded-2xl border border-white/[0.06] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 ${
-        mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
-      } ${collapsed ? "lg:-translate-x-[110%]" : "lg:translate-x-0"}`}
+      className={`fixed inset-y-2 left-2 z-50 hidden w-[286px] flex-col rounded-2xl border border-white/[0.06] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:flex ${
+        collapsed ? "lg:-translate-x-[110%]" : "lg:translate-x-0"
+      }`}
       style={{ background: "linear-gradient(175deg,#0d0d1a 0%,#08080f 55%,#070710 100%)" }}
     >
       <div className="flex items-center justify-between px-1.5 pt-1">
         <Link href="/"><LogoFull size={30} /></Link>
         <button
-          onClick={() => { setMobileOpen(false); setCollapsed(true); }}
+          onClick={() => setCollapsed(true)}
           className="text-white/30 transition hover:text-white/60"
           aria-label="Close sidebar"
         >
-          <span className="lg:hidden"><X size={18} /></span>
-          <span className="hidden lg:inline"><SiderbarMinimalistic size={18} weight="LineDuotone" /></span>
+          <SiderbarMinimalistic size={18} weight="LineDuotone" />
         </button>
       </div>
 
