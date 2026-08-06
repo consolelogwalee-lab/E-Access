@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="min-h-screen bg-neutral-100">
       <AdminSidebar user={{ full_name: admin.full_name, email: admin.email }} />
       <div className="min-h-screen p-2 lg:pl-[264px]">
-        <div className="min-h-[calc(100vh-16px)] p-4 md:p-6">{children}</div>
+        <div className="min-h-[calc(100vh-16px)] px-4 pb-4 pt-16 md:px-6 lg:p-6">{children}</div>
       </div>
     </div>
   );

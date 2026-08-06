@@ -190,3 +190,18 @@ body {
 /* keep content clear of the fixed mobile dock + bottom search bar */
 .dock-pad { padding-bottom: 150px; }
 @media (min-width: 768px) { .dock-pad { padding-bottom: 40px; } }
+
+/* --- global route loader: bouncing E-Access logo --- */
+@keyframes logoBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-18px) scale(1.05); }
+}
+@keyframes logoShadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.28; }
+  50% { transform: scaleX(0.66); opacity: 0.12; }
+}
+.logo-bounce { animation: logoBounce 0.72s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+.logo-shadow { animation: logoShadow 0.72s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .logo-bounce, .logo-shadow { animation: none; }
+}

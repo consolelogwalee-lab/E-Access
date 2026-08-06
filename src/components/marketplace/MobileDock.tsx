@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Menu, Home, Search, MessageSquare, Heart } from "lucide-react";
+import { Menu, Home, Search, MessageSquare, Headset } from "lucide-react";
 
 /**
  * Bottom navigation dock for mobile — search sits at the bottom (modern
@@ -39,9 +39,9 @@ export function MobileDock({
           <MessageSquare size={20} />
           Messages
         </Link>
-        <Link href={authed ? "/dashboard/saved" : "/auth/login?next=/dashboard/saved"} className={`${item} text-neutral-600`}>
-          <Heart size={20} />
-          Saved
+        <Link href={authed ? "/api/consultant/start" : "/auth/login?next=/api/consultant/start"} className={`${item} text-brand-900`}>
+          <Headset size={20} />
+          Consultant
         </Link>
       </div>
     </div>

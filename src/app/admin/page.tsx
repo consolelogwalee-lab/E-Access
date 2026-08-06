@@ -36,7 +36,7 @@ export default function AdminOverview() {
       <h1 className="h3 text-neutral-900">Admin Overview</h1>
       <p className="body-md text-neutral-400">Platform health at a glance.</p>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
         {cards.map((c) => (
           <Link key={c.label} href={c.href} className="rounded-2xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-400">
             <c.icon size={17} className="text-neutral-400" />
@@ -56,11 +56,11 @@ export default function AdminOverview() {
           <div className="mt-3 divide-y divide-neutral-100">
             {data.recentListings.map((l) => (
               <div key={l.id} className="flex items-center justify-between gap-3 py-2.5">
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-medium text-neutral-800">{l.title}</div>
                   <div className="text-xs text-neutral-400">{naira(l.price)} • {timeAgo(l.created_at)}</div>
                 </div>
-                <VerificationBadge status={l.verification_status} />
+                <span className="shrink-0"><VerificationBadge status={l.verification_status} /></span>
               </div>
             ))}
           </div>

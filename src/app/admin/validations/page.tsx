@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Camera, FileText, ShieldCheck, X } from "lucide-react";
+import { Camera, FileText, ShieldCheck, X, Download } from "lucide-react";
 
 type Req = {
   id: number; reference: string; property_title: string; property_type: string;
@@ -123,8 +123,17 @@ export default function AdminValidationsPage() {
                     <li key={f.id} className="flex items-center gap-2.5 rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm text-neutral-700">
                       {f.kind === "photo" ? <Camera size={15} className="shrink-0 text-neutral-400" /> : <FileText size={15} className="shrink-0 text-neutral-400" />}
                       <span className="min-w-0 flex-1 truncate">{f.doc_type ? `${f.doc_type}: ` : ""}{f.file_name}</span>
-                      {f.storage_path && (
-                        <a href={`/api/files?path=${encodeURIComponent(f.storage_path)}`} target="_blank" rel="noreferrer" className="shrink-0 text-xs font-semibold text-support-blue hover:underline">Open</a>
+                      {f.storage_path ? (
+                        <a
+                          href={`/api/files?path=${encodeURIComponent(f.storage_path)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex shrink-0 items-center gap-1.5 rounded-lg bg-support-blue px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110"
+                        >
+                          <Download size={13} /> View
+                        </a>
+                      ) : (
+                        <span className="shrink-0 rounded-lg bg-neutral-200 px-2.5 py-1.5 text-[11px] font-medium text-neutral-500">Not uploaded</span>
                       )}
                     </li>
                   ))}

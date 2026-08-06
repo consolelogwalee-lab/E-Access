@@ -31,6 +31,7 @@ export default function ValidatePage() {
   const [requests, setRequests] = useState<Request[] | null>(null);
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ propertyTitle: "", propertyType: "land", address: "", city: "", state: "Lagos", titleType: TITLE_TYPES[0], notes: "" });
   const [docs, setDocs] = useState<{ docType: string; fileName: string; storagePath?: string | null; uploading?: boolean }[]>([]);
   const [photos, setPhotos] = useState<{ fileName: string; storagePath?: string | null }[]>([]);
@@ -63,14 +64,23 @@ export default function ValidatePage() {
     setDocs([]); setPhotos([]);
   }
 
+  const anyUploading = docs.some((d) => d.uploading) || uploadingPhotos;
+  const docsFailed = docs.filter((d) => !d.uploading && !d.storagePath);
+  const canSubmit = docs.length > 0 && !anyUploading && docsFailed.length === 0 && !submitting;
+
   async function submit() {
     setErr("");
+    if (anyUploading) { setErr("Please wait for your files to finish uploading."); return; }
+    if (docs.length === 0) { setErr("Attach at least one property document."); return; }
+    if (docsFailed.length > 0) { setErr("Some documents didn't upload. Remove and re-attach them, then try again."); return; }
+    setSubmitting(true);
     const res = await fetch("/api/validations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, documents: docs, photos }),
+      body: JSON.stringify({ ...form, documents: docs, photos: photos.filter((p) => p.storagePath) }),
     });
     const d = await res.json();
+    setSubmitting(false);
     if (!res.ok) { setErr(d.error ?? "Could not submit."); return; }
     setDone({ reference: d.reference, id: d.id });
     load();
@@ -237,7 +247,7 @@ export default function ValidatePage() {
                           <li key={i} className="flex items-center justify-between rounded-xl bg-neutral-50 px-3.5 py-2.5 text-sm">
                             <span className="min-w-0 truncate text-neutral-700">
                               <span className="font-medium">{d.docType}:</span> {d.fileName}
-                              {d.uploading ? <span className="ml-2 text-xs text-amber-600">uploading…</span> : d.storagePath ? <span className="ml-2 text-xs text-lime-600">uploaded</span> : null}
+                              {d.uploading ? <span className="ml-2 text-xs text-amber-600">uploading…</span> : d.storagePath ? <span className="ml-2 text-xs text-lime-600">uploaded ✓</span> : <span className="ml-2 text-xs font-semibold text-red-600">upload failed — remove &amp; re-attach</span>}
                             </span>
                             <button onClick={() => setDocs(docs.filter((_, j) => j !== i))} aria-label="Remove document" className="ml-2 text-neutral-400 hover:text-red-500"><Trash2 size={14} /></button>
                           </li>
@@ -269,7 +279,9 @@ export default function ValidatePage() {
                     {err && <p className="mt-3 text-sm text-red-600">{err}</p>}
                     <div className="mt-5 flex gap-2">
                       <button onClick={() => setStep(1)} className="btn-text h-12 flex-1 rounded-xl bg-neutral-100 text-neutral-700 hover:bg-neutral-200">Back</button>
-                      <button onClick={submit} className="btn-text h-12 flex-1 rounded-xl bg-[#E2A600] text-[#3f3005] hover:brightness-105">Submit for verification</button>
+                      <button onClick={submit} disabled={!canSubmit} className="btn-text h-12 flex-1 rounded-xl bg-[#E2A600] text-[#3f3005] transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-50">
+                        {submitting ? "Submitting…" : anyUploading ? "Uploading…" : "Submit for verification"}
+                      </button>
                     </div>
                   </>
                 )}
