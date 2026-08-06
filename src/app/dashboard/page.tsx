@@ -15,6 +15,7 @@ const LOCATIONS = ["All Nigeria", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "
 function DiscoverInner() {
   const sp = useSearchParams();
   const search = sp.get("search") ?? "";
+  const locationParam = sp.get("location") ?? "";
   const [me, setMe] = useState<{ full_name: string } | null>(null);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [applied, setApplied] = useState<Filters>(EMPTY_FILTERS);
@@ -38,6 +39,18 @@ function DiscoverInner() {
   useEffect(() => {
     fetch("/api/me").then((r) => r.json()).then((d) => setMe(d.user)).catch(() => {});
   }, []);
+
+  // apply a location chosen from the bottom bar (?location=)
+  useEffect(() => {
+    if (locationParam) setApplied((a) => ({ ...a, location: locationParam }));
+  }, [locationParam]);
+
+  // the header filter button opens the same filter drawer
+  useEffect(() => {
+    const open = () => { setFilters(applied); setDrawer(true); };
+    window.addEventListener("eaccess-filters-open", open);
+    return () => window.removeEventListener("eaccess-filters-open", open);
+  }, [applied]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -96,8 +109,8 @@ function DiscoverInner() {
         </div>
       </div>
 
-      {/* Controls: location, sort, save search, filters */}
-      <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-1 scroll-thin">
+      {/* Controls: location, sort, save search, filters (desktop; mobile uses the top/bottom bars) */}
+      <div className="mt-4 hidden items-center gap-2 overflow-x-auto pb-1 scroll-thin lg:flex">
         <div className="relative shrink-0">
           <button
             onClick={() => setLocOpen((o) => !o)}

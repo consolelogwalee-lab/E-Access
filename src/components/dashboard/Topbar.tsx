@@ -24,7 +24,7 @@ export function Topbar({
   }, []);
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="hidden items-center gap-4 lg:flex">
       <nav className="hidden shrink-0 items-center gap-1.5 text-[13px] md:flex">
         {crumbs.map(([label, href], i) => (
           <span key={label} className="flex items-center gap-1.5">

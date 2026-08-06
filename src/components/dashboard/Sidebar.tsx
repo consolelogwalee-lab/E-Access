@@ -37,7 +37,16 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+
+  // The mobile drawer is opened from the bottom bar's menu button (Figma).
+  useEffect(() => {
+    const open = () => setMobileOpen(true);
+    window.addEventListener("eaccess-sidebar-open", open);
+    return () => window.removeEventListener("eaccess-sidebar-open", open);
+  }, []);
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
 
   useEffect(() => {
     let alive = true;
@@ -108,7 +117,7 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
 
   return (
     <>
-      {/* Desktop-only: collapsed reopen button (mobile uses the bottom navigation instead) */}
+      {/* Desktop-only: collapsed reopen button */}
       {collapsed && (
         <button
           onClick={() => setCollapsed(false)}
@@ -118,8 +127,14 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
           <SiderbarMinimalistic size={17} weight="LineDuotone" />
         </button>
       )}
+      {/* Mobile drawer scrim */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 bg-neutral-950/50 backdrop-blur-[2px] lg:hidden" onClick={() => setMobileOpen(false)} />
+      )}
     <aside
-      className={`fixed inset-y-2 left-2 z-50 hidden w-[286px] flex-col rounded-2xl border border-white/[0.06] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 lg:flex ${
+      className={`fixed inset-y-2 left-2 z-50 flex w-[286px] flex-col rounded-2xl border border-white/[0.06] p-4 text-white shadow-2xl shadow-black/40 transition-transform duration-200 lg:z-30 ${
+        mobileOpen ? "translate-x-0" : "-translate-x-[110%]"
+      } ${
         collapsed ? "lg:-translate-x-[110%]" : "lg:translate-x-0"
       }`}
       style={{ background: "linear-gradient(175deg,#0d0d1a 0%,#08080f 55%,#070710 100%)" }}
