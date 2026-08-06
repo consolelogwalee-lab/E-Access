@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
-import { CartButton } from "@/components/landing/Cart";
 
 const NAVY = "#1B1F4E";
 
@@ -37,7 +36,6 @@ export function Navbar() {
             {open ? <X size={16} /> : <Menu size={16} />} Home
           </button>
           <span className="h-1 w-1 rounded-full bg-white/40" />
-          <CartButton loggedIn={loggedIn} />
           {loggedIn ? (
             <Link
               href="/dashboard"
@@ -65,12 +63,10 @@ export function Navbar() {
           >
             <div className="space-y-1">
               {[
-                ["Browse listings", "/#browse"],
-                ["Why us", "/#why-us"],
-                ["How e-access works", "/#how-it-works"],
-                ["Featured listings", "/#featured"],
+                ["Browse listings", "/"],
                 ["News & info center", "/news"],
                 ["Verified agents", "/agents"],
+                ["Speak to a consultant", "/api/consultant/start"],
               ].map(([label, href]) => (
                 <a
                   key={href}

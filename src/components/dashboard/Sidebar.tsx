@@ -5,20 +5,20 @@ import {
   Widget6, MagicStick3, ChatLine, Chart, FolderWithFiles, DocumentAdd,
   BellOff, Settings, SiderbarMinimalistic, AltArrowDown, WalletMoney, Notebook, ShieldCheck,
 } from "@solar-icons/react";
-import { LogOut, Plus, Menu, X } from "lucide-react";
+import { LogOut, Plus, Menu, X, Headphones } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
 
 const MAIN = [
   { label: "Home", href: "/", icon: Widget6, neverActive: true },
   { label: "Discover", href: "/dashboard", icon: MagicStick3, exact: true },
-  { label: "Saved Listings", href: "/dashboard/saved", icon: Widget6 },
+  { label: "Verify Property", href: "/dashboard/validate", icon: ShieldCheck },
   { label: "Messages", href: "/dashboard/messages", icon: ChatLine },
+  { label: "Inspections", href: "/dashboard/inspections", icon: DocumentAdd },
+  { label: "Saved Listings", href: "/dashboard/saved", icon: Widget6 },
   { label: "Portfolio", href: "/dashboard/portfolio", icon: Chart },
   { label: "Documents Vault", href: "/dashboard/documents", icon: FolderWithFiles },
-  { label: "Inspections", href: "/dashboard/inspections", icon: DocumentAdd },
   { label: "Payment Plans", href: "/dashboard/payments", icon: WalletMoney },
-  { label: "Verify Property", href: "/dashboard/validate", icon: ShieldCheck },
   { label: "Transactions", href: "/dashboard/transactions", icon: Chart },
   { label: "Request a Property", href: "/dashboard/request", icon: MagicStick3 },
 ];
@@ -157,9 +157,16 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
         <ul className="mt-2.5 space-y-1">
           {SECONDARY.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
+        <a
+          href="/api/consultant/start"
+          className="mt-4 flex w-full items-center gap-3 rounded-xl border border-[#E2A600]/30 bg-[#E2A600]/10 px-3.5 py-2.5 text-left text-[13px] font-semibold text-[#E2A600] transition hover:bg-[#E2A600]/15"
+        >
+          <Headphones size={16} />
+          Speak to a Consultant
+        </a>
         <button
           onClick={() => window.dispatchEvent(new Event("eaccess-tour-open"))}
-          className="mt-4 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-medium text-white/45 transition hover:bg-white/[0.04] hover:text-white/80"
+          className="mt-2 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-medium text-white/45 transition hover:bg-white/[0.04] hover:text-white/80"
         >
           <span className="flex h-5 w-5 items-center justify-center rounded-full border border-white/25 text-[10px] font-bold">?</span>
           How E-Access works

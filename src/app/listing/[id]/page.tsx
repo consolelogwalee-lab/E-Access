@@ -88,8 +88,11 @@ export default async function PublicListingPage({ params }: { params: Promise<{ 
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/auth/login" className="btn-text rounded-full bg-[#E2A600] px-6 py-3 text-[#3f3005] transition hover:brightness-105">
-              Continue on E-Access
+            <Link href={`/auth/login?next=/dashboard/property/${L.id}`} className="btn-text rounded-full bg-[#E2A600] px-6 py-3 text-[#3f3005] transition hover:brightness-105">
+              Book Inspection
+            </Link>
+            <Link href={`/auth/login?next=/dashboard/property/${L.id}`} className="btn-text rounded-full border border-white/25 px-6 py-3 text-white transition hover:border-white/60">
+              Message Agent
             </Link>
             <a
               href={`https://wa.me/?text=${waText}`}

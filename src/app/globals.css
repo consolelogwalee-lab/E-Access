@@ -168,3 +168,25 @@ body {
 .scroll-thin::-webkit-scrollbar { width: 6px; height: 6px; }
 .scroll-thin::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 3px; }
 .scroll-thin::-webkit-scrollbar-track { background: transparent; }
+
+/* --- marketplace (mobile-first redesign) --- */
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #ececf0 25%, #f6f6f8 50%, #ececf0 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+@keyframes popUp {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.pop-up { animation: popUp 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .pop-up { animation: none; }
+}
+/* keep content clear of the fixed mobile dock + bottom search bar */
+.dock-pad { padding-bottom: 150px; }
+@media (min-width: 768px) { .dock-pad { padding-bottom: 40px; } }

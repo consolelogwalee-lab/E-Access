@@ -1,10 +1,9 @@
 "use client";
 import Link from "next/link";
-import { Heart, MapPin, BedDouble, Bath, Ruler, ShoppingBag, Check, Scale } from "lucide-react";
+import { Heart, MapPin, BedDouble, Bath, Ruler, Scale, BadgeCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { VerificationBadge } from "./Badges";
 import { naira } from "@/lib/format";
-import { addToCart, inCart, removeFromCart, CART_EVENT } from "@/lib/cart";
 import { listingImage } from "@/lib/images";
 import { getCompare, toggleCompare, COMPARE_EVENT } from "@/lib/compare";
 import { toast } from "@/components/Ui";
@@ -32,26 +31,17 @@ export type Listing = {
 export function ListingCard({
   listing,
   href,
-  cartable = false,
   comparable = false,
+  variant = "grid",
 }: {
   listing: Listing;
   href?: string;
-  cartable?: boolean;
   comparable?: boolean;
+  variant?: "grid" | "row";
 }) {
   const [saved, setSaved] = useState(!!listing.saved);
-  const [carted, setCarted] = useState(false);
   const [comparing, setComparing] = useState(false);
   const url = href ?? `/dashboard/property/${listing.id}`;
-
-  useEffect(() => {
-    if (!cartable) return;
-    const sync = () => setCarted(inCart(listing.id));
-    sync();
-    window.addEventListener(CART_EVENT, sync);
-    return () => window.removeEventListener(CART_EVENT, sync);
-  }, [cartable, listing.id]);
 
   useEffect(() => {
     if (!comparable) return;
@@ -68,25 +58,99 @@ export function ListingCard({
     if (r.full) toast("You can compare up to 3 properties at a time. Remove one first.", "warn");
   }
 
-  function toggleCart(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (carted) removeFromCart(listing.id);
-    else
-      addToCart({
-        id: listing.id,
-        title: listing.title,
-        price: Number(listing.price),
-        image: listingImage(listing),
-        location: `${listing.location_area}, ${listing.location_city}`,
-      });
-  }
-
   async function toggleSave(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     setSaved((s) => !s);
-    await fetch(`/api/listings/${listing.id}/save`, { method: "POST" }).catch(() => setSaved((s) => !s));
+    const res = await fetch(`/api/listings/${listing.id}/save`, { method: "POST" }).catch(() => null);
+    if (!res || res.status === 401) {
+      setSaved((s) => !s);
+      const back = encodeURIComponent(window.location.pathname + window.location.search);
+      window.location.href = `/auth/login?next=${back}`;
+    }
+  }
+
+  const meta = (
+    <div className="flex flex-wrap items-center gap-1.5 pt-1">
+      {listing.verification_status === "verified" && <VerificationBadge status="verified" />}
+      {listing.bedrooms ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+          <BedDouble size={12} /> {listing.bedrooms} Bed
+        </span>
+      ) : null}
+      {listing.bathrooms ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+          <Bath size={12} /> {listing.bathrooms} Bath
+        </span>
+      ) : null}
+      {listing.land_size_sqm ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+          <Ruler size={12} /> {listing.land_size_sqm} sqm
+        </span>
+      ) : null}
+    </div>
+  );
+
+  const saveBtn = (
+    <button
+      onClick={toggleSave}
+      aria-label="Save listing"
+      className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur transition hover:bg-white"
+    >
+      <Heart size={17} className={saved ? "fill-red-500 text-red-500" : "text-neutral-700"} />
+    </button>
+  );
+
+  if (variant === "row") {
+    return (
+      <Link
+        href={url}
+        className="group flex gap-3 rounded-2xl border border-neutral-200 bg-white p-2 transition hover:shadow-lg hover:shadow-neutral-900/5"
+      >
+        <div className="relative shrink-0 overflow-hidden rounded-xl">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={listing.cover_url ?? listingImage(listing)}
+            alt={listing.title}
+            className="h-[112px] w-[128px] object-cover transition duration-300 group-hover:scale-[1.04] sm:w-[168px]"
+          />
+          {listing.verification_status === "verified" && (
+            <span className="absolute left-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-lime-600 shadow-sm">
+              <BadgeCheck size={14} />
+            </span>
+          )}
+        </div>
+        <div className="relative min-w-0 flex-1 py-1 pr-9">
+          <div className="text-[17px] font-bold leading-6 text-brand-500">{naira(listing.price)}</div>
+          <div className="body-md mt-0.5 line-clamp-2 text-neutral-700">{listing.title}</div>
+          <div className="mt-1 flex items-center gap-1 text-xs text-neutral-500">
+            <MapPin size={12} className="shrink-0" />
+            <span className="truncate">
+              {listing.location_area}, {listing.location_city}
+            </span>
+          </div>
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {listing.bedrooms ? (
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                {listing.bedrooms} Bed
+              </span>
+            ) : null}
+            {listing.land_size_sqm ? (
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
+                {listing.land_size_sqm} sqm
+              </span>
+            ) : null}
+          </div>
+          <button
+            onClick={toggleSave}
+            aria-label="Save listing"
+            className="absolute right-0 top-1 flex h-9 w-9 items-center justify-center rounded-full bg-neutral-100 transition hover:bg-neutral-200"
+          >
+            <Heart size={16} className={saved ? "fill-red-500 text-red-500" : "text-neutral-600"} />
+          </button>
+        </div>
+      </Link>
+    );
   }
 
   return (
@@ -101,16 +165,7 @@ export function ListingCard({
           alt={listing.title}
           className="aspect-[292/200] w-full object-cover transition duration-300 group-hover:scale-[1.03]"
         />
-        <button
-          onClick={toggleSave}
-          aria-label="Save listing"
-          className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm backdrop-blur transition hover:bg-white"
-        >
-          <Heart
-            size={17}
-            className={saved ? "fill-red-500 text-red-500" : "text-neutral-700"}
-          />
-        </button>
+        {saveBtn}
         {comparable && (
           <button
             onClick={onCompare}
@@ -132,38 +187,7 @@ export function ListingCard({
             {listing.location_area}, {listing.location_city}
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          {listing.verification_status === "verified" && (
-            <VerificationBadge status="verified" />
-          )}
-          {listing.bedrooms ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-              <BedDouble size={12} /> {listing.bedrooms} Bed
-            </span>
-          ) : null}
-          {listing.bathrooms ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-              <Bath size={12} /> {listing.bathrooms} Bath
-            </span>
-          ) : null}
-          {listing.land_size_sqm ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-600">
-              <Ruler size={12} /> {listing.land_size_sqm} sqm
-            </span>
-          ) : null}
-        </div>
-        {cartable && (
-          <button
-            onClick={toggleCart}
-            className={`btn-text mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-xl transition ${
-              carted
-                ? "bg-lime-100 text-lime-600"
-                : "bg-neutral-950 text-white hover:bg-brand-900"
-            }`}
-          >
-            {carted ? <><Check size={15} /> In Cart</> : <><ShoppingBag size={15} /> Add to Cart</>}
-          </button>
-        )}
+        {meta}
       </div>
     </Link>
   );
