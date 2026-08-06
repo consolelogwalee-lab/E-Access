@@ -84,13 +84,13 @@ export default function ValidatePage() {
       <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property", ""]]} showRegion={false} />
 
       <div className="mt-6 overflow-hidden rounded-2xl bg-[#04040a] text-white">
-        <div className="flex flex-wrap items-center gap-6 p-7 md:p-9">
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#E2A600]/40 bg-[#E2A600]/10">
-            <Stamp size={25} className="text-[#E2A600]" />
+        <div className="flex flex-col gap-5 p-6 md:flex-row md:items-center md:gap-6 md:p-9">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#E2A600]/40 bg-[#E2A600]/10 md:h-14 md:w-14">
+            <Stamp size={24} className="text-[#E2A600]" />
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="text-[25px] font-extrabold leading-8 tracking-[-0.02em]">Property & Document Validation</h1>
-            <p className="body-md mt-1.5 max-w-[560px] text-white/60">
+            <h1 className="text-[21px] font-extrabold leading-tight tracking-[-0.02em] md:text-[25px]">Property &amp; Document Validation</h1>
+            <p className="body-md mt-2 text-white/60 md:max-w-[560px]">
               Own a property already? Upload your documents and photos, and the E-Access team,
               working with legal partners, will verify the title, check the registry, and stamp
               it if everything holds. You get a verification certificate at the end.
@@ -98,7 +98,7 @@ export default function ValidatePage() {
           </div>
           <button
             onClick={() => setOpen(true)}
-            className="btn-gold flex h-12 items-center gap-2 rounded-xl px-6 text-[14px]"
+            className="btn-gold flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl px-6 text-[14px] md:w-auto"
           >
             <Plus size={16} /> Verify a property
           </button>
