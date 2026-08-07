@@ -36,8 +36,8 @@ const SLIDES: Slide[] = [
     ],
   },
   {
-    title: "Verify your own property",
-    body: "Already own land or about to pay for one? Open Verify Property, upload the documents and photos, and our team with legal partners checks the title at the registry. If it holds, you get a stamped Certificate of Verification.",
+    title: "Verify your property documents",
+    body: "Already own land or about to pay for one? Open Verify Documents, upload the property documents and photos, and our team with legal partners checks the title at the registry. If it holds, you get a stamped Certificate of Document Verification.",
     icons: [
       { icon: <Stamp size={20} className="text-[#E2A600]" />, label: "Approved & stamped" },
     ],

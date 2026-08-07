@@ -15,7 +15,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const user = await currentUser();
-  if (!user) return NextResponse.json({ error: "Sign in to submit a property for validation." }, { status: 401 });
+  if (!user) return NextResponse.json({ error: "Sign in to submit property documents for verification." }, { status: 401 });
   const b = await req.json();
   if (!b.propertyTitle || !b.propertyType || !b.address || !b.city || !b.state)
     return NextResponse.json({ error: "Property name, type, address, city and state are required." }, { status: 400 });
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
   for (const a of admins) {
     if (Number(a.id) === user.id) continue;
     await notify(Number(a.id), "verification", "New validation request",
-      `${user.full_name} submitted ${reference} for property validation.`, "/admin/validations");
+      `${user.full_name} submitted ${reference} for property document verification.`, "/admin/validations");
   }
   return NextResponse.json({ ok: true, id, reference });
 }

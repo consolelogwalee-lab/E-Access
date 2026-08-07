@@ -12,7 +12,7 @@ type Entry = { label: string; href: string; icon: typeof Home; gated?: boolean }
 const ENTRIES: Entry[] = [
   { label: "Home", href: "/", icon: Home },
   { label: "Discover", href: "/dashboard", icon: Compass, gated: true },
-  { label: "Verify a Property", href: "/dashboard/validate", icon: ShieldCheck, gated: true },
+  { label: "Verify Property Documents", href: "/dashboard/validate", icon: ShieldCheck, gated: true },
   { label: "Messages", href: "/dashboard/messages", icon: MessageSquare, gated: true },
   { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck2, gated: true },
   { label: "Saved Listings", href: "/dashboard/saved", icon: Heart, gated: true },

@@ -46,7 +46,7 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <div>
-      <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property", "/dashboard/validate"], [R.reference, ""]]} showRegion={false} />
+      <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property Documents", "/dashboard/validate"], [R.reference, ""]]} showRegion={false} />
 
       <div className="mt-5">
         <div className="flex items-center gap-3">
@@ -70,22 +70,24 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
       {R.status === "approved" && (
         <div className="relative mt-6 overflow-hidden rounded-2xl border-2 border-[#E2A600]/40 bg-white p-5 md:p-8 print:border-black">
           <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-[#E2A600]/10" />
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
-            <LogoMark size={52} />
-            <div className="min-w-0 flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2A600] md:text-[11px] md:tracking-[0.25em]">Certificate of Verification</div>
-              <h2 className="display mt-1 text-[19px] leading-tight text-neutral-950 md:text-[24px]">This property has been verified and stamped</h2>
-              <p className="body-md mt-1 text-neutral-500">
-                {R.property_title} at {R.address}, {R.city}, {R.state} passed document, title and registry checks
-                conducted by the E-Access verification team and its legal partners.
-              </p>
-            </div>
-            <div className="shrink-0 rotate-[-8deg] rounded-xl border-4 border-[#E2A600] px-5 py-3 text-center">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E2A600]">E-Access</div>
-              <div className="text-sm font-extrabold uppercase tracking-widest text-[#1B1F4E]">Verified</div>
-              <div className="text-[10px] font-semibold text-neutral-500">
-                {R.stamped_at ? new Date(R.stamped_at + "Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : ""}
+          <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-center md:gap-6">
+            <div className="flex items-center justify-between gap-4 md:contents">
+              <span className="shrink-0 md:order-1"><LogoMark size={52} /></span>
+              <div className="shrink-0 rotate-[-8deg] rounded-xl border-4 border-[#E2A600] px-4 py-2.5 text-center md:order-3 md:px-5 md:py-3">
+                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E2A600]">E-Access</div>
+                <div className="text-sm font-extrabold uppercase tracking-widest text-[#1B1F4E]">Verified</div>
+                <div className="text-[10px] font-semibold text-neutral-500">
+                  {R.stamped_at ? new Date(R.stamped_at + "Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : ""}
+                </div>
               </div>
+            </div>
+            <div className="min-w-0 md:order-2 md:flex-1">
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2A600] md:text-[11px] md:tracking-[0.25em]">Certificate of Document Verification</div>
+              <h2 className="display mt-1 text-[19px] leading-tight text-neutral-950 md:text-[24px]">These property documents have been verified and stamped</h2>
+              <p className="body-md mt-1 text-neutral-500">
+                The documents submitted for {R.property_title} at {R.address}, {R.city}, {R.state} passed document,
+                title and registry checks conducted by the E-Access verification team and its legal partners.
+              </p>
             </div>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-100 pt-4 text-xs text-neutral-400">

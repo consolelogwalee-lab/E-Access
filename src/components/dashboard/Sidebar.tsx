@@ -12,7 +12,7 @@ import { LogoFull } from "@/components/Logo";
 const MAIN = [
   { label: "Home", href: "/", icon: Widget6, neverActive: true },
   { label: "Discover", href: "/dashboard", icon: MagicStick3, exact: true },
-  { label: "Verify Property", href: "/dashboard/validate", icon: ShieldCheck },
+  { label: "Verify Property Documents", href: "/dashboard/validate", icon: ShieldCheck },
   { label: "Messages", href: "/dashboard/messages", icon: ChatLine },
   { label: "Inspections", href: "/dashboard/inspections", icon: DocumentAdd },
   { label: "Saved Listings", href: "/dashboard/saved", icon: Widget6 },

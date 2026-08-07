@@ -91,7 +91,7 @@ export default function ValidatePage() {
 
   return (
     <div>
-      <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property", ""]]} showRegion={false} />
+      <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property Documents", ""]]} showRegion={false} />
 
       <div className="mt-6 overflow-hidden rounded-2xl bg-[#04040a] text-white">
         <div className="flex flex-col gap-5 p-6 md:flex-row md:items-center md:gap-6 md:p-9">
@@ -99,18 +99,18 @@ export default function ValidatePage() {
             <Stamp size={24} className="text-[#E2A600]" />
           </span>
           <div className="min-w-0 flex-1">
-            <h1 className="text-[21px] font-extrabold leading-tight tracking-[-0.02em] md:text-[25px]">Property &amp; Document Validation</h1>
+            <h1 className="text-[21px] font-extrabold leading-tight tracking-[-0.02em] md:text-[25px]">Property Document Verification</h1>
             <p className="body-md mt-2 text-white/60 md:max-w-[560px]">
-              Own a property already? Upload your documents and photos, and the E-Access team,
+              Own a property already? Upload its documents and photos, and the E-Access team,
               working with legal partners, will verify the title, check the registry, and stamp
-              it if everything holds. You get a verification certificate at the end.
+              the documents if everything holds. You get a verification certificate at the end.
             </p>
           </div>
           <button
             onClick={() => setOpen(true)}
             className="btn-gold flex h-12 w-full shrink-0 items-center justify-center gap-2 rounded-xl px-6 text-[14px] md:w-auto"
           >
-            <Plus size={16} /> Verify a property
+            <Plus size={16} /> Verify property documents
           </button>
         </div>
         <div className="grid gap-px border-t border-white/10 bg-white/10 sm:grid-cols-4">
@@ -120,12 +120,12 @@ export default function ValidatePage() {
         </div>
       </div>
 
-      <h2 className="label-lg mt-8 text-neutral-900">Your validation requests</h2>
+      <h2 className="label-lg mt-8 text-neutral-900">Your document verification requests</h2>
       <div className="mt-4 space-y-2">
         {requests === null && <div className="h-32 animate-pulse rounded-2xl bg-white" />}
         {requests?.length === 0 && (
           <div className="flex h-[180px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white/60 text-center">
-            <p className="body-md text-neutral-400">No requests yet. Verify your first property above.</p>
+            <p className="body-md text-neutral-400">No requests yet. Submit your first property documents above.</p>
           </div>
         )}
         {requests?.map((r) => {
@@ -165,7 +165,7 @@ export default function ValidatePage() {
             ) : (
               <>
                 <div className="flex items-center justify-between">
-                  <h2 className="h4 text-neutral-900">Verify a property {step === 1 ? "· Details" : "· Documents & Photos"}</h2>
+                  <h2 className="h4 text-neutral-900">Verify documents {step === 1 ? "· Property details" : "· Documents & Photos"}</h2>
                   <button onClick={reset} className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-neutral-100" aria-label="Close"><X size={17} /></button>
                 </div>
                 <div className="mt-3 flex gap-1.5">

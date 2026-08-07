@@ -13,7 +13,7 @@ import { LogoFull } from "@/components/Logo";
 type User = { full_name: string; email: string; avatar_color: string; role?: string; avatar_url?: string | null };
 
 const SECTIONS = [
-  { label: "Verify Property", href: "/dashboard/validate", icon: ShieldIcon },
+  { label: "Verify Property Documents", href: "/dashboard/validate", icon: ShieldIcon },
   { label: "Inspections", href: "/dashboard/inspections", icon: CalIcon },
   { label: "Portfolio", href: "/dashboard/portfolio", icon: Building2 },
   { label: "Documents", href: "/dashboard/documents", icon: FolderClosed },

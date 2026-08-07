@@ -22,8 +22,8 @@ const FLOW: Record<string, string> = {
   in_review: "Review started by the verification team.",
   legal_review: "Documents forwarded to the legal team for title and registry checks.",
   action_required: "The team needs something from you before verification can continue.",
-  approved: "Verification complete. Your property has been approved and stamped.",
-  rejected: "Verification could not be completed for this property.",
+  approved: "Verification complete. Your property documents have been approved and stamped.",
+  rejected: "Verification could not be completed for these documents.",
 };
 
 export async function GET() {
@@ -69,7 +69,7 @@ export async function PATCH(req: Request) {
     const owner = await q1<{ email: string }>("SELECT email FROM users WHERE id = $1", [Number(v.user_id)]);
     if (owner?.email && !owner.email.endsWith("@eaccess.demo")) {
       await sendNotice(owner.email, `${v.reference} approved and stamped`,
-        "Your property passed document, title and registry checks. Your Certificate of Verification is ready.",
+        "Your property documents passed document, title and registry checks. Your Certificate of Document Verification is ready.",
         "View your certificate", `${new URL(req.url).origin}/dashboard/validate/${id}`);
     }
   }

@@ -86,9 +86,9 @@ export default function AdminValidationsPage() {
 
   return (
     <div>
-      <h1 className="h3 text-neutral-900">Property Validations</h1>
+      <h1 className="h3 text-neutral-900">Property Document Verification</h1>
       <p className="body-md mt-1 text-neutral-500">
-        Client-submitted properties awaiting verification. Move each request through review, legal checks, and stamping. Every action notifies the client.
+        Client-submitted property documents awaiting verification. Move each request through review, legal checks, and stamping. Every action notifies the client.
       </p>
 
       {/* Controls */}
