@@ -8,6 +8,8 @@ import { CardSkeleton, RowSkeleton } from "@/components/Skeleton";
 import { FilterDrawer, EMPTY_FILTERS, PRICE_BANDS, type Filters } from "@/components/dashboard/FilterDrawer";
 import { RecentlyViewed } from "@/components/dashboard/RecentlyViewed";
 import { SaveSearchButton } from "@/components/dashboard/SaveSearchButton";
+import { FeaturedCarousel } from "@/components/marketplace/FeaturedCarousel";
+import { CategoryCards } from "@/components/marketplace/CategoryCards";
 
 // Scalable location selector — ready for multi-country expansion.
 const LOCATIONS = ["All Nigeria", "Lagos", "Abuja", "Port Harcourt", "Ibadan", "Enugu", "Kano"];
@@ -107,6 +109,16 @@ function DiscoverInner() {
             <Rows3 size={16} />
           </button>
         </div>
+      </div>
+
+      {/* Featured carousel */}
+      <div className="mt-4">
+        <FeaturedCarousel authed />
+      </div>
+
+      {/* Category tiles */}
+      <div className="mt-4">
+        <CategoryCards value={applied.types[0] ?? ""} onChange={(v) => setApplied({ ...applied, types: v ? [v] : [] })} />
       </div>
 
       {/* Controls: location, sort, save search, filters (desktop; mobile uses the top/bottom bars) */}

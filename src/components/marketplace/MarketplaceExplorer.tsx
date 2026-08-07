@@ -3,24 +3,24 @@ import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Search, SlidersHorizontal, LayoutGrid, Rows3, X, Bell, Headset,
-  Building2, Trees, Home as HomeIcon, Store, BadgeCheck, ChevronRight,
+  Search, SlidersHorizontal, LayoutGrid, Rows3, X, Bell, BadgeCheck,
 } from "lucide-react";
 import { LogoFull } from "@/components/Logo";
 import { ListingCard, type Listing } from "@/components/ListingCard";
 import { CardSkeleton, RowSkeleton } from "@/components/Skeleton";
-import { listingImage } from "@/lib/images";
+import { CategoryCards } from "./CategoryCards";
+import { FeaturedCarousel } from "./FeaturedCarousel";
 import { MobileDock } from "./MobileDock";
 import { FloatingMenu } from "./FloatingMenu";
 
 type Props = { authed: boolean; userName: string | null };
 
 const CATEGORIES = [
-  { key: "", label: "All", icon: LayoutGrid },
-  { key: "land", label: "Land", icon: Trees },
-  { key: "apartment", label: "Apartment", icon: Building2 },
-  { key: "duplex", label: "Duplex", icon: HomeIcon },
-  { key: "commercial", label: "Commercial", icon: Store },
+  { key: "", label: "All" },
+  { key: "land", label: "Land" },
+  { key: "apartment", label: "Apartment" },
+  { key: "duplex", label: "Duplex" },
+  { key: "commercial", label: "Commercial" },
 ];
 
 const PRICE_BANDS = [
@@ -45,7 +45,6 @@ function Explorer({ authed, userName }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [listings, setListings] = useState<Listing[]>([]);
-  const [featured, setFeatured] = useState<Listing[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [perPage, setPerPage] = useState(12);
@@ -79,13 +78,6 @@ function Explorer({ authed, userName }: Props) {
   }, [purpose, category, verifiedOnly, band, debounced, perPage]);
 
   useEffect(() => { load(); }, [load]);
-
-  useEffect(() => {
-    fetch("/api/listings?featured=1&perPage=8")
-      .then((r) => r.json())
-      .then((d) => setFeatured(d.listings ?? []))
-      .catch(() => {});
-  }, []);
 
   const activeChips: { label: string; clear: () => void }[] = [];
   if (verifiedOnly) activeChips.push({ label: "Verified", clear: () => setVerifiedOnly(false) });
@@ -166,24 +158,9 @@ function Explorer({ authed, userName }: Props) {
           </div>
         </div>
 
-        {/* Categories */}
-        <div className="mt-4 flex gap-2.5 overflow-x-auto pb-1 scroll-thin">
-          {CATEGORIES.map((c) => {
-            const Icon = c.icon;
-            const on = category === c.key;
-            return (
-              <button
-                key={c.key || "all"}
-                onClick={() => setCategory(c.key)}
-                className={`flex min-w-[80px] shrink-0 flex-col items-center gap-1.5 rounded-2xl border px-4 py-3 text-xs font-semibold transition ${
-                  on ? "border-brand-900 bg-brand-900 text-white" : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300"
-                }`}
-              >
-                <Icon size={20} />
-                {c.label}
-              </button>
-            );
-          })}
+        {/* Categories (image tiles) */}
+        <div className="mt-4">
+          <CategoryCards value={category} onChange={setCategory} />
         </div>
 
         {/* Filter row */}
@@ -243,53 +220,10 @@ function Explorer({ authed, userName }: Props) {
           </div>
         )}
 
-        {/* Consultant box */}
-        <Link
-          href={authed ? "/api/consultant/start" : "/auth/login?next=/api/consultant/start"}
-          className="mt-5 flex items-center gap-3 rounded-2xl bg-gradient-to-r from-brand-900 to-[#2a2f6b] p-4 text-white transition hover:brightness-110"
-        >
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15">
-            <Headset size={20} />
-          </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-sm font-bold">Speak to a Real Estate Consultant</span>
-            <span className="block text-xs text-white/70">Get guidance, recommendations, or answers — chat with our team now.</span>
-          </span>
-          <ChevronRight size={18} className="shrink-0 text-white/70" />
-        </Link>
-
-        {/* Featured strip */}
-        {featured.length > 0 && (
-          <section className="mt-7">
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-base font-bold text-neutral-900">Featured listings</h2>
-            </div>
-            <div className="flex gap-3 overflow-x-auto pb-2 scroll-thin">
-              {featured.map((l) => (
-                <Link
-                  key={l.id}
-                  href={href(l.id)}
-                  className="group w-[230px] shrink-0 overflow-hidden rounded-2xl border border-neutral-200 bg-white transition hover:shadow-lg"
-                >
-                  <div className="relative overflow-hidden">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={l.cover_url ?? listingImage(l)}
-                      alt={l.title}
-                      className="aspect-[230/150] w-full object-cover transition duration-300 group-hover:scale-[1.04]"
-                    />
-                    <span className="absolute left-2 top-2 rounded-full bg-[#E2A600] px-2 py-0.5 text-[10px] font-bold text-[#3f3005]">Featured</span>
-                  </div>
-                  <div className="p-3">
-                    <div className="font-bold text-brand-500">{new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(l.price)}</div>
-                    <div className="body-md mt-0.5 truncate text-neutral-600">{l.title}</div>
-                    <div className="mt-0.5 truncate text-xs text-neutral-400">{l.location_area}, {l.location_city}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* Featured carousel banner */}
+        <div className="mt-5">
+          <FeaturedCarousel authed={authed} />
+        </div>
 
         {/* Listings feed */}
         <section className="mt-7">

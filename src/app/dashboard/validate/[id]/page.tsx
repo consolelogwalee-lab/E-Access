@@ -48,15 +48,15 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
     <div>
       <Topbar crumbs={[["Main", "/dashboard"], ["Verify Property", "/dashboard/validate"], [R.reference, ""]]} showRegion={false} />
 
-      <div className="mt-5 flex items-center gap-3">
-        <Link href="/dashboard/validate" className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50">
-          <ArrowLeft size={15} />
-        </Link>
-        <div>
-          <h1 className="h3 text-neutral-900">{R.property_title}</h1>
-          <p className="text-xs text-neutral-400">{R.reference} • {R.address}, {R.city}, {R.state}</p>
+      <div className="mt-5">
+        <div className="flex items-center gap-3">
+          <Link href="/dashboard/validate" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 hover:bg-neutral-50">
+            <ArrowLeft size={15} />
+          </Link>
+          <span className={`ml-auto rounded-full px-3 py-1.5 text-xs font-semibold ${meta.cls}`}>{meta.label}</span>
         </div>
-        <span className={`ml-auto rounded-full px-3.5 py-2 text-xs font-semibold ${meta.cls}`}>{meta.label}</span>
+        <h1 className="mt-3 text-[20px] font-semibold leading-tight text-neutral-900">{R.property_title}</h1>
+        <p className="mt-1 text-xs text-neutral-400">{R.reference} • {R.address}, {R.city}, {R.state}</p>
       </div>
 
       {R.status === "action_required" && R.admin_note && (
@@ -68,13 +68,13 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
       )}
 
       {R.status === "approved" && (
-        <div className="relative mt-6 overflow-hidden rounded-2xl border-2 border-[#E2A600]/40 bg-white p-8 print:border-black">
+        <div className="relative mt-6 overflow-hidden rounded-2xl border-2 border-[#E2A600]/40 bg-white p-5 md:p-8 print:border-black">
           <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-[#E2A600]/10" />
-          <div className="flex flex-wrap items-center gap-6">
-            <LogoMark size={64} />
+          <div className="flex flex-wrap items-center gap-4 md:gap-6">
+            <LogoMark size={52} />
             <div className="min-w-0 flex-1">
-              <div className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#E2A600]">Certificate of Verification</div>
-              <h2 className="display mt-1 text-[24px] text-neutral-950">This property has been verified and stamped</h2>
+              <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#E2A600] md:text-[11px] md:tracking-[0.25em]">Certificate of Verification</div>
+              <h2 className="display mt-1 text-[19px] leading-tight text-neutral-950 md:text-[24px]">This property has been verified and stamped</h2>
               <p className="body-md mt-1 text-neutral-500">
                 {R.property_title} at {R.address}, {R.city}, {R.state} passed document, title and registry checks
                 conducted by the E-Access verification team and its legal partners.

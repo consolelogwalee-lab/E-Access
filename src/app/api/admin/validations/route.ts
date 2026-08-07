@@ -1,8 +1,22 @@
 import { NextResponse } from "next/server";
-import { q, q1, run } from "@/lib/db";
+import { q, q1, run, nowIso, daysFromNowIso } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { notify } from "@/lib/notify";
 import { sendNotice } from "@/lib/email";
+
+/** Remove rejected requests that have been resolved for more than 7 days. */
+async function cleanupOldRejected() {
+  const cutoff = daysFromNowIso(-7);
+  const stale = await q<{ id: number }>(
+    "SELECT id FROM validation_requests WHERE status = 'rejected' AND resolved_at IS NOT NULL AND resolved_at < $1",
+    [cutoff]
+  );
+  for (const r of stale) {
+    await run("DELETE FROM validation_files WHERE request_id = $1", [Number(r.id)]);
+    await run("DELETE FROM validation_events WHERE request_id = $1", [Number(r.id)]);
+    await run("DELETE FROM validation_requests WHERE id = $1", [Number(r.id)]);
+  }
+}
 
 const FLOW: Record<string, string> = {
   in_review: "Review started by the verification team.",
@@ -15,6 +29,7 @@ const FLOW: Record<string, string> = {
 export async function GET() {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Admin only." }, { status: 403 });
+  await cleanupOldRejected();
   const requests = await q(
     `SELECT v.*, u.full_name AS owner_name, u.email AS owner_email,
        (SELECT COUNT(*) FROM validation_files f WHERE f.request_id = v.id AND f.kind = 'document') AS doc_count,
@@ -40,11 +55,13 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: "This request is already resolved." }, { status: 400 });
 
   const note = b.note ? String(b.note).slice(0, 500) : null;
+  const resolved = ["approved", "rejected"].includes(status) ? nowIso() : null;
   if (status === "approved") {
-    await run("UPDATE validation_requests SET status = $1, admin_note = $2, stamped_at = CURRENT_TIMESTAMP WHERE id = $3",
-      [status, note, id]);
+    await run("UPDATE validation_requests SET status = $1, admin_note = $2, stamped_at = CURRENT_TIMESTAMP, resolved_at = $3 WHERE id = $4",
+      [status, note, resolved, id]);
   } else {
-    await run("UPDATE validation_requests SET status = $1, admin_note = $2 WHERE id = $3", [status, note, id]);
+    await run("UPDATE validation_requests SET status = $1, admin_note = $2, resolved_at = COALESCE($3, resolved_at) WHERE id = $4",
+      [status, note, resolved, id]);
   }
   await run("INSERT INTO validation_events (request_id, status, note, actor) VALUES ($1,$2,$3,'team')",
     [id, status, note ?? FLOW[status]]);
@@ -66,5 +83,17 @@ export async function PATCH(req: Request) {
     note ?? FLOW[status],
     `/dashboard/validate/${id}`
   );
+  return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(req: Request) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Admin only." }, { status: 403 });
+  const b = await req.json().catch(() => ({}));
+  const id = Number(b.id);
+  if (!id) return NextResponse.json({ error: "No request specified." }, { status: 400 });
+  await run("DELETE FROM validation_files WHERE request_id = $1", [id]);
+  await run("DELETE FROM validation_events WHERE request_id = $1", [id]);
+  await run("DELETE FROM validation_requests WHERE id = $1", [id]);
   return NextResponse.json({ ok: true });
 }

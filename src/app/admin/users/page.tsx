@@ -1,6 +1,8 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { timeAgo } from "@/lib/format";
+import { appConfirm, toast } from "@/components/Ui";
 
 type AdminUser = {
   id: number; full_name: string; email: string; email_verified: number; avatar_color: string;
@@ -28,6 +30,24 @@ export default function AdminUsers() {
     load();
   }
 
+  async function remove(u: AdminUser) {
+    const ok = await appConfirm(
+      `Permanently delete ${u.full_name}? This removes their account, listings, messages and requests. This can't be undone.`,
+      "Delete user"
+    );
+    if (!ok) return;
+    setError("");
+    const res = await fetch("/api/admin/users", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: u.id }),
+    });
+    const d = await res.json();
+    if (!res.ok) { setError(d.error ?? "Failed."); return; }
+    toast("User deleted.", "success");
+    load();
+  }
+
   return (
     <div>
       <h1 className="h3 text-neutral-900">Users</h1>
@@ -44,6 +64,7 @@ export default function AdminUsers() {
               <th className="px-4 py-3 font-medium">Inquiries</th>
               <th className="px-4 py-3 font-medium">Joined</th>
               <th className="px-4 py-3 font-medium">Role</th>
+              <th className="px-4 py-3 font-medium"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-neutral-50">
@@ -81,6 +102,17 @@ export default function AdminUsers() {
                     <option value="user">user</option>
                     <option value="admin">admin</option>
                   </select>
+                </td>
+                <td className="px-4 py-3 text-right">
+                  {u.role !== "admin" && (
+                    <button
+                      onClick={() => remove(u)}
+                      aria-label={`Delete ${u.full_name}`}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-neutral-400 transition hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

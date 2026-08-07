@@ -1,11 +1,27 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { q1, run } from "@/lib/db";
-import { currentUser } from "@/lib/auth";
+import { currentUser, destroySession } from "@/lib/auth";
+import { deleteUserCascade } from "@/lib/users";
 
 export async function GET() {
   const user = await currentUser();
   return NextResponse.json({ user });
+}
+
+// Self-service account deletion.
+export async function DELETE() {
+  const user = await currentUser();
+  if (!user) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+  // The last admin shouldn't be able to lock the platform out of admin access.
+  if (user.role === "admin") {
+    const others = await q1<{ c: number | string }>("SELECT COUNT(*) AS c FROM users WHERE role = 'admin' AND id <> $1", [user.id]);
+    if (Number(others?.c ?? 0) === 0)
+      return NextResponse.json({ error: "You're the only admin. Make someone else an admin before deleting your account." }, { status: 400 });
+  }
+  await deleteUserCascade(user.id);
+  await destroySession();
+  return NextResponse.json({ ok: true });
 }
 
 export async function PATCH(req: Request) {

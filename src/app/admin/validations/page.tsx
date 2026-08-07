@@ -1,6 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Camera, FileText, ShieldCheck, X, Download } from "lucide-react";
+import { Camera, FileText, ShieldCheck, X, Download, Trash2, ArrowDownUp } from "lucide-react";
+import { appConfirm, toast } from "@/components/Ui";
 
 type Req = {
   id: number; reference: string; property_title: string; property_type: string;
@@ -35,6 +36,8 @@ export default function AdminValidationsPage() {
   const [note, setNote] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sortAsc, setSortAsc] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const load = useCallback(() => {
     fetch("/api/admin/validations").then((r) => r.json()).then((d) => setRequests(d.requests ?? []));
@@ -47,6 +50,23 @@ export default function AdminValidationsPage() {
   }, [openId]);
 
   const open = requests?.find((r) => r.id === openId) ?? null;
+
+  const shown = (requests ?? [])
+    .filter((r) => statusFilter === "all" || r.status === statusFilter)
+    .slice()
+    .sort((a, b) => a.property_title.localeCompare(b.property_title) * (sortAsc ? 1 : -1));
+
+  async function removeReq(r: Req) {
+    const ok = await appConfirm(`Delete validation request "${r.property_title}" (${r.reference})? This can't be undone.`, "Delete request");
+    if (!ok) return;
+    const res = await fetch("/api/admin/validations", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: r.id }),
+    });
+    if (res.ok) { toast("Request deleted.", "success"); setOpenId(null); load(); }
+    else toast("Could not delete.", "warn");
+  }
 
   async function act(status: string, needsNote?: boolean) {
     if (needsNote && !note.trim()) { setErr("Add a note for the client first (what needs to change / why)."); return; }
@@ -71,7 +91,32 @@ export default function AdminValidationsPage() {
         Client-submitted properties awaiting verification. Move each request through review, legal checks, and stamping. Every action notifies the client.
       </p>
 
-      <div className="mt-6 space-y-2">
+      {/* Controls */}
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="h-9 rounded-lg border border-neutral-200 bg-white px-3 text-xs font-semibold text-neutral-700 outline-none"
+        >
+          <option value="all">All statuses</option>
+          <option value="submitted">New</option>
+          <option value="in_review">In Review</option>
+          <option value="legal_review">With Legal</option>
+          <option value="action_required">Awaiting Client</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button
+          onClick={() => setSortAsc((s) => !s)}
+          className="flex h-9 items-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-3 text-xs font-semibold text-neutral-700 transition hover:border-neutral-400"
+        >
+          <ArrowDownUp size={13} /> Name {sortAsc ? "A–Z" : "Z–A"}
+        </button>
+        <span className="text-xs text-neutral-400">{shown.length} shown</span>
+        <span className="ml-auto text-[11px] text-neutral-400">Rejected requests auto-delete after 7 days.</span>
+      </div>
+
+      <div className="mt-4 space-y-2">
         {requests === null && <div className="h-40 animate-pulse rounded-2xl bg-white" />}
         {requests?.length === 0 && (
           <div className="flex h-[220px] flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white/60">
@@ -79,7 +124,7 @@ export default function AdminValidationsPage() {
             <p className="body-md mt-3 text-neutral-400">No validation requests yet.</p>
           </div>
         )}
-        {requests?.map((r) => {
+        {shown.map((r) => {
           const meta = STATUS_META[r.status] ?? STATUS_META.submitted;
           return (
             <button key={r.id} onClick={() => setOpenId(r.id)} className="flex w-full items-center gap-4 rounded-2xl border border-neutral-200 bg-white p-4 text-left transition hover:border-neutral-400">
@@ -151,6 +196,13 @@ export default function AdminValidationsPage() {
                   ))}
                 </ul>
               </div>
+
+              <button
+                onClick={() => removeReq(open)}
+                className="flex items-center gap-2 rounded-xl border border-red-200 px-3.5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+              >
+                <Trash2 size={15} /> Delete this request
+              </button>
             </div>
 
             {!["approved", "rejected"].includes(open.status) && (

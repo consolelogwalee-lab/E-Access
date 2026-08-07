@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Check, Camera, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Check, Camera, Trash2, AlertTriangle } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
+import { appConfirm } from "@/components/Ui";
 
 const TYPES = ["land", "apartment", "duplex", "commercial"];
 const BUDGETS = ["Under ₦5m", "₦5m – ₦50m", "₦50m – ₦150m", "Above ₦150m"];
@@ -10,6 +12,7 @@ const CITIES = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Enugu"];
 type Prefs = { purpose?: string; types?: string[]; budget?: string; locations?: string[] };
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -79,6 +82,20 @@ export default function SettingsPage() {
     setMsg({ section: "password", text: res.ok ? "Password updated." : d.error, ok: res.ok });
     if (res.ok) { setCurrentPassword(""); setNewPassword(""); }
     setBusy("");
+  }
+
+  async function deleteAccount() {
+    const ok = await appConfirm(
+      "Delete your account permanently? Everything tied to it will be removed and you can't undo this.",
+      "Delete account"
+    );
+    if (!ok) return;
+    setBusy("delete");
+    const res = await fetch("/api/me", { method: "DELETE" });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) { setMsg({ section: "delete", text: d.error ?? "Could not delete your account.", ok: false }); setBusy(""); return; }
+    router.push("/");
+    router.refresh();
   }
 
   async function savePrefs() {
@@ -232,6 +249,24 @@ export default function SettingsPage() {
             Save Preferences
           </button>
           <Msg section="prefs" />
+        </div>
+
+        {/* Danger zone */}
+        <div className="rounded-2xl border border-red-200 bg-red-50/40 p-6 lg:col-span-2">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-red-700">
+            <AlertTriangle size={17} /> Delete account
+          </h2>
+          <p className="body-r mt-1 text-neutral-500">
+            Permanently delete your account and everything tied to it: listings, messages, saved items and validation requests. This can&apos;t be undone.
+          </p>
+          <button
+            onClick={deleteAccount}
+            disabled={busy === "delete"}
+            className="btn-text mt-4 flex h-11 items-center gap-2 rounded-xl border border-red-300 bg-white px-5 text-red-600 transition hover:bg-red-50 disabled:opacity-60"
+          >
+            <Trash2 size={15} /> {busy === "delete" ? "Deleting…" : "Delete my account"}
+          </button>
+          <Msg section="delete" />
         </div>
       </div>
     </div>

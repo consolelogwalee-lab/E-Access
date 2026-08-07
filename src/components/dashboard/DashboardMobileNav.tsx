@@ -65,7 +65,13 @@ export function DashboardMobileNav({ user }: { user: User }) {
         <div className="flex items-center justify-between px-4 py-3">
           <Link href="/dashboard" className="shrink-0"><LogoFull light size={32} /></Link>
           <div className="flex items-center gap-2">
-            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-neutral-200 transition active:scale-95">
+            <button onClick={() => window.dispatchEvent(new Event("eaccess-filters-open"))} aria-label="Filters" className={iconBtn}>
+              <SlidersHorizontal size={18} />
+            </button>
+            <Link href="/dashboard/notifications" aria-label="Notifications" className={`${iconBtn} relative`}>
+              <Bell size={18} />
+            </Link>
+            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-brand-900/15 transition active:scale-95">
               {user.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
@@ -75,12 +81,6 @@ export function DashboardMobileNav({ user }: { user: User }) {
                 </span>
               )}
             </button>
-            <button onClick={() => window.dispatchEvent(new Event("eaccess-filters-open"))} aria-label="Filters" className={iconBtn}>
-              <SlidersHorizontal size={18} />
-            </button>
-            <Link href="/dashboard/notifications" aria-label="Notifications" className={`${iconBtn} relative`}>
-              <Bell size={18} />
-            </Link>
           </div>
         </div>
       </header>

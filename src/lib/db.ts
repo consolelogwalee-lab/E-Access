@@ -370,6 +370,8 @@ async function migrate() {
   try { await d.run("ALTER TABLE threads ADD COLUMN kind TEXT NOT NULL DEFAULT 'direct'"); } catch { /* exists */ }
   // profile photo (falls back to coloured initials when null)
   try { await d.run("ALTER TABLE users ADD COLUMN avatar_url TEXT"); } catch { /* exists */ }
+  // when a validation request was approved/rejected (ISO) — drives auto-cleanup of old rejects
+  try { await d.run("ALTER TABLE validation_requests ADD COLUMN resolved_at TEXT"); } catch { /* exists */ }
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
   // Wale's account gets admin so the Admin Panel link is visible in the sidebar

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Building2, Users, Inbox, FileCheck2, ArrowLeft, LogOut, ShieldCheck, Menu, X, Newspaper, HandCoins,
-  Handshake, UserRoundCheck, SearchCheck,
+  UserRoundCheck, SearchCheck,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
@@ -14,7 +14,6 @@ const NAV = [
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Leads", href: "/admin/leads", icon: Inbox },
   { label: "Offers", href: "/admin/offers", icon: HandCoins },
-  { label: "Transactions", href: "/admin/transactions", icon: Handshake },
   { label: "Validations", href: "/admin/validations", icon: ShieldCheck },
   { label: "Verifications", href: "/admin/verifications", icon: FileCheck2 },
   { label: "Agents", href: "/admin/agents", icon: UserRoundCheck },
