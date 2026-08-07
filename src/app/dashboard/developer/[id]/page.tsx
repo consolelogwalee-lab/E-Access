@@ -51,18 +51,24 @@ export default function DeveloperPage({ params }: { params: Promise<{ id: string
         <ArrowLeft size={15} /> Back
       </Link>
 
-      <div className="mt-5 flex flex-wrap items-center gap-5 rounded-2xl border border-neutral-200 bg-white p-6">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white" style={{ background: d.avatar_color }}>
-          {d.full_name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
-            {d.full_name} <BadgeCheck size={17} className="text-lime-600" />
+      <div className="mt-5 rounded-2xl border border-neutral-200 bg-white p-5 md:p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-5">
+          <div className="flex min-w-0 items-center gap-4">
+            <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white md:h-16 md:w-16 md:text-xl" style={{ background: d.avatar_color }}>
+              {d.full_name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
+            </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
+                <span className="truncate">{d.full_name}</span>
+                <BadgeCheck size={17} className="shrink-0 text-lime-600" />
+              </div>
+              <p className="body-md text-neutral-400">
+                Verified property developer • Member since {timeAgo(d.created_at)}
+              </p>
+            </div>
           </div>
-          <p className="body-md text-neutral-400">
-            Verified property developer • Member since {timeAgo(d.created_at).replace(" ago", "")} ago
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2 text-xs">
+
+          <div className="flex flex-wrap gap-2 text-xs md:ml-auto md:shrink-0">
             <span className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 font-medium text-neutral-600">
               <Building2 size={12} /> {data.stats.total} active listings
             </span>
@@ -71,7 +77,11 @@ export default function DeveloperPage({ params }: { params: Promise<{ id: string
             </span>
           </div>
         </div>
-        <button onClick={message} className="btn-text flex h-11 items-center gap-2 rounded-xl bg-brand-900 px-6 text-white transition hover:bg-brand-500">
+
+        <button
+          onClick={message}
+          className="btn-text mt-4 flex h-11 w-full shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-brand-900 px-6 text-white transition hover:bg-brand-500 sm:w-auto"
+        >
           <MessageSquare size={15} /> Message Developer
         </button>
       </div>

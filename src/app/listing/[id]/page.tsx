@@ -6,6 +6,7 @@ import { LogoFull } from "@/components/Logo";
 import { q1, q } from "@/lib/db";
 import { naira } from "@/lib/format";
 import { listingImage, poolImage } from "@/lib/images";
+import { PhotoGallery } from "@/components/PhotoGallery";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -58,16 +59,11 @@ export default async function PublicListingPage({ params }: { params: Promise<{ 
           <div className="text-[28px] font-bold text-brand-500">{naira(Number(L.price))}</div>
         </div>
 
-        <div className="mt-6 grid gap-2 md:grid-cols-[1fr_240px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={listingImage(L)} alt={L.title} className="h-[300px] w-full rounded-2xl object-cover md:h-[440px]" />
-          <div className="hidden flex-col gap-2 md:flex">
-            {[1, 2].map((o) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img key={o} src={o === 1 ? listingImage(L, 1) : poolImage(L.image_seed, o)} alt="" className="h-[216px] w-full rounded-2xl object-cover" />
-            ))}
-          </div>
-        </div>
+        <PhotoGallery
+          photos={[listingImage(L), listingImage(L, 1), listingImage(L, 2), poolImage(L.image_seed, 3), poolImage(L.image_seed, 4)]}
+          alt={L.title}
+          verified={L.verification_status === "verified"}
+        />
 
         <div className="mt-6 flex flex-wrap gap-2">
           {L.bedrooms ? <span className="flex items-center gap-1.5 rounded-full bg-neutral-100 px-3.5 py-2 text-sm text-neutral-700"><BedDouble size={14} /> {L.bedrooms} Bedrooms</span> : null}

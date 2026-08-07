@@ -94,10 +94,10 @@ export function BookInspectionDrawer({
                 View Inspection Status
               </Link>
               <Link
-                href="/dashboard/messages"
+                href="/api/consultant/start"
                 className="btn-text flex h-11 items-center justify-center rounded-xl border border-neutral-200 px-2 text-neutral-800 transition hover:bg-neutral-50"
               >
-                Message Consultant
+                Speak to a Consultant
               </Link>
             </div>
           </div>
