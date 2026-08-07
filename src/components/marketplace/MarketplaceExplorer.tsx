@@ -86,10 +86,10 @@ function Explorer({ authed, userName }: Props) {
   if (band >= 0) activeChips.push({ label: PRICE_BANDS[band].label, clear: () => setBand(-1) });
 
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-white">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-neutral-100 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-3 px-4 py-3 lg:px-8">
+      <header className="sticky top-0 z-30 px-[18px] pt-3 lg:border-b lg:border-neutral-100 lg:bg-white/95 lg:px-0 lg:pt-0 lg:backdrop-blur">
+        <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-3 rounded-2xl border border-neutral-200/70 bg-white/90 py-2 pl-3.5 pr-2 shadow-[0_8px_30px_rgba(0,0,0,0.10)] backdrop-blur-xl lg:rounded-none lg:border-0 lg:bg-transparent lg:px-8 lg:py-3 lg:shadow-none lg:backdrop-blur-none">
           <Link href="/"><LogoFull light size={30} /></Link>
           <div className="hidden flex-1 items-center px-6 md:flex">
             <div className="relative w-full max-w-[520px]">

@@ -34,11 +34,14 @@ export function DashboardMobileNav({ user }: { user: User }) {
   const [locOpen, setLocOpen] = useState(false);
   const [term, setTerm] = useState("");
   const [unread, setUnread] = useState(0);
+  const [notifUnread, setNotifUnread] = useState(0);
 
   useEffect(() => {
     let alive = true;
-    const load = () =>
+    const load = () => {
       fetch("/api/messages/unread").then((r) => r.json()).then((d) => { if (alive) setUnread(d.unread ?? 0); }).catch(() => {});
+      fetch("/api/notifications").then((r) => r.json()).then((d) => { if (alive) setNotifUnread(d.unread ?? 0); }).catch(() => {});
+    };
     load();
     const t = setInterval(load, 25000);
     return () => { alive = false; clearInterval(t); };
@@ -56,22 +59,25 @@ export function DashboardMobileNav({ user }: { user: User }) {
     router.push("/auth/login");
   }
 
-  const iconBtn = "flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-200 bg-white text-neutral-600 transition hover:bg-neutral-50 active:scale-95";
+  const iconBtn = "flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700 transition hover:bg-neutral-200 active:scale-95";
 
   return (
     <>
-      {/* ===== Top bar (Figma header) ===== */}
-      <header className="fixed inset-x-0 top-0 z-30 border-b border-neutral-100 bg-white/95 backdrop-blur lg:hidden">
-        <div className="flex items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="shrink-0"><LogoFull light size={32} /></Link>
-          <div className="flex items-center gap-2">
+      {/* ===== Top bar: floating pill, mirrors the bottom dock ===== */}
+      <header className="fixed inset-x-0 top-0 z-30 px-[18px] pt-3 lg:hidden">
+        <div className="flex items-center justify-between gap-2 rounded-2xl border border-neutral-200/70 bg-white/90 py-2 pl-3.5 pr-2 shadow-[0_8px_30px_rgba(0,0,0,0.10)] backdrop-blur-xl">
+          <Link href="/dashboard" className="shrink-0"><LogoFull light size={30} /></Link>
+          <div className="flex items-center gap-1.5">
             <button onClick={() => window.dispatchEvent(new Event("eaccess-filters-open"))} aria-label="Filters" className={iconBtn}>
-              <SlidersHorizontal size={18} />
+              <SlidersHorizontal size={17} />
             </button>
             <Link href="/dashboard/notifications" aria-label="Notifications" className={`${iconBtn} relative`}>
-              <Bell size={18} />
+              <Bell size={17} />
+              {notifUnread > 0 && (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500 ring-2 ring-neutral-100" />
+              )}
             </Link>
-            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-brand-900/15 transition active:scale-95">
+            <button onClick={() => setProfileOpen(true)} aria-label="Profile" className="h-9 w-9 shrink-0 overflow-hidden rounded-xl ring-1 ring-brand-900/10 transition active:scale-95">
               {user.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />

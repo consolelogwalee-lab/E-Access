@@ -1,9 +1,15 @@
 "use client";
-import { use, useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Camera, FileText, Printer, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Camera, FileText, ImagePlus, Printer, Send, ShieldCheck, Trash2 } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { LogoMark } from "@/components/Logo";
+import { appConfirm, toast } from "@/components/Ui";
+
+const DOC_TYPES = [
+  "Certificate of Occupancy", "Survey Plan", "Deed of Assignment", "Governor's Consent",
+  "Excision / Gazette", "Allocation Letter", "Purchase Receipt", "Other Supporting Document",
+];
 
 type Req = {
   id: number; reference: string; property_title: string; property_type: string;
@@ -20,16 +26,68 @@ const STATUS_META: Record<string, { label: string; cls: string; dot: string }> =
   action_required: { label: "Action Required", cls: "bg-red-50 text-red-600", dot: "bg-red-500" },
   approved: { label: "Approved & Stamped", cls: "bg-lime-50 text-lime-700", dot: "bg-lime-500" },
   rejected: { label: "Not Approved", cls: "bg-neutral-100 text-neutral-500", dot: "bg-neutral-400" },
+  resubmitted: { label: "Sent back for review", cls: "bg-blue-50 text-blue-700", dot: "bg-blue-500" },
 };
 
 export default function ValidationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [data, setData] = useState<{ request: Req; files: File_[]; events: Event_[] } | null>(null);
 
+  // Response to an "action required" request
+  const [newDocs, setNewDocs] = useState<{ docType: string; fileName: string; storagePath?: string | null; uploading?: boolean }[]>([]);
+  const [newPhotos, setNewPhotos] = useState<{ fileName: string; storagePath?: string | null }[]>([]);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [removeIds, setRemoveIds] = useState<number[]>([]);
+  const [reply, setReply] = useState("");
+  const [sending, setSending] = useState(false);
+  const [respErr, setRespErr] = useState("");
+  const [docType, setDocType] = useState(DOC_TYPES[0]);
+  const docInput = useRef<HTMLInputElement>(null);
+  const photoInput = useRef<HTMLInputElement>(null);
+
   const load = useCallback(() => {
     fetch(`/api/validations/${id}`).then((r) => r.json()).then((d) => { if (d.request) setData(d); });
   }, [id]);
   useEffect(() => { load(); }, [load]);
+
+  async function uploadOne(f: File): Promise<string | null> {
+    try {
+      const fd = new FormData();
+      fd.append("file", f);
+      fd.append("kind", "document");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const d = await res.json();
+      return d.ok ? d.path : null;
+    } catch { return null; }
+  }
+
+  async function sendBack() {
+    setRespErr("");
+    if (newDocs.some((d) => d.uploading) || uploadingPhotos) {
+      setRespErr("Please wait for your files to finish uploading."); return;
+    }
+    const failed = newDocs.filter((d) => !d.uploading && !d.storagePath);
+    if (failed.length > 0) { setRespErr("Some files didn't upload. Remove and re-attach them, then try again."); return; }
+    const ok = await appConfirm("Send this request back to the verification team with your changes?", "Send back");
+    if (!ok) return;
+    setSending(true);
+    const res = await fetch(`/api/validations/${id}/respond`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        note: reply.trim() || null,
+        removeIds,
+        documents: newDocs.filter((d) => d.storagePath),
+        photos: newPhotos.filter((p) => p.storagePath),
+      }),
+    });
+    const d = await res.json().catch(() => ({}));
+    setSending(false);
+    if (!res.ok) { setRespErr(d.error ?? "Could not send this back. Try again."); return; }
+    setNewDocs([]); setNewPhotos([]); setRemoveIds([]); setReply("");
+    toast("Sent back to the verification team.", "success");
+    load();
+  }
 
   if (!data) {
     return (
@@ -59,11 +117,120 @@ export default function ValidationDetailPage({ params }: { params: Promise<{ id:
         <p className="mt-1 text-xs text-neutral-400">{R.reference} • {R.address}, {R.city}, {R.state}</p>
       </div>
 
-      {R.status === "action_required" && R.admin_note && (
-        <div className="mt-5 rounded-2xl border border-red-100 bg-red-50 p-5">
-          <div className="text-sm font-semibold text-red-700">The team needs something from you</div>
-          <p className="body-md mt-1 text-red-600">{R.admin_note}</p>
-          <p className="mt-2 text-xs text-red-400">Reply through Messages or submit a new request with the corrected documents.</p>
+      {R.status === "action_required" && (
+        <div className="mt-5 overflow-hidden rounded-2xl border border-red-100">
+          {R.admin_note && (
+            <div className="bg-red-50 p-5">
+              <div className="text-sm font-semibold text-red-700">The team needs something from you</div>
+              <p className="body-md mt-1 text-red-600">{R.admin_note}</p>
+            </div>
+          )}
+
+          <div className="bg-white p-5">
+            <h3 className="text-sm font-semibold text-neutral-900">Update your submission</h3>
+            <p className="body-md mt-1 text-neutral-500">
+              Add what the team asked for, remove anything that was wrong, then send it back.
+            </p>
+
+            {/* Existing files, removable */}
+            {data.files.length > 0 && (
+              <ul className="mt-4 space-y-1.5">
+                {data.files.map((f) => {
+                  const marked = removeIds.includes(f.id);
+                  return (
+                    <li key={f.id} className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-sm ${marked ? "bg-red-50 text-red-400 line-through" : "bg-neutral-50 text-neutral-700"}`}>
+                      {f.kind === "photo" ? <Camera size={15} className="shrink-0 text-neutral-400" /> : <FileText size={15} className="shrink-0 text-neutral-400" />}
+                      <span className="min-w-0 flex-1 truncate">{f.doc_type ? `${f.doc_type}: ` : ""}{f.file_name}</span>
+                      <button
+                        onClick={() => setRemoveIds((r) => marked ? r.filter((x) => x !== f.id) : [...r, f.id])}
+                        className={`shrink-0 text-xs font-semibold ${marked ? "text-neutral-500 hover:text-neutral-800" : "text-neutral-400 hover:text-red-600"}`}
+                      >
+                        {marked ? "Undo" : <Trash2 size={14} />}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+
+            {/* Add documents */}
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <select value={docType} onChange={(e) => setDocType(e.target.value)} className="h-10 rounded-xl border border-neutral-200 bg-white px-3 text-sm outline-none focus:border-neutral-400">
+                {DOC_TYPES.map((t) => <option key={t}>{t}</option>)}
+              </select>
+              <button onClick={() => docInput.current?.click()} className="flex h-10 items-center gap-1.5 rounded-xl border border-neutral-200 px-3.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400">
+                <FileText size={15} /> Add document
+              </button>
+              <button onClick={() => photoInput.current?.click()} className="flex h-10 items-center gap-1.5 rounded-xl border border-neutral-200 px-3.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400">
+                <ImagePlus size={15} /> Add photos
+              </button>
+            </div>
+            <input
+              ref={docInput} type="file" hidden accept="image/*,application/pdf"
+              onChange={async (e) => {
+                const f = e.target.files?.[0]; e.target.value = "";
+                if (!f) return;
+                const entry = { docType, fileName: f.name, uploading: true };
+                setNewDocs((d) => [...d, entry]);
+                const path = await uploadOne(f);
+                setNewDocs((d) => d.map((x) => (x.fileName === f.name && x.uploading ? { ...x, uploading: false, storagePath: path } : x)));
+              }}
+            />
+            <input
+              ref={photoInput} type="file" hidden accept="image/*" multiple
+              onChange={async (e) => {
+                const list = Array.from(e.target.files ?? []); e.target.value = "";
+                if (!list.length) return;
+                setUploadingPhotos(true);
+                for (const f of list.slice(0, 12)) {
+                  const path = await uploadOne(f);
+                  setNewPhotos((p) => [...p, { fileName: f.name, storagePath: path }]);
+                }
+                setUploadingPhotos(false);
+              }}
+            />
+
+            {(newDocs.length > 0 || newPhotos.length > 0 || uploadingPhotos) && (
+              <ul className="mt-3 space-y-1.5">
+                {newDocs.map((d, i) => (
+                  <li key={`d${i}`} className="flex items-center gap-2.5 rounded-xl bg-lime-50 px-3.5 py-2.5 text-sm text-neutral-700">
+                    <FileText size={15} className="shrink-0 text-neutral-400" />
+                    <span className="min-w-0 flex-1 truncate">
+                      <span className="font-medium">{d.docType}:</span> {d.fileName}
+                      {d.uploading ? <span className="ml-2 text-xs text-amber-600">uploading…</span>
+                        : d.storagePath ? <span className="ml-2 text-xs text-lime-600">uploaded ✓</span>
+                        : <span className="ml-2 text-xs font-semibold text-red-600">failed, remove and retry</span>}
+                    </span>
+                    <button onClick={() => setNewDocs(newDocs.filter((_, j) => j !== i))} aria-label="Remove" className="shrink-0 text-neutral-400 hover:text-red-500"><Trash2 size={14} /></button>
+                  </li>
+                ))}
+                {newPhotos.map((p, i) => (
+                  <li key={`p${i}`} className="flex items-center gap-2.5 rounded-xl bg-lime-50 px-3.5 py-2.5 text-sm text-neutral-700">
+                    <Camera size={15} className="shrink-0 text-neutral-400" />
+                    <span className="min-w-0 flex-1 truncate">{p.fileName}{p.storagePath ? "" : " (failed)"}</span>
+                    <button onClick={() => setNewPhotos(newPhotos.filter((_, j) => j !== i))} aria-label="Remove" className="shrink-0 text-neutral-400 hover:text-red-500"><Trash2 size={14} /></button>
+                  </li>
+                ))}
+                {uploadingPhotos && <li className="px-1 text-xs text-amber-600">Uploading photos…</li>}
+              </ul>
+            )}
+
+            <textarea
+              value={reply}
+              onChange={(e) => setReply(e.target.value)}
+              rows={3}
+              placeholder="Add a short note for the team (optional)"
+              className="mt-4 w-full rounded-xl border border-neutral-200 px-3.5 py-2.5 text-sm outline-none focus:border-neutral-400"
+            />
+            {respErr && <p className="mt-2 text-xs text-red-600">{respErr}</p>}
+            <button
+              onClick={sendBack}
+              disabled={sending}
+              className="btn-text mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-neutral-950 text-white transition hover:bg-neutral-800 disabled:opacity-50 sm:w-auto sm:px-6"
+            >
+              <Send size={15} /> {sending ? "Sending…" : "Send back for review"}
+            </button>
+          </div>
         </div>
       )}
 

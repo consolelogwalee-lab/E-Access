@@ -19,6 +19,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
   action_required: { label: "Awaiting Client", cls: "bg-red-50 text-red-600" },
   approved: { label: "Approved & Stamped", cls: "bg-lime-50 text-lime-700" },
   rejected: { label: "Rejected", cls: "bg-neutral-100 text-neutral-500" },
+  resubmitted: { label: "Client sent it back", cls: "bg-blue-50 text-blue-700" },
 };
 
 const ACTIONS: { status: string; label: string; cls: string; needsNote?: boolean }[] = [
