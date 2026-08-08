@@ -9,6 +9,7 @@ import {
   Newspaper, Building2, ClipboardList,
 } from "lucide-react";
 import { LogoFull } from "@/components/Logo";
+import { openConsultation } from "@/components/ConsultationHost";
 
 type User = { full_name: string; email: string; avatar_color: string; role?: string; avatar_url?: string | null };
 
@@ -192,9 +193,12 @@ export function DashboardMobileNav({ user }: { user: User }) {
               <Link href="/dashboard/settings" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 rounded-xl border border-neutral-200 px-3.5 py-3 text-sm font-semibold text-neutral-800">
                 <Settings size={17} className="text-neutral-500" /> Profile Settings
               </Link>
-              <a href="/api/consultant/start" className="flex items-center gap-3 rounded-xl border border-[#E2A600]/30 bg-[#E2A600]/10 px-3.5 py-3 text-sm font-semibold text-[#9a7400]">
+              <button
+                onClick={() => { setProfileOpen(false); openConsultation(); }}
+                className="flex items-center gap-3 rounded-xl border border-[#E2A600]/30 bg-[#E2A600]/10 px-3.5 py-3 text-sm font-semibold text-[#9a7400]"
+              >
                 <Headset size={17} /> Speak to a Consultant
-              </a>
+              </button>
               {user.role === "admin" && (
                 <Link href="/admin" onClick={() => setProfileOpen(false)} className="flex items-center gap-3 rounded-xl border border-neutral-200 px-3.5 py-3 text-sm font-semibold text-neutral-800">
                   <ShieldIcon size={17} className="text-neutral-500" /> Admin Panel

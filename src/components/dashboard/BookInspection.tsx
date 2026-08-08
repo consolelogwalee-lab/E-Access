@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { X, MapPinCheckInside, Video, Calendar, Clock, BadgeCheck } from "lucide-react";
 import Link from "next/link";
+import { openConsultation } from "@/components/ConsultationHost";
 
 export function BookInspectionDrawer({
   listingId, listingTitle, listingLocation = "", initialDate = "", initialTime = "", open, onClose,
@@ -93,12 +94,12 @@ export function BookInspectionDrawer({
               >
                 View Inspection Status
               </Link>
-              <Link
-                href="/api/consultant/start"
+              <button
+                onClick={() => openConsultation()}
                 className="btn-text flex h-11 items-center justify-center rounded-xl border border-neutral-200 px-2 text-neutral-800 transition hover:bg-neutral-50"
               >
                 Speak to a Consultant
-              </Link>
+              </button>
             </div>
           </div>
         ) : (

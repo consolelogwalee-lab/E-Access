@@ -8,6 +8,7 @@ import {
 import { LogOut, Plus, Headphones } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LogoFull } from "@/components/Logo";
+import { openConsultation } from "@/components/ConsultationHost";
 
 const MAIN = [
   { label: "Home", href: "/", icon: Widget6, neverActive: true },
@@ -159,13 +160,13 @@ export function Sidebar({ user }: { user: { full_name: string; email: string; av
         <ul className="mt-2.5 space-y-1">
           {SECONDARY.map((item) => <NavItem key={item.label} item={item} />)}
         </ul>
-        <a
-          href="/api/consultant/start"
+        <button
+          onClick={() => openConsultation()}
           className="mt-4 flex w-full items-center gap-3 rounded-xl border border-[#E2A600]/30 bg-[#E2A600]/10 px-3.5 py-2.5 text-left text-[13px] font-semibold text-[#E2A600] transition hover:bg-[#E2A600]/15"
         >
           <Headphones size={16} />
           Speak to a Consultant
-        </a>
+        </button>
         <button
           onClick={() => window.dispatchEvent(new Event("eaccess-tour-open"))}
           className="mt-2 flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-[13px] font-medium text-white/45 transition hover:bg-white/[0.04] hover:text-white/80"

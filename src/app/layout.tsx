@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { UiHost } from "@/components/Ui";
 import { RouteLoader } from "@/components/RouteLoader";
+import { ConsultationHost } from "@/components/ConsultationHost";
 
 export const metadata: Metadata = {
   title: "E-Access | Real Land. Real Owners. Real Peace of Mind.",
@@ -18,6 +19,7 @@ export default function RootLayout({
         {children}
         <RouteLoader />
         <UiHost />
+        <ConsultationHost />
       </body>
     </html>
   );

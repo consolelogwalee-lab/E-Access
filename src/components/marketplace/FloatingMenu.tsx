@@ -5,8 +5,9 @@ import {
   Newspaper, Headset, LayoutDashboard, LogIn, UserPlus,
 } from "lucide-react";
 import { LogoFull } from "@/components/Logo";
+import { openConsultation } from "@/components/ConsultationHost";
 
-type Entry = { label: string; href: string; icon: typeof Home; gated?: boolean };
+type Entry = { label: string; href: string; icon: typeof Home; gated?: boolean; consult?: boolean };
 
 // Priority order: Home, Discover, then the top features, then the rest.
 const ENTRIES: Entry[] = [
@@ -16,7 +17,7 @@ const ENTRIES: Entry[] = [
   { label: "Messages", href: "/dashboard/messages", icon: MessageSquare, gated: true },
   { label: "Inspections", href: "/dashboard/inspections", icon: CalendarCheck2, gated: true },
   { label: "Saved Listings", href: "/dashboard/saved", icon: Heart, gated: true },
-  { label: "Speak to a Consultant", href: "/api/consultant/start", icon: Headset, gated: false },
+  { label: "Speak to a Consultant", href: "/auth/login?next=%2Fdashboard%3Fconsult%3D1", icon: Headset, consult: true },
   { label: "News & Info", href: "/news", icon: Newspaper },
 ];
 
@@ -52,17 +53,29 @@ export function FloatingMenu({
         <div className="grid grid-cols-2 gap-2.5">
           {ENTRIES.map((e) => {
             const Icon = e.icon;
-            return (
-              <Link
-                key={e.label}
-                href={hrefFor(e)}
-                onClick={onClose}
-                className="flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-3.5 py-3 text-sm font-semibold text-neutral-800 transition active:scale-[0.98] hover:border-neutral-300"
-              >
+            const inner = (
+              <>
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-900/5 text-brand-900">
                   <Icon size={17} />
                 </span>
                 <span className="min-w-0 leading-tight">{e.label}</span>
+              </>
+            );
+            const cls =
+              "flex items-center gap-3 rounded-2xl border border-neutral-200 bg-white px-3.5 py-3 text-left text-sm font-semibold text-neutral-800 transition active:scale-[0.98] hover:border-neutral-300";
+
+            // Signed in, the consultant entry opens the intake sheet rather than
+            // dropping the user straight into an empty conversation.
+            if (e.consult && authed) {
+              return (
+                <button key={e.label} onClick={() => { onClose(); openConsultation(); }} className={cls}>
+                  {inner}
+                </button>
+              );
+            }
+            return (
+              <Link key={e.label} href={hrefFor(e)} onClick={onClose} className={cls}>
+                {inner}
               </Link>
             );
           })}

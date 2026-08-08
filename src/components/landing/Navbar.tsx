@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { LogoMark } from "@/components/Logo";
+import { openConsultation } from "@/components/ConsultationHost";
 
 const NAVY = "#1B1F4E";
 
@@ -66,12 +67,15 @@ export function Navbar() {
                 ["Browse listings", "/"],
                 ["News & info center", "/news"],
                 ["Verified agents", "/agents"],
-                ["Speak to a consultant", "/api/consultant/start"],
+                ["Speak to a consultant", loggedIn ? "#consult" : "/auth/login?next=%2Fdashboard%3Fconsult%3D1"],
               ].map(([label, href]) => (
                 <a
                   key={href}
                   href={href}
-                  onClick={() => setOpen(false)}
+                  onClick={(ev) => {
+                    setOpen(false);
+                    if (href === "#consult") { ev.preventDefault(); openConsultation(); }
+                  }}
                   className="block rounded-xl px-4 py-3 text-[15px] font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
                 >
                   {label}

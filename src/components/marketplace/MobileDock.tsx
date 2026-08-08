@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Menu, ShieldCheck, Search, MessageSquare, Headset } from "lucide-react";
+import { openConsultation } from "@/components/ConsultationHost";
 
 /**
  * Bottom navigation dock for mobile — search sits at the bottom (modern
@@ -39,10 +40,17 @@ export function MobileDock({
           <MessageSquare size={20} />
           Messages
         </Link>
-        <Link href={authed ? "/api/consultant/start" : "/auth/login?next=/api/consultant/start"} className={`${item} flex-1 text-brand-900`}>
+        {authed ? (
+          <button onClick={() => openConsultation()} className={`${item} flex-1 text-brand-900`}>
+            <Headset size={20} />
+            Consultant
+          </button>
+        ) : (
+        <Link href="/auth/login?next=%2Fdashboard%3Fconsult%3D1" className={`${item} flex-1 text-brand-900`}>
           <Headset size={20} />
           Consultant
         </Link>
+        )}
       </div>
     </div>
   );

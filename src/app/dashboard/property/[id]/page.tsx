@@ -8,7 +8,7 @@ import { VerificationBadge, Pill } from "@/components/Badges";
 import { BookInspectionDrawer } from "@/components/dashboard/BookInspection";
 import { MortgageCalculator } from "@/components/dashboard/MortgageCalculator";
 import { PhotoGallery } from "@/components/PhotoGallery";
-import { ConsultationSheet } from "@/components/ConsultationSheet";
+import { openConsultation } from "@/components/ConsultationHost";
 import { naira, TYPE_LABEL } from "@/lib/format";
 import { listingImage, poolImage } from "@/lib/images";
 import { trackRecent } from "@/lib/compare";
@@ -31,7 +31,6 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
   const [inqMsg, setInqMsg] = useState("");
   const [inqSent, setInqSent] = useState(false);
   const [inqErr, setInqErr] = useState("");
-  const [consultOpen, setConsultOpen] = useState(false);
   const [inqThreadId, setInqThreadId] = useState<number | null>(null);
   const [offerOpen, setOfferOpen] = useState(false);
   const [offerAmount, setOfferAmount] = useState("");
@@ -245,7 +244,10 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
               </button>
             )}
             <button
-              onClick={() => setConsultOpen(true)}
+              onClick={() => openConsultation({
+                id: L.id, title: L.title, price: L.price, image: photos[0],
+                area: L.location_area, city: L.location_city,
+              })}
               className="btn-text mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-neutral-200 text-neutral-800 transition hover:bg-neutral-50"
             >
               <Headset size={15} /> Speak to a Consultant
@@ -282,12 +284,6 @@ export default function PropertyPage({ params }: { params: Promise<{ id: string 
           <MortgageCalculator price={L.price} />
         </div>
       </div>
-
-      <ConsultationSheet
-        open={consultOpen}
-        onClose={() => setConsultOpen(false)}
-        context={{ id: L.id, title: L.title, price: L.price, image: photos[0], area: L.location_area, city: L.location_city }}
-      />
 
       {/* Ask the agent: a sheet on mobile, a modal on desktop, so it always
           opens where you are rather than far below the fold. */}
