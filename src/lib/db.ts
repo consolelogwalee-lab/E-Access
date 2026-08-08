@@ -372,6 +372,38 @@ async function migrate() {
   try { await d.run("ALTER TABLE users ADD COLUMN avatar_url TEXT"); } catch { /* exists */ }
   // when a validation request was approved/rejected (ISO) — drives auto-cleanup of old rejects
   try { await d.run("ALTER TABLE validation_requests ADD COLUMN resolved_at TEXT"); } catch { /* exists */ }
+  // structured payload on a message (JSON). Null for ordinary text messages; used to
+  // carry a property card when a consultant recommends a listing.
+  try { await d.run("ALTER TABLE messages ADD COLUMN payload_json TEXT"); } catch { /* exists */ }
+  // A consultation is the qualified request behind a consultant conversation.
+  // The conversation itself still lives in threads/messages — this row is the
+  // context and the lifecycle around it.
+  await d.run(`CREATE TABLE IF NOT EXISTS consultations (
+    ${ID},
+    user_id INTEGER NOT NULL,
+    thread_id INTEGER,
+    listing_id INTEGER,
+    intent TEXT NOT NULL,
+    property_type TEXT,
+    locations TEXT,
+    budget_min BIGINT,
+    budget_max BIGINT,
+    bedrooms INTEGER,
+    timeline TEXT,
+    requirements TEXT,
+    contact_method TEXT NOT NULL DEFAULT 'chat',
+    contact_channel TEXT,
+    phone TEXT,
+    callback_window TEXT,
+    appointment_at TEXT,
+    appointment_mode TEXT,
+    assigned_admin_id INTEGER,
+    status TEXT NOT NULL DEFAULT 'new',
+    admin_note TEXT,
+    created_at TEXT NOT NULL DEFAULT ${NOW},
+    updated_at TEXT,
+    last_activity_at TEXT
+  )`);
   // migrate legacy demo account name
   await d.run("UPDATE users SET email = 'wale@eaccess.demo', full_name = 'Wale Adeyemi' WHERE email = 'daniel@eaccess.demo'");
   // Wale's account gets admin so the Admin Panel link is visible in the sidebar

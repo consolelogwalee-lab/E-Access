@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { BadgeCheck, Paperclip, Send, Mic, MoreHorizontal, MessageSquarePlus } from "lucide-react";
 import { Topbar } from "@/components/dashboard/Topbar";
 import { timeAgo } from "@/lib/format";
+import { toast } from "@/components/Ui";
 
 type Thread = {
   id: number;
@@ -119,16 +120,27 @@ function MessagesInner() {
     const body = (text ?? draft).trim();
     if (!body || !activeId) return;
     setDraft("");
+    // Negative id so the optimistic bubble never collides with a real server id,
+    // and can be rolled back cleanly if the send is rejected.
+    const tempId = -Date.now();
     setMessages((m) => [
       ...m,
-      { id: Date.now(), thread_id: activeId, sender_id: meId, body, created_at: new Date().toISOString() },
+      { id: tempId, thread_id: activeId, sender_id: meId, body, created_at: new Date().toISOString() },
     ]);
     const res = await fetch(`/api/threads/${activeId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ body }),
     });
-    const d = await res.json();
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      // Drop the optimistic bubble and give the draft back rather than leaving
+      // a message on screen that was never delivered.
+      setMessages((m) => m.filter((x) => x.id !== tempId));
+      setDraft(body);
+      toast(d?.error ?? "Could not send that message.", "warn");
+      return;
+    }
     if (d.messages) setMessages(d.messages);
     // refresh the inbox preview/order without stealing the current selection
     fetch("/api/threads")

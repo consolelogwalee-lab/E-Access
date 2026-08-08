@@ -40,7 +40,15 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   try {
     const messages = await postMessage(Number(id), user.id, user.full_name, body, user.role === "admin");
     return NextResponse.json({ ok: true, messages });
-  } catch {
-    return NextResponse.json({ error: "Not found." }, { status: 404 });
+  } catch (e) {
+    const reason = e instanceof Error ? e.message : "";
+    if (reason === "already-claimed")
+      return NextResponse.json(
+        { error: "Another team member is already handling this conversation." },
+        { status: 409 }
+      );
+    if (reason === "not-a-participant")
+      return NextResponse.json({ error: "Not found." }, { status: 404 });
+    return NextResponse.json({ error: "Could not send that message." }, { status: 500 });
   }
 }

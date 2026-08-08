@@ -241,9 +241,18 @@ export async function postMessage(threadId: number, meId: number, meName: string
   const senderIsRequester = requesterId === meId;
 
   // First admin to reply to an unclaimed consultant request claims it.
+  // The WHERE guard makes this race-safe; we then re-read who actually won so a
+  // losing racer doesn't believe it holds the thread and misroute notifications.
   if (isConsultant && !thread.peer_id && isAdmin && !senderIsRequester) {
     await run("UPDATE threads SET peer_id = $1 WHERE id = $2 AND peer_id IS NULL", [meId, threadId]);
-    thread.peer_id = meId;
+    const claimed = await q1<{ peer_id: number | null }>("SELECT peer_id FROM threads WHERE id = $1", [threadId]);
+    thread.peer_id = claimed?.peer_id ?? null;
+  }
+
+  // A claimed consultant thread belongs to the admin who claimed it. Other admins
+  // keep read access for oversight, but must not reply over the top of a colleague.
+  if (isConsultant && thread.peer_id && isAdmin && !senderIsRequester && Number(thread.peer_id) !== meId) {
+    throw new Error("already-claimed");
   }
 
   await run("INSERT INTO messages (thread_id, sender_id, body) VALUES ($1,$2,$3)", [threadId, meId, body]);
